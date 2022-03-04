@@ -29,7 +29,7 @@ dotnet-uninstall-debian-packages.sh
 /**/.vscode/
 
 # Project Rider IDE files
-.idea.powershell/
+.idea/
 
 # Ignore executables
 *.exe
