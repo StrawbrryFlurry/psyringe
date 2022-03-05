@@ -1,7 +1,8 @@
 using System.Linq;
 using System.Management.Automation.Language;
 using FluentAssertions;
-using PSyringe.Core.Test.Scripts;
+using PSyringe.Common.Language.Parsing;
+using PSyringe.Common.Test.Scripts;
 using PSyringe.Language.Parsing;
 using PSyringe.Language.Test.Parsing.Utils;
 using Xunit;
@@ -14,7 +15,7 @@ public class ScriptVisitorTest {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.EmptyScript);
     var usingStatementName = sut.UsingStatements.Select(e => e.Name.Value).FirstOrDefault();
 
-    usingStatementName.Should().StartWith("PSyringe.Core.Language.Attributes");
+    usingStatementName.Should().StartWith("PSyringe.Language.Attributes");
   }
 
   [Fact]
@@ -50,6 +51,13 @@ public class ScriptVisitorTest {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithBeforeUnloadFunction);
 
     sut.CallbackFunctions.Should().NotBeEmpty();
+  }
+
+  [Fact]
+  public void VisitFunctionDefinition_AddsProviderFunction_WhenFunctionProviderFunction() {
+    var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithProvideExpressionAttribute_NoTarget);
+
+    sut.ProvideExpressions.Should().NotBeEmpty();
   }
 
   [Fact]
@@ -94,7 +102,7 @@ public class ScriptVisitorTest {
   private ScriptVisitor MakeVisitorAndVisitScript(string script) {
     var visitor = new ScriptVisitor();
     var ast = GetAst(script);
-    ast.Visit(visitor);
+    visitor.Visit(ast);
     return visitor;
   }
 

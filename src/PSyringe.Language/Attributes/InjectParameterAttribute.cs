@@ -1,6 +1,6 @@
 ﻿using PSyringe.Common.Language.Attributes;
 
-namespace PSyringe.Core.Language.Attributes;
+namespace PSyringe.Language.Attributes;
 
 public class InjectParameterAttribute : IInjectionTargetAttribute {
 }

@@ -1,6 +1,6 @@
 using System.Management.Automation.Language;
 using FluentAssertions;
-using PSyringe.Core.Language.Attributes;
+using PSyringe.Language.Attributes;
 using PSyringe.Language.Extensions;
 using PSyringe.Language.Test.Parsing.Utils;
 using Xunit;

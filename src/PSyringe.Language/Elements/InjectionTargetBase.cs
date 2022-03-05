@@ -1,6 +1,6 @@
 using System.Management.Automation;
 using System.Management.Automation.Language;
-using PSyringe.Core.Language.Attributes;
+using PSyringe.Language.Attributes;
 using PSyringe.Language.Extensions;
 
 namespace PSyringe.Core.Language.Parsing.Elements;

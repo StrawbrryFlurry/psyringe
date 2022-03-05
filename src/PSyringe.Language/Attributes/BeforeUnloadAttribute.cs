@@ -1,6 +1,6 @@
-using PSyringe.Language.Attributes;
+using PSyringe.Language.Attributes.Base;
 
-namespace PSyringe.Core.Language.Attributes;
+namespace PSyringe.Language.Attributes;
 
 public class BeforeUnloadAttribute : CallbackAttribute {
 }

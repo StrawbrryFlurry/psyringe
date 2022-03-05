@@ -1,9 +1,15 @@
 using System.Management.Automation.Language;
+using PSyringe.Common.Language.Parsing;
 using PSyringe.Core.Language.Parsing.Elements;
+using PSyringe.Language.Elements;
 
 namespace PSyringe.Language.Parsing;
 
 public class ElementFactory {
+  public static IScriptElement CreateScript(IScriptVisitor visitor) {
+    return new ScriptElement(visitor);
+  }
+  
   public static StartupElement CreateStartup(FunctionDefinitionAst ast) {
     return new StartupElement();
   }

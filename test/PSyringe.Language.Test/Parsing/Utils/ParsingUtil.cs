@@ -1,5 +1,4 @@
 using System.Management.Automation.Language;
-using PSyringe.Core.Language.Parsing;
 using PSyringe.Language.Parsing;
 
 namespace PSyringe.Language.Test.Parsing.Utils;

@@ -1,13 +1,16 @@
-namespace PSyringe.Core.Test.Scripts;
+namespace PSyringe.Common.Test.Scripts;
 
 public class ScriptTemplates {
   public const string StartupFunctionName = "Startup";
   public const string InjectionSiteFunctionName = "InjectionSite";
   public const string CallbackFunctionName = "Callback";
   public const string InjectVariableName = "Variable";
-  public const string InjectTemplateName = "Template";
+  public const string TemplateName = "Template";
+  public const string ProviderName = "Provider";
 
   public const string EmptyScript = "";
+
+  public const string InvalidScript = "InvalidScript | Foo";
 
   public const string WithStartupFunction = @$"
 function {StartupFunctionName} {{
@@ -127,11 +130,30 @@ function {InjectionSiteFunctionName} {{
 }}";
 
   public const string WithInjectTemplateAttribute_NamedTarget = @$"
-[InjectTemplate('{InjectTemplateName}')]{{}}
+[InjectTemplate('{TemplateName}')]{{}}
 ";
 
   public const string WithInjectTemplateAttribute_NoTarget = @"
 [InjectTemplate()]{}
+";
+
+  public const string WithProvideExpressionAttribute_ExplicitTarget = $@"
+  function {TemplateName} {{
+    [Provide(Target = '{ProviderName}')]
+    param()
+  }};
+";
+
+  public const string WithProvideExpressionAttribute_ImplicitTarget = $@"
+  function {TemplateName} {{
+    [Provide()]
+    param()
+  }};
+";
+
+  public const string WithProvideExpressionAttribute_NoTarget = @"
+  [Provide()]{
+  };
 ";
 
   public const string WithOnErrorFunction = @$"

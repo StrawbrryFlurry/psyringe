@@ -1,9 +1,52 @@
+using System.Management.Automation.Language;
 using System.Text;
-using PSyringe.Core.Language.Attributes;
+using PSyringe.Common.Language.Parsing;
+using PSyringe.Language.Attributes;
 
 namespace PSyringe.Language.Parsing;
 
-public class ScriptParser {
+public class ScriptParser : IScriptParser {
+  internal string ScriptBeforeParsing { get; private set; } = "";
+  internal ScriptBlockAst ScriptAst { get; private set; }
+  internal IScriptVisitor Visitor { get; }
+  
+  internal IScriptElement Script { get; private set; }
+  
+  public ScriptParser(IScriptVisitor visitor) {
+    Visitor = visitor;
+  }
+  
+  public IScriptElement Parse(string script) {
+    PrepareAndParseScript(script);
+    VisitScriptAst();
+    return CreateScriptElement();
+  }
+
+  private IScriptElement CreateScriptElement() {
+    Script = CreateScriptElementFromVisitor();
+    
+    return default;
+  }
+
+  private IScriptElement CreateScriptElementFromVisitor() {
+    return ElementFactory.CreateScript(Visitor);
+  }
+  
+  private void VisitScriptAst() {
+    Visitor.Visit(ScriptAst);
+  }
+
+  private void PrepareAndParseScript(string script) {
+    PrependAssemblyReference(ref script);
+    ScriptAst = ParseScriptToAst(script);
+  }
+  
+  private ScriptBlockAst ParseScriptToAst(string script) {
+    ScriptBeforeParsing = script;
+    var ast = Parser.ParseInput(script, out var tokens, out var errors);
+    return ast;
+  }
+
   internal static void PrependAssemblyReference(ref string script) {
     var assemblyName = GetAttributeAssemblyNamespace();
     var sb = new StringBuilder();

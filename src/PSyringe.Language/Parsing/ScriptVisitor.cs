@@ -7,15 +7,21 @@ using PSyringe.Language.Extensions;
 namespace PSyringe.Language.Parsing;
 
 public class ScriptVisitor : AstVisitor2, IScriptVisitor {
-  public readonly List<UsingStatementAst> UsingStatements = new();
   private readonly AstVisitAction _continue = AstVisitAction.Continue;
-  
+  public readonly List<UsingStatementAst> UsingStatements = new();
+
+  public ScriptBlockAst? Ast { get; private set; }
   public List<FunctionDefinitionAst> CallbackFunctions { get; } = new();
   public Dictionary<FunctionDefinitionAst, IEnumerable<ParameterAst>> FunctionParameters { get; } = new();
 
   public List<AttributedExpressionAst> InjectExpressions { get; } = new();
   public List<FunctionDefinitionAst> InjectionSites { get; } = new();
   public List<AttributedExpressionAst> ProvideExpressions { get; } = new();
+  
+  public void Visit(ScriptBlockAst scriptBlockAst) {
+    Ast = scriptBlockAst;
+    scriptBlockAst.Visit(this);
+  }
 
   public override AstVisitAction VisitUsingStatement(UsingStatementAst usingStatementAst) {
     UsingStatements.Add(usingStatementAst);
@@ -34,7 +40,7 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
     return _continue;
   }
 
-  private AstVisitAction AddProvideExpression(AttributedExpressionAst ast) {
+  private  AstVisitAction AddProvideExpression(AttributedExpressionAst ast) {
     ProvideExpressions.Add(ast);
     return _continue;
   }

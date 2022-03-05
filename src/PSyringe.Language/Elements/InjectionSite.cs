@@ -1,9 +1,10 @@
 using System.Management.Automation.Language;
-using PSyringe.Core.Language.Attributes;
+using PSyringe.Common.Language.Parsing.Elements;
+using PSyringe.Language.Attributes;
 
 namespace PSyringe.Core.Language.Parsing.Elements;
 
-public class InjectionSiteElement {
+public class InjectionSiteElement : IInjectionSiteElement {
   public InjectionSiteElement(FunctionDefinitionAst ast) {
     Name = ast.Name;
     FunctionDefinition = ast;
