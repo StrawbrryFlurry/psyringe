@@ -3,8 +3,8 @@ using PSyringe.Common.Language.Parsing.Elements;
 
 namespace PSyringe.Language.Elements;
 
-public class InjectionSiteParameterElement : IInjectionSiteParameter {
-  public InjectionSiteParameterElement(ParameterAst ast) {
+public class InjectTemplateElement : IInjectTemplateElement {
+  public InjectTemplateElement(AttributedExpressionAst ast) {
     Ast = ast;
   }
 

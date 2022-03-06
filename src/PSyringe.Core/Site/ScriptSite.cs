@@ -1,5 +1,4 @@
-namespace PSyringe.Core.Site; 
+namespace PSyringe.Core.Site;
 
 public class ScriptSite {
-  
 }

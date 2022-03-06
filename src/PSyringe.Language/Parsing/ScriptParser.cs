@@ -6,16 +6,16 @@ using PSyringe.Language.Attributes;
 namespace PSyringe.Language.Parsing;
 
 public class ScriptParser : IScriptParser {
-  internal string ScriptBeforeParsing { get; private set; } = "";
-  internal ScriptBlockAst ScriptAst { get; private set; }
-  internal IScriptVisitor Visitor { get; }
-  
-  internal IScriptElement Script { get; private set; }
-  
   public ScriptParser(IScriptVisitor visitor) {
     Visitor = visitor;
   }
-  
+
+  internal string ScriptBeforeParsing { get; private set; } = "";
+  internal ScriptBlockAst ScriptAst { get; private set; }
+  internal IScriptVisitor Visitor { get; }
+
+  internal IScriptElement Script { get; private set; }
+
   public IScriptElement Parse(string script) {
     PrepareAndParseScript(script);
     VisitScriptAst();
@@ -24,14 +24,15 @@ public class ScriptParser : IScriptParser {
 
   private IScriptElement CreateScriptElement() {
     Script = CreateScriptElementFromVisitor();
-    
+
     return default;
   }
 
   private IScriptElement CreateScriptElementFromVisitor() {
-    return ElementFactory.CreateScript(Visitor);
+    var builder = new ElementBuilder(new ElementFactory());
+    return builder.Build();
   }
-  
+
   private void VisitScriptAst() {
     Visitor.Visit(ScriptAst);
   }
@@ -40,7 +41,7 @@ public class ScriptParser : IScriptParser {
     PrependAssemblyReference(ref script);
     ScriptAst = ParseScriptToAst(script);
   }
-  
+
   private ScriptBlockAst ParseScriptToAst(string script) {
     ScriptBeforeParsing = script;
     var ast = Parser.ParseInput(script, out var tokens, out var errors);

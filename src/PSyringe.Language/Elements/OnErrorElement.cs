@@ -3,8 +3,9 @@ using PSyringe.Common.Language.Parsing.Elements;
 
 namespace PSyringe.Language.Elements;
 
-public class InjectionSiteParameterElement : IInjectionSiteParameter {
-  public InjectionSiteParameterElement(ParameterAst ast) {
+public class OnErrorElement : IOnErrorElement {
+  
+  public OnErrorElement(FunctionDefinitionAst ast) {
     Ast = ast;
   }
 

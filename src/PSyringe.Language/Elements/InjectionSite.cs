@@ -2,23 +2,28 @@ using System.Management.Automation.Language;
 using PSyringe.Common.Language.Parsing.Elements;
 using PSyringe.Language.Attributes;
 
-namespace PSyringe.Core.Language.Parsing.Elements;
+namespace PSyringe.Language.Elements;
 
 public class InjectionSiteElement : IInjectionSiteElement {
+  private readonly List<IInjectionSiteParameter> _parameters = new();
+
   public InjectionSiteElement(FunctionDefinitionAst ast) {
-    Name = ast.Name;
-    FunctionDefinition = ast;
+    Ast = ast;
   }
 
   public Type SiteDefinitionAttribute { get; set; } = typeof(StartupAttribute);
 
   public string Name { get; }
+
   public string InjectionScope { get; private set; }
+
   public FunctionDefinitionAst FunctionDefinition { get; }
 
-  public List<InjectionSiteParameterElement> Parameters { get; } = new();
+  public Ast Ast { get; }
 
-  public void AddParameter(InjectionSiteParameterElement parameter) {
-    Parameters.Add(parameter);
+  public IEnumerable<IInjectionSiteParameter> Parameters => _parameters;
+
+  public void AddParameter(IInjectionSiteParameter parameter) {
+    _parameters.Add(parameter);
   }
 }

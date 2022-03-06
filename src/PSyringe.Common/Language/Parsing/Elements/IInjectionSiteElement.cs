@@ -1,5 +1,8 @@
-namespace PSyringe.Common.Language.Parsing.Elements; 
+using PSyringe.Common.Language.Parsing.Elements.Base;
 
-public interface IInjectionSiteElement {
-  
+namespace PSyringe.Common.Language.Parsing.Elements;
+
+public interface IInjectionSiteElement : IElement {
+  public IEnumerable<IInjectionSiteParameter> Parameters { get; }
+  public void AddParameter(IInjectionSiteParameter parameter);
 }

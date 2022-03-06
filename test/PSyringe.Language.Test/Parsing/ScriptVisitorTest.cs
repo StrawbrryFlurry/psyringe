@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Management.Automation.Language;
 using FluentAssertions;
-using PSyringe.Common.Language.Parsing;
 using PSyringe.Common.Test.Scripts;
 using PSyringe.Language.Parsing;
 using PSyringe.Language.Test.Parsing.Utils;

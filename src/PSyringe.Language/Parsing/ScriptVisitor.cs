@@ -17,7 +17,7 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
   public List<AttributedExpressionAst> InjectExpressions { get; } = new();
   public List<FunctionDefinitionAst> InjectionSites { get; } = new();
   public List<AttributedExpressionAst> ProvideExpressions { get; } = new();
-  
+
   public void Visit(ScriptBlockAst scriptBlockAst) {
     Ast = scriptBlockAst;
     scriptBlockAst.Visit(this);
@@ -40,7 +40,7 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
     return _continue;
   }
 
-  private  AstVisitAction AddProvideExpression(AttributedExpressionAst ast) {
+  private AstVisitAction AddProvideExpression(AttributedExpressionAst ast) {
     ProvideExpressions.Add(ast);
     return _continue;
   }
