@@ -12,7 +12,7 @@ public class ScriptElement : IScriptElement {
   private readonly List<IOnErrorElement> _onErrorFunctions = new();
   private readonly List<IOnLoadElement> _onLoadFunctions = new();
 
-  public IStartupElement? StartupFunction { get; private set; }
+  public IStartupFunctionElement? StartupFunction { get; private set; }
 
   public IEnumerable<IInjectionSiteElement> InjectionSites => _injectionSites;
   public IEnumerable<IInjectVariableElement> InjectVariables => _injectVariables;
@@ -39,8 +39,8 @@ public class ScriptElement : IScriptElement {
     _injectTemplates.Add(injectTemplate);
   }
 
-  public void SetStartupFunction(IStartupElement startupFunction) {
-    StartupFunction = startupFunction;
+  public void SetStartupFunction(IStartupFunctionElement startupFunctionFunction) {
+    StartupFunction = startupFunctionFunction;
   }
 
   public void AddBeforeUnload(IBeforeUnloadElement beforeUnloadFunction) {

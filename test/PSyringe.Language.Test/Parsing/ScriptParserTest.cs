@@ -1,5 +1,8 @@
+using System.Linq;
 using System.Management.Automation.Language;
 using FluentAssertions;
+using PSyringe.Common.Language.Parsing;
+using PSyringe.Common.Language.Parsing.Elements;
 using PSyringe.Common.Test.Scripts;
 using PSyringe.Language.Parsing;
 using Xunit;
@@ -25,20 +28,62 @@ public class ScriptParserTest {
   public void Parse_CallsScriptVisitor_WhenCalled() {
     var sut = MakeParserAndParse(ScriptTemplates.WithStartupFunction);
 
-    sut.Visitor.InjectionSites.Should().NotBeEmpty();
+    sut.Visitor.HasVisited.Should().BeTrue();
   }
 
   [Fact]
-  public void Parse_CallsCreateScriptElement_WhenCalled() {
-    var sut = MakeParserAndParse(ScriptTemplates.WithStartupFunction);
+  public void AddStartupFunctionIfDefined_SetsStartupFunctionInScript_WhenScriptHasStartupFunction() {
+    MakeParserAndParse(ScriptTemplates.WithStartupFunction, out var script);
 
-    sut.Script.Should().NotBeNull();
+    script.StartupFunction.Should().BeAssignableTo<IStartupFunctionElement>();
   }
+  
+  [Fact]
+  public void AddStartupFunctionIfDefined_DoesNotSetAnythingInScript_WhenScriptHasNoStartupFunctionDefined() {
+    MakeParserAndParse(ScriptTemplates.WithInjectionSiteFunction, out var script);
 
+    script.StartupFunction.Should().BeNull();
+  }
+  
+  [Fact]
+  public void AddAllInjectionSiteElements_AddsInjectionSiteInScript_WhenScriptHasInjectionSite() {
+    MakeParserAndParse(ScriptTemplates.WithInjectionSiteFunction, out var script);
+
+    script.InjectionSites.Should().NotBeEmpty();
+  }
+  
+  [Fact]
+  public void AddAllInjectionSiteElements_AddsParametersToSite_WhenScriptHasParameters() {
+    MakeParserAndParse(ScriptTemplates.WithInjectParameterFunction_NoTarget, out var script);
+    
+    var site = script.InjectionSites.First();
+    site.Parameters.Should().NotBeEmpty();
+  }
+  
+  [Fact]
+  public void AddAllInjectVariableElements_AddsInjectVariableInScript_WhenScriptHasInjectVariable() {
+    MakeParserAndParse(ScriptTemplates.WithInjectVariableExpression_NoTarget, out var script);
+
+    script.InjectVariables.Should().NotBeEmpty();
+  }
+  
   private ScriptParser MakeParserAndParse(string script) {
     var visitor = new ScriptVisitor();
-    var parser = new ScriptParser(visitor);
+    var factory = new ElementFactory();
+    var builder = new ElementBuilder(factory);
+    var parser = new ScriptParser(visitor, builder);
+    
     parser.Parse(script);
+    return parser;
+  }
+  
+  private ScriptParser MakeParserAndParse(string script, out IScriptElement scriptElement) {
+    var visitor = new ScriptVisitor();
+    var factory = new ElementFactory();
+    var builder = new ElementBuilder(factory);
+    var parser = new ScriptParser(visitor, builder);
+    
+    scriptElement = parser.Parse(script);
     return parser;
   }
 }

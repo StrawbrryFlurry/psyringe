@@ -3,10 +3,10 @@ using PSyringe.Common.Language.Parsing.Elements;
 
 namespace PSyringe.Language.Elements;
 
-public class StartupElement : IStartupElement {
+public class StartupFunctionElement : IStartupFunctionElement {
   private readonly List<IInjectionSiteParameter> _parameters = new();
 
-  public StartupElement(FunctionDefinitionAst ast) {
+  public StartupFunctionElement(FunctionDefinitionAst ast) {
     Ast = ast;
   }
 

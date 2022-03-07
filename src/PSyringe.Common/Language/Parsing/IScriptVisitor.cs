@@ -3,13 +3,15 @@ using System.Management.Automation.Language;
 namespace PSyringe.Common.Language.Parsing;
 
 public interface IScriptVisitor {
-  ScriptBlockAst Ast { get; }
+  public ScriptBlockAst Ast { get; }
+  public bool HasVisited { get; }
 
-  List<FunctionDefinitionAst> CallbackFunctions { get; }
-  Dictionary<FunctionDefinitionAst, IEnumerable<ParameterAst>> FunctionParameters { get; }
-  List<AttributedExpressionAst> InjectExpressions { get; }
-  List<FunctionDefinitionAst> InjectionSites { get; }
-  List<AttributedExpressionAst> ProvideExpressions { get; }
+  public List<FunctionDefinitionAst> CallbackFunctions { get; }
+  public List<AttributedExpressionAst> InjectExpressions { get; }
+  public List<FunctionDefinitionAst> InjectionSites { get; }
+  public List<AttributedExpressionAst> ProvideExpressions { get; }
 
-  void Visit(ScriptBlockAst ast);
+  public IEnumerable<ParameterAst> GetParametersForFunction(FunctionDefinitionAst functionDefinitionAst); 
+
+  public void Visit(ScriptBlockAst ast);
 }

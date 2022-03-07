@@ -11,16 +11,23 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
   public readonly List<UsingStatementAst> UsingStatements = new();
 
   public ScriptBlockAst? Ast { get; private set; }
+  public bool HasVisited { get; private set; }
+  
   public List<FunctionDefinitionAst> CallbackFunctions { get; } = new();
-  public Dictionary<FunctionDefinitionAst, IEnumerable<ParameterAst>> FunctionParameters { get; } = new();
+  private Dictionary<FunctionDefinitionAst, IEnumerable<ParameterAst>> FunctionParameters { get; } = new();
 
   public List<AttributedExpressionAst> InjectExpressions { get; } = new();
   public List<FunctionDefinitionAst> InjectionSites { get; } = new();
   public List<AttributedExpressionAst> ProvideExpressions { get; } = new();
 
+  public IEnumerable<ParameterAst> GetParametersForFunction(FunctionDefinitionAst functionDefinitionAst) {
+    return FunctionParameters[functionDefinitionAst];
+  }
+
   public void Visit(ScriptBlockAst scriptBlockAst) {
     Ast = scriptBlockAst;
     scriptBlockAst.Visit(this);
+    HasVisited = true;
   }
 
   public override AstVisitAction VisitUsingStatement(UsingStatementAst usingStatementAst) {
@@ -46,7 +53,7 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
   }
 
   private bool IsProvideExpression(AttributedExpressionAst ast) {
-    return ast.Attribute.IsOfType<IProvideTargetAttribute>();
+    return ast.Attribute.IsAssignableToType<IProvideTargetAttribute>();
   }
 
   private AstVisitAction AddCallbackFunction(FunctionDefinitionAst ast) {
@@ -55,13 +62,13 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
   }
 
   private bool IsCallbackFunction(FunctionDefinitionAst ast) {
-    var attributes = GetFunctionAttributes(ast);
-    return attributes.HasAttributeOfType<ICallbackAttribute>();
+    var attributes = ast.GetAttributes();
+    return attributes.HasAttributeAssignableToType<ICallbackAttribute>();
   }
 
 
   private bool IsInjectExpression(AttributedExpressionAst ast) {
-    return ast.Attribute.IsOfType<IInjectionTargetAttribute>();
+    return ast.Attribute.IsAssignableToType<IInjectionTargetAttribute>();
   }
 
   private AstVisitAction AddInjectExpression(AttributedExpressionAst ast) {
@@ -86,8 +93,8 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
   }
 
   private bool AcceptsParameters(FunctionDefinitionAst ast) {
-    var attributes = GetFunctionAttributes(ast);
-    return attributes.HasAttributeOfType<IAcceptsParameters>();
+    var attributes = ast.GetAttributes();
+    return attributes.HasAttributeAssignableToType<IAcceptsParameters>();
   }
 
   private AstVisitAction AddInjectionSite(FunctionDefinitionAst site) {
@@ -96,25 +103,12 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
   }
 
   private void AddFunctionParameters(FunctionDefinitionAst site) {
-    var parameterBlock = GetFunctionParameterBlock(site)!;
+    var parameterBlock = site.GetParameterBlock()!;
     FunctionParameters.Add(site, parameterBlock.Parameters);
   }
 
   private bool IsInjectionSite(FunctionDefinitionAst ast) {
-    var attributes = GetFunctionAttributes(ast);
-    return attributes.HasAttributeOfType<IInjectionSiteAttribute>();
-  }
-
-  private IReadOnlyCollection<AttributeBaseAst> GetFunctionAttributes(FunctionDefinitionAst ast) {
-    var parameterBlock = GetFunctionParameterBlock(ast);
-    return parameterBlock?.Attributes ?? MakeEmptyReadOnlyCollection<AttributeBaseAst>();
-  }
-
-  private ParamBlockAst? GetFunctionParameterBlock(FunctionDefinitionAst ast) {
-    return ast.Body.ParamBlock;
-  }
-
-  private IReadOnlyCollection<T> MakeEmptyReadOnlyCollection<T>() {
-    return new ReadOnlyCollection<T>(new List<T>());
+    var attributes = ast.GetAttributes();
+    return attributes.HasAttributeAssignableToType<IInjectionSiteAttribute>();
   }
 }

@@ -18,8 +18,8 @@ public class ElementFactory : IElementFactory {
     return new InjectionSiteParameterElement(parameterAst);
   }
 
-  public IStartupElement CreateStartupFunction(FunctionDefinitionAst functionDefinitionAst) {
-    return new StartupElement(functionDefinitionAst);
+  public IStartupFunctionElement CreateStartupFunction(FunctionDefinitionAst functionDefinitionAst) {
+    return new StartupFunctionElement(functionDefinitionAst);
   }
 
   public IInjectVariableElement CreateInjectVariable(AttributedExpressionAst attributedExpressionAst) {

@@ -64,7 +64,7 @@ public class ScriptVisitorTest {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithInjectParameterFunction_NoTarget);
 
     var site = sut.InjectionSites.FirstOrDefault()!;
-    var parameters = sut.FunctionParameters[site];
+    var parameters = sut.GetParametersForFunction(site);
 
     parameters.Should().NotBeNull();
   }

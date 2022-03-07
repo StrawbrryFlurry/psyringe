@@ -10,8 +10,8 @@ public class ElementBuilder : IElementBuilder {
     Script = Factory.CreateScript();
   }
 
-  internal IScriptElement Script { get; }
-  internal IElementFactory Factory { get; }
+  public IScriptElement Script { get; }
+  public IElementFactory Factory { get; }
 
   public IScriptElement Build() {
     return Script;

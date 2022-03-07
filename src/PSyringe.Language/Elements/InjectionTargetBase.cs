@@ -17,6 +17,6 @@ public abstract class AbstractInjectionTargetElement {
 
   private void AssignInjectType(IReadOnlyCollection<AttributeBaseAst> attributes) {
     var implicitInjectType = attributes.FirstOrDefault(a => a is TypeConstraintAst);
-    var explicitInjectAttribute = attributes.FirstOrDefault(a => a.IsOfType<InjectAttribute>());
+    var explicitInjectAttribute = attributes.FirstOrDefault(a => a.IsAssignableToType<InjectAttribute>());
   }
 }

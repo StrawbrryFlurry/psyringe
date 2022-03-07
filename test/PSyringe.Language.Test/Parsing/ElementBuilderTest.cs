@@ -35,22 +35,6 @@ public class ElementFactoryTest {
 
 
   [Fact]
-  public void AddInjectionSiteParameter_CreatesAndAddsParameterToInjectionSite_WhenCalled() {
-    var sut = MakeScriptElementBuilder(ScriptTemplates.WithInjectParameterFunction_NoTarget, out var visitor);
-
-    var siteAst = visitor.InjectionSites.First();
-    sut.AddInjectionSite(siteAst);
-    var siteParameters = visitor.FunctionParameters[siteAst];
-    sut.AddParameterToInjectionSite(siteAst, siteParameters.First());
-    var script = sut.Build();
-
-    var injectionSite = script.InjectionSites.First();
-    var parameter = injectionSite.Parameters.First();
-
-    parameter.Should().BeAssignableTo<IInjectionSiteParameter>();
-  }
-
-  [Fact]
   public void SetStartupFunction_SetsStartupElementInScript_WhenCalled() {
     var sut = MakeScriptElementBuilder(ScriptTemplates.WithStartupFunction, out var visitor);
 

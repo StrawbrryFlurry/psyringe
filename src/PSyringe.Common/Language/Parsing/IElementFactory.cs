@@ -7,7 +7,7 @@ public interface IElementFactory {
   public IScriptElement CreateScript();
   public IInjectionSiteElement CreateInjectionSite(FunctionDefinitionAst functionDefinitionAst);
   public IInjectionSiteParameter CreateInjectionSiteParameter(ParameterAst parameterAst);
-  public IStartupElement CreateStartupFunction(FunctionDefinitionAst functionDefinitionAst);
+  public IStartupFunctionElement CreateStartupFunction(FunctionDefinitionAst functionDefinitionAst);
   public IInjectVariableElement CreateInjectVariable(AttributedExpressionAst attributedExpressionAst);
   public IInjectCredentialElement CreateInjectCredential(AttributedExpressionAst attributedExpressionAst);
   public IInjectTemplateElement CreateInjectTemplate(AttributedExpressionAst attributedExpressionAst);

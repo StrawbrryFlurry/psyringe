@@ -173,4 +173,18 @@ function {CallbackFunctionName} {{
   [BeforeUnload()]
   param()
 }}";
+
+  public const string WithAllFeatures = @$"
+[Inject()][ILogger]${InjectVariableName};
+[Inject([ILogger])]${InjectVariableName};
+[InjectCredential()]${InjectVariableName};
+[InjectTemplate()]{{}}
+
+function {InjectionSiteFunctionName} {{
+  [InjectionSite()]
+  param(
+    [InjectParameter()]$Parameter 
+  )
+}}
+";
 }
