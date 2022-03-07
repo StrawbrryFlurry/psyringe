@@ -13,20 +13,20 @@ namespace PSyringe.Language.Test.Parsing;
 public class ElementFactoryTest {
   [Fact]
   public void Build_ShouldReturnOfInternalScriptElement_WhenCalled() {
-    var builder = MakeScriptElementBuilder(ScriptTemplates.EmptyScript, out var visitor);
+    var sut = MakeScriptElementBuilder(ScriptTemplates.EmptyScript, out var visitor);
 
-    var script = builder.Build();
+    var script = sut.Build();
 
     script.Should().BeAssignableTo<IScriptElement>();
   }
 
   [Fact]
   public void AddInjectionSite_AddsInjectionSiteElementToScript_WhenCalled() {
-    var builder = MakeScriptElementBuilder(ScriptTemplates.WithInjectionSiteFunction, out var visitor);
+    var sut = MakeScriptElementBuilder(ScriptTemplates.WithInjectionSiteFunction, out var visitor);
 
     var siteAst = visitor.InjectionSites.First();
-    builder.AddInjectionSite(siteAst);
-    var script = builder.Build();
+    sut.AddInjectionSite(siteAst);
+    var script = sut.Build();
 
     var injectionSite = script.InjectionSites.First();
 
@@ -36,13 +36,13 @@ public class ElementFactoryTest {
 
   [Fact]
   public void AddInjectionSiteParameter_CreatesAndAddsParameterToInjectionSite_WhenCalled() {
-    var builder = MakeScriptElementBuilder(ScriptTemplates.WithInjectParameterFunction_NoTarget, out var visitor);
+    var sut = MakeScriptElementBuilder(ScriptTemplates.WithInjectParameterFunction_NoTarget, out var visitor);
 
     var siteAst = visitor.InjectionSites.First();
-    builder.AddInjectionSite(siteAst);
+    sut.AddInjectionSite(siteAst);
     var siteParameters = visitor.FunctionParameters[siteAst];
-    builder.AddParameterToInjectionSite(siteAst, siteParameters.First());
-    var script = builder.Build();
+    sut.AddParameterToInjectionSite(siteAst, siteParameters.First());
+    var script = sut.Build();
 
     var injectionSite = script.InjectionSites.First();
     var parameter = injectionSite.Parameters.First();
@@ -52,33 +52,33 @@ public class ElementFactoryTest {
 
   [Fact]
   public void SetStartupFunction_SetsStartupElementInScript_WhenCalled() {
-    var builder = MakeScriptElementBuilder(ScriptTemplates.WithStartupFunction, out var visitor);
+    var sut = MakeScriptElementBuilder(ScriptTemplates.WithStartupFunction, out var visitor);
 
     var startupFunctionAst = visitor.InjectionSites.First();
-    builder.SetStartupFunction(startupFunctionAst);
-    var script = builder.Build();
+    sut.SetStartupFunction(startupFunctionAst);
+    var script = sut.Build();
 
     script.StartupFunction.Should().NotBeNull();
   }
 
   [Fact]
   public void SetStartupFunction_ThrowsError_WhenStartupFunctionIsAlreadySet() {
-    var builder = MakeScriptElementBuilder(ScriptTemplates.WithStartupFunction, out var visitor);
+    var sut = MakeScriptElementBuilder(ScriptTemplates.WithStartupFunction, out var visitor);
 
     var startupFunctionAst = visitor.InjectionSites.First();
-    builder.SetStartupFunction(startupFunctionAst);
-    var action = () => builder.SetStartupFunction(startupFunctionAst);
+    sut.SetStartupFunction(startupFunctionAst);
+    var action = () => sut.SetStartupFunction(startupFunctionAst);
 
     action.Should().Throw<InvalidOperationException>();
   }
 
   [Fact]
   public void AddInjectVariable_AddsInjectVariableToScript_WhenCalled() {
-    var builder = MakeScriptElementBuilder(ScriptTemplates.WithInjectVariableExpression_NoTarget, out var visitor);
+    var sut = MakeScriptElementBuilder(ScriptTemplates.WithInjectVariableExpression_NoTarget, out var visitor);
 
     var injectVariableAst = visitor.InjectExpressions.First();
-    builder.AddInjectVariable(injectVariableAst);
-    var script = builder.Build();
+    sut.AddInjectVariable(injectVariableAst);
+    var script = sut.Build();
 
     var injectVariable = script.InjectVariables.First();
     injectVariable.Should().BeAssignableTo<IInjectVariableElement>();
@@ -86,11 +86,11 @@ public class ElementFactoryTest {
 
   [Fact]
   public void AddInjectCredential_AddsInjectCredentialToScript_WhenCalled() {
-    var builder = MakeScriptElementBuilder(ScriptTemplates.WithInjectCredentialVariable_NoTarget, out var visitor);
+    var sut = MakeScriptElementBuilder(ScriptTemplates.WithInjectCredentialVariable_NoTarget, out var visitor);
 
     var injectCredentialAst = visitor.InjectExpressions.First();
-    builder.AddInjectCredential(injectCredentialAst);
-    var script = builder.Build();
+    sut.AddInjectCredential(injectCredentialAst);
+    var script = sut.Build();
 
     var injectCredential = script.InjectCredentials.First();
     injectCredential.Should().BeAssignableTo<IInjectCredentialElement>();
@@ -98,11 +98,11 @@ public class ElementFactoryTest {
 
   [Fact]
   public void AddInjectTemplate_AddsInjectTemplateToScript_WhenCalled() {
-    var builder = MakeScriptElementBuilder(ScriptTemplates.WithInjectTemplateAttribute_NoTarget, out var visitor);
+    var sut = MakeScriptElementBuilder(ScriptTemplates.WithInjectTemplateAttribute_NoTarget, out var visitor);
 
     var templateAst = visitor.InjectExpressions.First();
-    builder.AddInjectTemplate(templateAst);
-    var script = builder.Build();
+    sut.AddInjectTemplate(templateAst);
+    var script = sut.Build();
 
     var injectTemplate = script.InjectTemplates.First();
     injectTemplate.Should().BeAssignableTo<IInjectTemplateElement>();
@@ -110,11 +110,11 @@ public class ElementFactoryTest {
 
   [Fact]
   public void AddOnError_AddsOnErrorFunctionToScript_WhenCalled() {
-    var builder = MakeScriptElementBuilder(ScriptTemplates.WithOnErrorFunction, out var visitor);
+    var sut = MakeScriptElementBuilder(ScriptTemplates.WithOnErrorFunction, out var visitor);
 
     var onErrorAst = visitor.CallbackFunctions.First();
-    builder.AddOnError(onErrorAst);
-    var script = builder.Build();
+    sut.AddOnError(onErrorAst);
+    var script = sut.Build();
 
     var onErrorElement = script.OnErrorFunctions.First();
     onErrorElement.Should().BeAssignableTo<IOnErrorElement>();
@@ -122,11 +122,11 @@ public class ElementFactoryTest {
 
   [Fact]
   public void AddOnLoad_AddsOnLoadFunctionToScript_WhenCalled() {
-    var builder = MakeScriptElementBuilder(ScriptTemplates.WithOnLoadedFunction , out var visitor);
+    var sut = MakeScriptElementBuilder(ScriptTemplates.WithOnLoadedFunction , out var visitor);
 
     var onLoadAst = visitor.CallbackFunctions.First();
-    builder.AddOnLoad(onLoadAst);
-    var script = builder.Build();
+    sut.AddOnLoad(onLoadAst);
+    var script = sut.Build();
 
     var onLoadElement = script.OnLoadFunctions.First();
     onLoadElement.Should().BeAssignableTo<IOnLoadElement>();
@@ -134,11 +134,11 @@ public class ElementFactoryTest {
   
   [Fact]
   public void AddBeforeUnload_AddsBeforeUnloadFunctionToScript_WhenCalled() {
-    var builder = MakeScriptElementBuilder(ScriptTemplates.WithBeforeUnloadFunction , out var visitor);
+    var sut = MakeScriptElementBuilder(ScriptTemplates.WithBeforeUnloadFunction , out var visitor);
 
     var beforeUnloadAst = visitor.CallbackFunctions.First();
-    builder.AddBeforeUnload(beforeUnloadAst);
-    var script = builder.Build();
+    sut.AddBeforeUnload(beforeUnloadAst);
+    var script = sut.Build();
 
     var beforeUnloadElement = script.BeforeUnloadFunctions.First();
     beforeUnloadElement.Should().BeAssignableTo<IBeforeUnloadElement>();
