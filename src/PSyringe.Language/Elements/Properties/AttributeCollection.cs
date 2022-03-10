@@ -1,6 +1,5 @@
 using System.Management.Automation.Language;
 using PSyringe.Common.Language.Parsing.Elements.Properties;
-using PSyringe.Core.Language.Parsing.Elements;
 
 namespace PSyringe.Language.Elements.Properties;
 

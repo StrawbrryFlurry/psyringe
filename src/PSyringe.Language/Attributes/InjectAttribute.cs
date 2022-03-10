@@ -1,8 +1,6 @@
-﻿using PSyringe.Common.Language.Attributes;
+﻿namespace PSyringe.Language.Attributes;
 
-namespace PSyringe.Language.Attributes;
-
-public class InjectAttribute : IInjectionTargetAttribute {
+public class InjectAttribute : InjectionTargetAttribute {
   /// <summary>
   /// </summary>
   /// <param name="Target"></param>

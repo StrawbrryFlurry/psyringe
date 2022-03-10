@@ -2,6 +2,7 @@ using System.Management.Automation.Language;
 
 namespace PSyringe.Common.Language.Parsing;
 
+[Obsolete]
 public interface IElementBuilder {
   public IScriptElement Script { get; }
   public IElementFactory Factory { get; }
@@ -15,6 +16,6 @@ public interface IElementBuilder {
   public void AddOnError(FunctionDefinitionAst onErrorAst);
   public void AddOnLoad(FunctionDefinitionAst onLoadAst);
   public void AddBeforeUnload(FunctionDefinitionAst beforeUnloadAst);
-  
+
   public IScriptElement Build();
 }

@@ -11,7 +11,7 @@ public interface IScriptVisitor {
   public List<FunctionDefinitionAst> InjectionSites { get; }
   public List<AttributedExpressionAst> ProvideExpressions { get; }
 
-  public IEnumerable<ParameterAst> GetParametersForFunction(FunctionDefinitionAst functionDefinitionAst); 
+  public IEnumerable<ParameterAst> GetParametersForFunction(FunctionDefinitionAst functionDefinitionAst);
 
   public void Visit(ScriptBlockAst ast);
 }

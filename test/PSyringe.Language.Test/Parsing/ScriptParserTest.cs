@@ -67,11 +67,25 @@ public class ScriptParserTest {
     script.InjectVariables.Should().NotBeEmpty();
   }
   
+  [Fact]
+  public void AddAllInjectCredentialElements_AddsInjectCredentialInScript_WhenScriptHasInjectCredential() {
+    MakeParserAndParse(ScriptTemplates.WithInjectCredentialVariable_NoTarget, out var script);
+
+    script.InjectCredentials.Should().NotBeEmpty();
+  }
+  
+  
+  [Fact]
+  public void AddAllInjectTemplateElements_AddsInjectTemplateInScript_WhenScriptHasInjectTemplate() {
+    MakeParserAndParse(ScriptTemplates.WithInjectTemplateAttribute_NoTarget, out var script);
+
+    script.InjectTemplates.Should().NotBeEmpty();
+  }
+  
   private ScriptParser MakeParserAndParse(string script) {
     var visitor = new ScriptVisitor();
     var factory = new ElementFactory();
-    var builder = new ElementBuilder(factory);
-    var parser = new ScriptParser(visitor, builder);
+    var parser = new ScriptParser(visitor, factory);
     
     parser.Parse(script);
     return parser;
@@ -80,8 +94,7 @@ public class ScriptParserTest {
   private ScriptParser MakeParserAndParse(string script, out IScriptElement scriptElement) {
     var visitor = new ScriptVisitor();
     var factory = new ElementFactory();
-    var builder = new ElementBuilder(factory);
-    var parser = new ScriptParser(visitor, builder);
+    var parser = new ScriptParser(visitor, factory);
     
     scriptElement = parser.Parse(script);
     return parser;

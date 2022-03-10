@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Management.Automation.Language;
 using PSyringe.Common.Language.Attributes;
 using PSyringe.Common.Language.Parsing;
@@ -9,12 +8,12 @@ namespace PSyringe.Language.Parsing;
 public class ScriptVisitor : AstVisitor2, IScriptVisitor {
   private readonly AstVisitAction _continue = AstVisitAction.Continue;
   public readonly List<UsingStatementAst> UsingStatements = new();
+  private Dictionary<FunctionDefinitionAst, IEnumerable<ParameterAst>> FunctionParameters { get; } = new();
 
   public ScriptBlockAst? Ast { get; private set; }
   public bool HasVisited { get; private set; }
-  
+
   public List<FunctionDefinitionAst> CallbackFunctions { get; } = new();
-  private Dictionary<FunctionDefinitionAst, IEnumerable<ParameterAst>> FunctionParameters { get; } = new();
 
   public List<AttributedExpressionAst> InjectExpressions { get; } = new();
   public List<FunctionDefinitionAst> InjectionSites { get; } = new();

@@ -1,4 +1,4 @@
-namespace PSyringe.Core.Language.Parsing.Elements;
+namespace PSyringe.Language.Elements;
 
 public class InjectionTarget {
 }

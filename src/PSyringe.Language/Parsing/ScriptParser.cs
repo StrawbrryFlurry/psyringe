@@ -1,22 +1,29 @@
 using System.Management.Automation.Language;
 using System.Text;
-using Newtonsoft.Json.Converters;
 using PSyringe.Common.Language.Parsing;
+using PSyringe.Common.Language.Parsing.Elements;
 using PSyringe.Language.Attributes;
-using PSyringe.Language.Extensions;
+using PSyringe.Language.Attributes.Base;
 
 namespace PSyringe.Language.Parsing;
 
 public class ScriptParser : IScriptParser {
-  public ScriptParser(IScriptVisitor visitor, IElementBuilder builder) {
+  internal readonly IElementFactory ElementFactory;
+  internal readonly IScriptElement ScriptElement;
+
+  internal readonly IScriptVisitor Visitor;
+
+  public ScriptParser(IScriptVisitor visitor, IElementFactory elementFactory) {
     Visitor = visitor;
-    Builder = builder;
+    ElementFactory = elementFactory;
+    ScriptElement = ElementFactory.CreateScript();
   }
 
   internal string ScriptBeforeParsing { get; private set; } = "";
   internal ScriptBlockAst ScriptAst { get; private set; }
-  internal IScriptVisitor Visitor { get; }
-  internal IElementBuilder Builder { get; }
+
+  private IEnumerable<AttributedExpressionAst> InjectExpressions => Visitor.InjectExpressions;
+  private IEnumerable<FunctionDefinitionAst> CallbackFunctions => Visitor.CallbackFunctions;
 
   public IScriptElement Parse(string script) {
     PrepareAndParseScript(script);
@@ -27,60 +34,123 @@ public class ScriptParser : IScriptParser {
   private IScriptElement CreateScriptElementFromVisitor() {
     AddStartupFunctionElementIfDefined();
     AddAllInjectionSiteElements();
-    AddAllInjectVariableElements();
-    // CreateInjectCredentialElements();
-    // 
-    // CreateInjectTemplateElements();
+    AddAllInjectElements();
+    AddAllCallbackElements();
 
-    return Builder.Build();
+    return ScriptElement;
   }
-  
-  private void AddInjectCredentialElements() {
-    throw new NotImplementedException();
+
+  private void AddAllCallbackElements() {
+    AddAllOnErrorElements();
+    AddAllOnLoadedElements();
+    AddAllBeforeUnloadElements();
+  }
+
+  private void AddAllOnErrorElements() {
+    AddAllCallbackElementsWithAttribute<OnErrorAttribute>(AddOnErrorElement);
+  }
+
+  private void AddAllOnLoadedElements() {
+    AddAllCallbackElementsWithAttribute<OnLoadedAttribute>(AddOnLoadedElement);
+  }
+
+  private void AddAllBeforeUnloadElements() {
+    AddAllCallbackElementsWithAttribute<BeforeUnloadAttribute>(AddBeforeUnloadElement);
+  }
+
+  private void AddOnErrorElement(FunctionDefinitionAst onErrorFnAst) {
+    var onErrorFn = ElementFactory.CreateOnError(onErrorFnAst);
+    ScriptElement.AddOnError(onErrorFn);
+  }
+
+  private void AddOnLoadedElement(FunctionDefinitionAst onLoadedFnAst) {
+    var onLoadedFn = ElementFactory.CreateOnLoad(onLoadedFnAst);
+    ScriptElement.AddOnLoad(onLoadedFn);
+  }
+
+  private void AddBeforeUnloadElement(FunctionDefinitionAst beforeUnloadFnAst) {
+    var beforeUnloadFn = ElementFactory.CreateBeforeUnload(beforeUnloadFnAst);
+    ScriptElement.AddBeforeUnload(beforeUnloadFn);
+  }
+
+  private void AddAllCallbackElementsWithAttribute<T>(
+    Action<FunctionDefinitionAst> addCallbackElement
+  ) where T : CallbackAttribute {
+    var callbackAstsOfType = CallbackFunctions.GetFunctionDefinitionWithAttribute<T>();
+
+    foreach (var callbackAst in callbackAstsOfType) {
+      addCallbackElement(callbackAst);
+    }
+  }
+
+  private void AddAllInjectElements() {
+    AddAllInjectVariableElements();
+    AddAllInjectCredentialElements();
+    AddAllInjectTemplateElements();
   }
 
   private void AddAllInjectVariableElements() {
-    var injectExpressionAsts = Visitor.InjectExpressions;
-    var injectVariableExpressionAsts = injectExpressionAsts.Where(IsInjectVariableExpression);    
-    
-    foreach (var injectVariableAst in injectVariableExpressionAsts) {
-      AddInjectVariableElement(injectVariableAst);
-    }
+    AddAllInjectVariableElementsWithAttribute<InjectAttribute>(AddInjectVariableElement);
+  }
+  
+  private void AddAllInjectCredentialElements() {
+    AddAllInjectVariableElementsWithAttribute<InjectCredentialAttribute>(AddInjectCredentialElement);
   }
 
   private void AddInjectVariableElement(AttributedExpressionAst injectVariableAst) {
-    Builder.AddInjectVariable(injectVariableAst);
+    var injectVariable = ElementFactory.CreateInjectVariable(injectVariableAst);
+    ScriptElement.AddInjectVariable(injectVariable);
   }
 
-  private bool IsInjectVariableExpression(AttributedExpressionAst ast) {
-    var hasBaseInjectAttribute =  ast.Attribute.IsOfExactType<InjectAttribute>();
-    var isVariableExpression = ast.Child is VariableExpressionAst;
+  private void AddInjectCredentialElement(AttributedExpressionAst injectCredentialAst) {
+    var injectCredential = ElementFactory.CreateInjectCredential(injectCredentialAst);
+    ScriptElement.AddInjectCredential(injectCredential);
+  }
 
-    return isVariableExpression && hasBaseInjectAttribute;
+  private void AddAllInjectVariableElementsWithAttribute<T>(
+    Action<AttributedExpressionAst> addInjectVariableElement
+  ) where T : InjectionTargetAttribute {
+    var injectAstsOfType = InjectExpressions.GetAttributedVariableExpressionsOfType<T>();
+
+    foreach (var injectAst in injectAstsOfType) {
+      addInjectVariableElement(injectAst);
+    }
+  }
+  private void AddAllInjectTemplateElements() {
+    AddAllInjectScriptBlockElementsWithAttribute<InjectTemplateAttribute>(AddInjectTemplateElement);
+  }
+
+  private void AddInjectTemplateElement(AttributedExpressionAst injectTemplateAst) {
+    var injectTemplate = ElementFactory.CreateInjectTemplate(injectTemplateAst);
+    ScriptElement.AddInjectTemplate(injectTemplate);
+  }
+
+  private void AddAllInjectScriptBlockElementsWithAttribute<T>(
+    Action<AttributedExpressionAst> addInjectScriptBlockElement
+    ) where T : InjectionTargetAttribute {
+    var injectAstsOfType = InjectExpressions.GetAttributedExpressionsOfType<T>();
+    
+    foreach (var injectAst in injectAstsOfType) {
+      addInjectScriptBlockElement(injectAst);
+    }
   }
   
   private void AddStartupFunctionElementIfDefined() {
-    var startupFunction = GetStartupFunction();
+    var startupFunctionAst = GetStartupFunction();
 
-    if (startupFunction is null) {
-      return;
+    if (startupFunctionAst is not null) {
+      CreateAndSetStartupFunction(startupFunctionAst);
     }
-    
-    Builder.SetStartupFunction(startupFunction);
+  }
+
+  private void CreateAndSetStartupFunction(FunctionDefinitionAst startupFunctionAst) {
+    var startupFn = ElementFactory.CreateStartupFunction(startupFunctionAst);
+    ScriptElement.SetStartupFunction(startupFn);
   }
 
   private FunctionDefinitionAst? GetStartupFunction() {
     var injectionSites = Visitor.InjectionSites;
-    return injectionSites.FirstOrDefault(IsStartupFunction);
-  }
-
-  private bool IsStartupFunction(FunctionDefinitionAst ast) {
-    var attributes = ast.GetAttributes();
-    return attributes.HasAttributeAssignableToType<StartupAttribute>();
-  }
-  
-  private void CreateInjectTemplateElements() {
-    throw new NotImplementedException();
+    return injectionSites.GetFunctionDefinitionWithAttribute<StartupAttribute>().FirstOrDefault();
   }
 
   private void AddAllInjectionSiteElements() {
@@ -92,18 +162,25 @@ public class ScriptParser : IScriptParser {
   }
 
   private void AddInjectionSiteElementWithParameters(FunctionDefinitionAst injectionSiteAst) {
-    Builder.AddInjectionSite(injectionSiteAst);
-    
-    var parameters = Visitor.GetParametersForFunction(injectionSiteAst);
-    AddParametersToInjectionSite(injectionSiteAst, parameters);
+    var injectionSite = ElementFactory.CreateInjectionSite(injectionSiteAst);
+    ScriptElement.AddInjectionSite(injectionSite);
+
+    AddAllParametersToInjectionSite(injectionSite);
   }
-  
-  private void AddParametersToInjectionSite(FunctionDefinitionAst injectionSiteAst, IEnumerable<ParameterAst> parameterAsts) {
+
+  private void AddAllParametersToInjectionSite(IInjectionSiteElement injectionSite) {
+    var parameterAsts = Visitor.GetParametersForFunction(injectionSite.Ast as FunctionDefinitionAst);
+
     foreach (var parameterAst in parameterAsts) {
-      Builder.AddParameterToInjectionSite(injectionSiteAst, parameterAst);
+      AddParametersToInjectionSite(injectionSite, parameterAst);
     }
   }
-  
+
+  private void AddParametersToInjectionSite(IInjectionSiteElement injectionSite, ParameterAst parameterAst) {
+    var parameter = ElementFactory.CreateInjectionSiteParameter(parameterAst);
+    injectionSite.AddParameter(parameter);
+  }
+
   private void VisitScriptAst() {
     Visitor.Visit(ScriptAst);
   }
@@ -115,7 +192,7 @@ public class ScriptParser : IScriptParser {
 
   private ScriptBlockAst ParseScriptToAst(string script) {
     ScriptBeforeParsing = script;
-    var ast = Parser.ParseInput(script, out var tokens, out var errors);
+    var ast = Parser.ParseInput(script, out _, out _);
     return ast;
   }
 
@@ -132,80 +209,3 @@ public class ScriptParser : IScriptParser {
     return type.Namespace!;
   }
 }
-
-
-/*
- *   private void AddInjectionSite(FunctionDefinitionAst ast) {
-    var site = ElementFactory.CreateInjectionSite(ast);
-    InjectionSites.Add(site);
-    AddInjectionSiteParameters(ast, site);
-  }
-
-  private void AddInjectionSiteParameters(FunctionDefinitionAst ast, InjectionSiteElement site) {
-    var parameterBlock = GetFunctionParameterBlock(ast)!;
-    
-    foreach (var parameter in parameterBlock.Parameters) {
-      ElementFactory.AddParameterToInjectionSite(site, parameter);
-    }
-  }
-
-  private bool IsInjectTemplateExpression(AttributedExpressionAst ast) {
-    return ast.Attribute.IsOfType<InjectTemplateAttribute>();
-  }
-  
-  private bool IsInjectionSite(FunctionDefinitionAst ast) {
-    if(!FunctionHasParameterBlock(ast))  {
-      return false;
-    }
-    
-    var functionAttributes = GetFunctionAttributes(ast);
-    return functionAttributes.Any(IsInjectionSiteAttribute);
-  }
-
-  private bool FunctionHasParameterBlock(FunctionDefinitionAst ast) {
-    return GetFunctionParameterBlock(ast) is not null;
-  }
-
-  private bool IsInjectVariableExpression(AttributedExpressionAst ast) {
-    if (!IsVariableExpression(ast)) {
-      return false;
-    }
-
-    return IsInjectAttribute(ast.Attribute);
-  }
-
-  private void AddInjectVariable(AttributedExpressionAst ast) {
-    var variable = ElementFactory.CreateInjectionVariable(ast);
-    InjectionVariables.Add(variable);
-  }
-
-  private void AddInjectTemplate(AttributedExpressionAst ast) {
-    var template = ElementFactory.CreateInjectTemplate(ast);
-    InjectionTemplates.Add(template);
-  }
-  
-  private bool IsVariableExpression(AttributedExpressionAst ast) {
-    return ast.Child is VariableExpressionAst;
-  }
-  
-  private IReadOnlyCollection<AttributeBaseAst> GetFunctionAttributes(FunctionDefinitionAst ast) {
-    var parameterBlock = GetFunctionParameterBlock(ast);
-    return parameterBlock?.Attributes ?? MakeEmptyReadOnlyCollection<AttributeBaseAst>();
-  }
-
-  private IReadOnlyCollection<T> MakeEmptyReadOnlyCollection<T>() {
-    return new ReadOnlyCollection<T>(new List<T>());
-  }
-
-  private ParamBlockAst? GetFunctionParameterBlock(FunctionDefinitionAst ast) {
-    return ast.Body.ParamBlock;
-  }
-
-  private bool IsInjectionSiteAttribute(AttributeBaseAst ast) {
-    return ast.IsOfType<InjectionSiteAttribute>();
-  }
-
-  private bool IsInjectAttribute(AttributeBaseAst ast) {
-    return ast.IsOfType<InjectAttribute>();
-  }
- */

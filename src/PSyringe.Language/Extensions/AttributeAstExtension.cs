@@ -16,9 +16,13 @@ internal static class AttributeAstExtension {
 
     return attributeType == type;
   }
-  
+
   internal static bool HasAttributeAssignableToType<T>(this IEnumerable<AttributeBaseAst> attributes) {
-    return attributes.Any(a => a.IsAssignableToType<T>());
+    return attributes.Any(IsAssignableToType<T>);
+  }
+
+  internal static bool HasAttributeOfType<T>(this IEnumerable<AttributeBaseAst> attributes) {
+    return attributes.Any(IsOfExactType<T>);
   }
 
   internal static Type GetReflectionAttributeType(this AttributeBaseAst ast) {
