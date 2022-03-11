@@ -58,7 +58,7 @@ public class ScriptVisitorTest {
 
     sut.ProvideExpressions.Should().NotBeEmpty();
   }
-  
+
   [Fact]
   public void VisitAttributedExpression_AddsInjectExpression_WhenExpressionIsInjectVariable() {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithInjectVariableExpression_NoTarget);

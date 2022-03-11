@@ -70,22 +70,22 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
 
     return _continue;
   }
-  
+
   private bool IsInjectionSite(FunctionDefinitionAst ast) {
     var attributes = ast.GetAttributes();
     return attributes.HasAttributeAssignableToType<IInjectionSiteAttribute>();
   }
-  
+
   private AstVisitAction AddInjectionSite(FunctionDefinitionAst site) {
     InjectionSites.Add(site);
     return _continue;
   }
-  
+
   private bool IsCallbackFunction(FunctionDefinitionAst ast) {
     var attributes = ast.GetAttributes();
     return attributes.HasAttributeAssignableToType<ICallbackAttribute>();
   }
-  
+
   private AstVisitAction AddCallbackFunction(FunctionDefinitionAst ast) {
     CallbackFunctions.Add(ast);
     return _continue;

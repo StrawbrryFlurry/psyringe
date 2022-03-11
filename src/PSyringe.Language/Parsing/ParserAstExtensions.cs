@@ -7,8 +7,8 @@ internal static class ParserAstExtensions {
   internal static IEnumerable<FunctionDefinitionAst> GetFunctionDefinitionWithAttribute<T>(
     this IEnumerable<FunctionDefinitionAst>? functionDefinitionAst
   ) where T : Attribute {
-    return functionDefinitionAst is null 
-      ? Enumerable.Empty<FunctionDefinitionAst>() 
+    return functionDefinitionAst is null
+      ? Enumerable.Empty<FunctionDefinitionAst>()
       : functionDefinitionAst.Where(HasAttributeOfType<T>);
   }
 
@@ -17,27 +17,27 @@ internal static class ParserAstExtensions {
     return attributes.HasAttributeOfType<T>();
   }
 
-  internal static IEnumerable<AttributedExpressionAst> GetAttributedScriptBlockExpressionOfType<T> (
+  internal static IEnumerable<AttributedExpressionAst> GetAttributedScriptBlockExpressionOfType<T>(
     this IEnumerable<AttributedExpressionAst>? attributedExpressions
   ) where T : Attribute {
-    return attributedExpressions is null 
-      ? Enumerable.Empty<AttributedExpressionAst>() 
+    return attributedExpressions is null
+      ? Enumerable.Empty<AttributedExpressionAst>()
       : attributedExpressions.Where(IsAttributedScriptBlockExpressionOfType<T>);
   }
 
   internal static IEnumerable<AttributedExpressionAst> GetAttributedVariableExpressionsOfType<T>(
     this IEnumerable<AttributedExpressionAst>? attributedExpressions
   ) where T : Attribute {
-    return attributedExpressions is null 
-      ? Enumerable.Empty<AttributedExpressionAst>() 
+    return attributedExpressions is null
+      ? Enumerable.Empty<AttributedExpressionAst>()
       : attributedExpressions.Where(IsAttributedVariableExpressionOfType<T>);
   }
 
   internal static IEnumerable<AttributedExpressionAst> GetAttributedExpressionsOfType<T>(
     this IEnumerable<AttributedExpressionAst>? attributedExpressions
   ) where T : Attribute {
-    return attributedExpressions is null 
-      ? Enumerable.Empty<AttributedExpressionAst>() 
+    return attributedExpressions is null
+      ? Enumerable.Empty<AttributedExpressionAst>()
       : attributedExpressions.Where(IsAttributedWithType<T>);
   }
 
@@ -57,7 +57,7 @@ internal static class ParserAstExtensions {
   internal static bool IsScriptBlockExpression(this AttributedExpressionAst ast) {
     return ast.Child is ScriptBlockExpressionAst;
   }
-  
+
   internal static bool IsAttributedWithType<T>(this AttributedExpressionAst ast) {
     return ast.Attribute.IsOfExactType<T>();
   }

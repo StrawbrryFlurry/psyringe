@@ -7,6 +7,8 @@ public class ScriptTemplates {
   public const string InjectVariableName = "Variable";
   public const string TemplateName = "Template";
   public const string ProviderName = "Provider";
+  public const string DatabaseProviderName = "DatabaseProvider";
+  public const string DatabaseConnectionString = "ConnectionString";
 
   public const string EmptyScript = "";
 
@@ -48,6 +50,18 @@ function {StartupFunctionName} {{
   public const string WithInjectCredentialVariable_IndexParameter = @$"
 [InjectCredential('Credential')]${InjectVariableName};";
 
+  public const string WithInjectDatabaseVariable_NoTarget = @$"
+[InjectDatabase()]${InjectVariableName};";
+
+  public const string WithInjectDatabaseVariable_ConnectionString = @$"
+[InjectDatabase(ConnectionString = '{DatabaseConnectionString}')]${InjectVariableName};";
+
+  public const string WithInjectDatabaseVariable_IndexProviderToken = @$"
+[InjectDatabase('{DatabaseProviderName}')]${InjectVariableName};";
+  
+  public const string WithInjectDatabaseVariable_ProviderToken = @$"
+[InjectDatabase(Target = '{DatabaseProviderName}')]${InjectVariableName};";
+  
   public const string WithInjectParameterFunction_NamedParameter = @$"
 function {InjectionSiteFunctionName} {{
   [InjectionSite()]

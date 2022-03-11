@@ -14,4 +14,5 @@ public interface IElementFactory {
   public IBeforeUnloadElement CreateBeforeUnload(FunctionDefinitionAst functionDefinitionAst);
   public IOnLoadElement CreateOnLoad(FunctionDefinitionAst functionDefinitionAst);
   public IOnErrorElement CreateOnError(FunctionDefinitionAst functionDefinitionAst);
+  public IInjectDatabaseElement CreateInjectDatabase(AttributedExpressionAst attributedExpressionAst);
 }
