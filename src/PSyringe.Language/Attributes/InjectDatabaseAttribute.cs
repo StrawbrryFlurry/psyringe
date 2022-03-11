@@ -1,7 +1,7 @@
-namespace PSyringe.Language.Attributes; 
+namespace PSyringe.Language.Attributes;
 
 /// <summary>
-/// TODO:
+///   TODO:
 /// </summary>
 public class InjectDatabaseAttribute : InjectionTargetAttribute {
   public InjectDatabaseAttribute(string Target) {

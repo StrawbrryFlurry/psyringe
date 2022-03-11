@@ -19,13 +19,13 @@ public interface IScriptElement {
 
   public void SetStartupFunction(IStartupFunctionElement injectionSite);
   public void AddInjectionSite(IInjectionSiteElement injectionSite);
-  
+
   public void AddInjectVariable(IInjectVariableElement injectVariable);
   public void AddInjectCredential(IInjectCredentialElement injectVariable);
   public void AddInjectDatabase(IInjectDatabaseElement injectDatabase);
 
   public void AddInjectTemplate(IInjectTemplateElement injectTemplate);
-  
+
   public void AddBeforeUnloadFunction(IBeforeUnloadElement beforeUnload);
   public void AddOnLoadFunction(IOnLoadElement onLoad);
   public void AddOnErrorFunction(IOnErrorElement onError);

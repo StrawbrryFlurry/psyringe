@@ -1,5 +1,4 @@
-namespace PSyringe.Common.Compiler; 
+namespace PSyringe.Common.Compiler;
 
 public interface IScript {
-  
 }

@@ -1,4 +1,4 @@
-namespace PSyringe.Common.Runtime; 
+namespace PSyringe.Common.Runtime;
 
 public interface IScriptInvocationContext {
   public TimeSpan TimeElapsedSinceInvocation { get; }

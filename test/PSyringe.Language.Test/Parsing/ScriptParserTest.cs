@@ -77,7 +77,7 @@ public class ScriptParserTest {
 
     script.InjectTemplateElements.Should().NotBeEmpty();
   }
-  
+
   [Fact]
   public void AddAllInjectElementsToScript_AddsInjectDatabaseToScript_WhenScriptHasInjectDatabase() {
     MakeParserAndParse(ScriptTemplates.WithInjectDatabaseVariable_ConnectionString, out var script);
@@ -91,21 +91,21 @@ public class ScriptParserTest {
 
     script.OnErrorFunctions.Should().NotBeEmpty();
   }
-  
+
   [Fact]
   public void AddAllCallbackElementsToScript_AddsOnLoadedCallbackToScript_WhenScriptHasOnLoadedCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithOnLoadedFunction, out var script);
 
     script.OnLoadFunctions.Should().NotBeEmpty();
   }
-  
+
   [Fact]
   public void AddAllCallbackElementsToScript_AddsBeforeUnloadCallbackToScript_WhenScriptHasBeforeUnloadCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithBeforeUnloadFunction, out var script);
 
     script.BeforeUnloadFunctions.Should().NotBeEmpty();
   }
-  
+
   private ScriptParser MakeParserAndParse(string script) {
     var visitor = new ScriptVisitor();
     var parser = new ScriptParser(_elementFactory);

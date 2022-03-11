@@ -73,7 +73,7 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
 
   private bool IsInjectionSite(FunctionDefinitionAst ast) {
     var attributes = ast.GetAttributes();
-    return attributes.HasAttributeAssignableToType<IInjectionSiteAttribute>();
+    return attributes.ContainsAttributeAssignableToType<IInjectionSiteAttribute>();
   }
 
   private AstVisitAction AddInjectionSite(FunctionDefinitionAst site) {
@@ -83,7 +83,7 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
 
   private bool IsCallbackFunction(FunctionDefinitionAst ast) {
     var attributes = ast.GetAttributes();
-    return attributes.HasAttributeAssignableToType<ICallbackAttribute>();
+    return attributes.ContainsAttributeAssignableToType<ICallbackAttribute>();
   }
 
   private AstVisitAction AddCallbackFunction(FunctionDefinitionAst ast) {

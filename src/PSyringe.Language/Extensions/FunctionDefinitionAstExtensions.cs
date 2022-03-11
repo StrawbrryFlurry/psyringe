@@ -1,19 +1,24 @@
-using System.Collections.ObjectModel;
 using System.Management.Automation.Language;
 
 namespace PSyringe.Language.Extensions;
 
-internal static class FunctionDefinitionAstExtensions {
-  internal static IReadOnlyCollection<AttributeBaseAst> GetAttributes(this FunctionDefinitionAst ast) {
+public static class FunctionDefinitionAstExtensions {
+  public static IEnumerable<AttributeBaseAst> GetAttributes(this FunctionDefinitionAst ast) {
     var parameterBlock = ast.GetParameterBlock();
-    return parameterBlock?.Attributes ?? MakeEmptyReadOnlyCollection<AttributeBaseAst>();
+    return parameterBlock?.Attributes ?? Enumerable.Empty<AttributeBaseAst>();
   }
 
-  internal static ParamBlockAst? GetParameterBlock(this FunctionDefinitionAst ast) {
+  public static IEnumerable<ParameterAst> GetParameters(this FunctionDefinitionAst ast) {
+    var parameterBlock = ast.GetParameterBlock();
+    return parameterBlock?.Parameters ?? Enumerable.Empty<ParameterAst>();
+  }
+
+  public static ParamBlockAst? GetParameterBlock(this FunctionDefinitionAst ast) {
     return ast.Body.ParamBlock;
   }
 
-  private static IReadOnlyCollection<T> MakeEmptyReadOnlyCollection<T>() {
-    return new ReadOnlyCollection<T>(new List<T>());
+  public static bool HasAttributeOfType<T>(this FunctionDefinitionAst ast) where T : Attribute {
+    var attributes = ast.GetAttributes();
+    return attributes.Any(a => a.IsOfExactType<T>());
   }
 }

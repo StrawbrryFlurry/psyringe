@@ -5,15 +5,15 @@ using PSyringe.Common.Language.Parsing.Elements;
 namespace PSyringe.Language.Elements;
 
 public class ScriptElement : IScriptElement {
+  private readonly List<IBeforeUnloadElement> _beforeUnloadFunctions = new();
   private readonly List<IInjectCredentialElement> _injectCredentialElements = new();
+  private readonly List<IInjectDatabaseElement> _injectDatabaseElements = new();
   private readonly List<IInjectionSiteElement> _injectionSiteElements = new();
   private readonly List<IInjectTemplateElement> _injectTemplateElements = new();
   private readonly List<IInjectVariableElement> _injectVariableElements = new();
-  private readonly List<IInjectDatabaseElement> _injectDatabaseElements = new();
 
   private readonly List<IOnErrorElement> _onErrorFunctions = new();
   private readonly List<IOnLoadElement> _onLoadFunctions = new();
-  private readonly List<IBeforeUnloadElement> _beforeUnloadFunctions = new();
 
   public ScriptElement(ScriptBlockAst ast) {
     ScriptBlockAst = ast;
@@ -21,7 +21,7 @@ public class ScriptElement : IScriptElement {
 
   public IStartupFunctionElement? StartupFunction { get; private set; }
   public ScriptBlockAst ScriptBlockAst { get; }
-  
+
   public IEnumerable<IInjectionSiteElement> InjectionSiteElements => _injectionSiteElements;
   public IEnumerable<IInjectVariableElement> InjectVariableElements => _injectVariableElements;
   public IEnumerable<IInjectCredentialElement> InjectCredentialElements => _injectCredentialElements;
@@ -63,7 +63,7 @@ public class ScriptElement : IScriptElement {
   public void AddOnLoadFunction(IOnLoadElement onLoadFunction) {
     _onLoadFunctions.Add(onLoadFunction);
   }
-  
+
   public void AddOnErrorFunction(IOnErrorElement onErrorFunction) {
     _onErrorFunctions.Add(onErrorFunction);
   }

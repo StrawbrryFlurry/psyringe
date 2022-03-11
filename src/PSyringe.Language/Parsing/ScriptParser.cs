@@ -3,6 +3,7 @@ using System.Text;
 using PSyringe.Common.Language.Parsing;
 using PSyringe.Common.Language.Parsing.Elements;
 using PSyringe.Language.Attributes;
+using PSyringe.Language.Extensions;
 
 namespace PSyringe.Language.Parsing;
 
@@ -21,7 +22,7 @@ public class ScriptParser : IScriptParser {
     var startupFunction = GetStartupFunction(visitor);
 
     AddStartupFunctionElementToScriptIfDefined(scriptElement, startupFunction);
-    
+
     AddAllInjectionSiteElementsToScript(scriptElement, visitor.InjectionSites);
     AddAllInjectElementsToScript(scriptElement, visitor.InjectExpressions);
     AddAllCallbackElementsToScript(scriptElement, visitor.CallbackFunctions);
@@ -31,7 +32,10 @@ public class ScriptParser : IScriptParser {
 
   private FunctionDefinitionAst? GetStartupFunction(IScriptVisitor visitor) {
     var injectionSites = visitor.InjectionSites;
-    return injectionSites.GetFunctionDefinitionWithAttribute<StartupAttribute>().FirstOrDefault();
+
+    return injectionSites?.FirstOrDefault(
+      site => site.HasAttributeOfType<StartupAttribute>()
+    );
   }
 
   private void AddStartupFunctionElementToScriptIfDefined(
@@ -73,79 +77,62 @@ public class ScriptParser : IScriptParser {
     IScriptElement scriptElement,
     IEnumerable<AttributedExpressionAst> injectExpressionAsts
   ) {
-    foreach (var injectExpressionAst in injectExpressionAsts) {
-      if (IsInjectVariableExpression(injectExpressionAst)) {
-        var injectVariable = ElementFactory.CreateInjectVariable(injectExpressionAst);
+    foreach (var expressionAst in injectExpressionAsts) {
+      if (IsVariableExpressionWithAttribute<InjectAttribute>(expressionAst)) {
+        var injectVariable = ElementFactory.CreateInjectVariable(expressionAst);
         scriptElement.AddInjectVariable(injectVariable);
       }
-
-      else if (IsInjectCredentialExpression(injectExpressionAst)) {
-        var injectCredential = ElementFactory.CreateInjectCredential(injectExpressionAst);
+      else if (IsVariableExpressionWithAttribute<InjectCredentialAttribute>(expressionAst)) {
+        var injectCredential = ElementFactory.CreateInjectCredential(expressionAst);
         scriptElement.AddInjectCredential(injectCredential);
       }
-
-      else if(IsInjectDatabaseExpression(injectExpressionAst)) {
-        var injectDatabase = ElementFactory.CreateInjectDatabase(injectExpressionAst);
+      else if (IsVariableExpressionWithAttribute<InjectDatabaseAttribute>(expressionAst)) {
+        var injectDatabase = ElementFactory.CreateInjectDatabase(expressionAst);
         scriptElement.AddInjectDatabase(injectDatabase);
       }
-      
-      else if (IsInjectTemplateExpression(injectExpressionAst)) {
-        var injectTemplate = ElementFactory.CreateInjectTemplate(injectExpressionAst);
+      else if (IsScriptBlockExpressionWithAttribute<InjectTemplateAttribute>(expressionAst)) {
+        var injectTemplate = ElementFactory.CreateInjectTemplate(expressionAst);
         scriptElement.AddInjectTemplate(injectTemplate);
       }
     }
   }
 
   // Variable Expressions [InjectX()]$Variable;
-  private bool IsInjectVariableExpression(AttributedExpressionAst injectExpressionAst) {
-    return injectExpressionAst.IsAttributedVariableExpressionOfType<InjectAttribute>();
-  }
-
-  private bool IsInjectCredentialExpression(AttributedExpressionAst injectExpressionAst) {
-    return injectExpressionAst.IsAttributedVariableExpressionOfType<InjectCredentialAttribute>();
-  }
-  
-  private bool IsInjectDatabaseExpression(AttributedExpressionAst injectExpressionAst) {
-    return injectExpressionAst.IsAttributedVariableExpressionOfType<InjectDatabaseAttribute>();
+  private bool IsVariableExpressionWithAttribute<T>(AttributedExpressionAst expressionAst) where T : Attribute {
+    var isVariableExpression = expressionAst.Child is VariableExpressionAst;
+    return isVariableExpression && expressionAst.Attribute.IsOfExactType<T>();
   }
 
   // ScriptBlock Expressions [InjectX()]{ ... };
-  private bool IsInjectTemplateExpression(AttributedExpressionAst injectExpressionAst) {
-    return injectExpressionAst.IsAttributedScriptBlockExpressionOfType<InjectTemplateAttribute>();
+  private bool IsScriptBlockExpressionWithAttribute<T>(AttributedExpressionAst expressionAst) where T : Attribute {
+    var isScriptBlockExpression = expressionAst.Child is ScriptBlockExpressionAst;
+    return isScriptBlockExpression && expressionAst.Attribute.IsOfExactType<T>();
   }
-  
+
   private void AddAllCallbackElementsToScript(
     IScriptElement scriptElement,
     IEnumerable<FunctionDefinitionAst> callbackFunctionAsts
   ) {
     foreach (var functionAst in callbackFunctionAsts) {
-      if (IsOnErrorCallbackFunction(functionAst)) {
+      if (IsCallbackFunctionWithAttribute<OnErrorAttribute>(functionAst)) {
         var onErrorFn = ElementFactory.CreateOnError(functionAst);
         scriptElement.AddOnErrorFunction(onErrorFn);
       }
 
-      else if (IsBeforeUnloadCallbackFunction(functionAst)) {
+      else if (IsCallbackFunctionWithAttribute<BeforeUnloadAttribute>(functionAst)) {
         var beforeUnloadFn = ElementFactory.CreateBeforeUnload(functionAst);
         scriptElement.AddBeforeUnloadFunction(beforeUnloadFn);
       }
 
-      else if (IsOnLoadedCallbackFunction(functionAst)) {
+      else if (IsCallbackFunctionWithAttribute<OnLoadedAttribute>(functionAst)) {
         var onLoadedFn = ElementFactory.CreateOnLoad(functionAst);
         scriptElement.AddOnLoadFunction(onLoadedFn);
       }
     }
   }
 
-  private bool IsOnErrorCallbackFunction(FunctionDefinitionAst callbackFunctionAst) {
-    return callbackFunctionAst.HasAttributeOfType<OnErrorAttribute>();
-  }
-
-  private bool IsBeforeUnloadCallbackFunction(FunctionDefinitionAst callbackFunctionAst) {
-    return callbackFunctionAst.HasAttributeOfType<BeforeUnloadAttribute>();
-  }
-
-  private bool IsOnLoadedCallbackFunction(FunctionDefinitionAst callbackFunctionAst) {
-    return callbackFunctionAst.HasAttributeOfType<OnLoadedAttribute>();
+  private bool IsCallbackFunctionWithAttribute<T>(FunctionDefinitionAst ast) where T : Attribute {
+    return ast.HasAttributeOfType<T>();
   }
 
   private ScriptBlockAst PrepareAndParseScript(string script) {

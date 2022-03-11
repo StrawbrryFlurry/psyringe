@@ -1,7 +1,6 @@
 using System.Management.Automation.Language;
 using PSyringe.Common.Language.Parsing;
 using PSyringe.Common.Language.Parsing.Elements;
-using PSyringe.Language.Attributes;
 using PSyringe.Language.Elements;
 
 namespace PSyringe.Language.Parsing;
@@ -34,7 +33,7 @@ public class ElementFactory : IElementFactory {
   public IInjectDatabaseElement CreateInjectDatabase(AttributedExpressionAst attributedExpressionAst) {
     return new InjectDatabaseElement(attributedExpressionAst);
   }
-  
+
   public IInjectTemplateElement CreateInjectTemplate(AttributedExpressionAst attributedExpressionAst) {
     return new InjectTemplateElement(attributedExpressionAst);
   }

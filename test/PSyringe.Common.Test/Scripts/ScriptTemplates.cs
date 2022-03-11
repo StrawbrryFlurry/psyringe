@@ -58,10 +58,10 @@ function {StartupFunctionName} {{
 
   public const string WithInjectDatabaseVariable_IndexProviderToken = @$"
 [InjectDatabase('{DatabaseProviderName}')]${InjectVariableName};";
-  
+
   public const string WithInjectDatabaseVariable_ProviderToken = @$"
 [InjectDatabase(Target = '{DatabaseProviderName}')]${InjectVariableName};";
-  
+
   public const string WithInjectParameterFunction_NamedParameter = @$"
 function {InjectionSiteFunctionName} {{
   [InjectionSite()]

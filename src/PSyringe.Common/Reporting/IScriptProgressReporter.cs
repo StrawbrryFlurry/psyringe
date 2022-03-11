@@ -1,5 +1,4 @@
-namespace PSyringe.Common.Reporting; 
+namespace PSyringe.Common.Reporting;
 
 public class IScriptProgressReporter {
-  
 }

@@ -1,4 +1,3 @@
-using System.Management.Automation.Runspaces;
 using PSyringe.Common.Language.Parsing;
 
 namespace PSyringe.Common.Compiler;
