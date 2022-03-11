@@ -8,5 +8,5 @@ public class InjectTemplateElement : IInjectTemplateElement {
     Ast = ast;
   }
 
-  public Ast Ast { get; }
+  public AttributedExpressionAst Ast { get; }
 }

@@ -11,8 +11,8 @@ public interface IElementFactory {
   public IInjectVariableElement CreateInjectVariable(AttributedExpressionAst attributedExpressionAst);
   public IInjectCredentialElement CreateInjectCredential(AttributedExpressionAst attributedExpressionAst);
   public IInjectTemplateElement CreateInjectTemplate(AttributedExpressionAst attributedExpressionAst);
-  public IBeforeUnloadElement CreateBeforeUnload(FunctionDefinitionAst functionDefinitionAst);
-  public IOnLoadElement CreateOnLoad(FunctionDefinitionAst functionDefinitionAst);
-  public IOnErrorElement CreateOnError(FunctionDefinitionAst functionDefinitionAst);
+  public IBeforeUnloadCallbackElement CreateBeforeUnload(FunctionDefinitionAst functionDefinitionAst);
+  public IOnLoadCallbackElement CreateOnLoad(FunctionDefinitionAst functionDefinitionAst);
+  public IOnErrorCallbackElement CreateOnError(FunctionDefinitionAst functionDefinitionAst);
   public IInjectDatabaseElement CreateInjectDatabase(AttributedExpressionAst attributedExpressionAst);
 }

@@ -10,7 +10,7 @@ public class StartupFunctionElement : IStartupFunctionElement {
     Ast = ast;
   }
 
-  public Ast Ast { get; }
+  public FunctionDefinitionAst Ast { get; }
   public IEnumerable<IInjectionSiteParameter> Parameters => _parameters;
 
   public void AddParameter(IInjectionSiteParameter parameter) {

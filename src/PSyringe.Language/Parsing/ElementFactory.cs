@@ -38,15 +38,15 @@ public class ElementFactory : IElementFactory {
     return new InjectTemplateElement(attributedExpressionAst);
   }
 
-  public IBeforeUnloadElement CreateBeforeUnload(FunctionDefinitionAst functionDefinitionAst) {
-    return new BeforeUnloadElement(functionDefinitionAst);
+  public IBeforeUnloadCallbackElement CreateBeforeUnload(FunctionDefinitionAst functionDefinitionAst) {
+    return new BeforeUnloadCallbackElement(functionDefinitionAst);
   }
 
-  public IOnLoadElement CreateOnLoad(FunctionDefinitionAst functionDefinitionAst) {
-    return new OnLoadElement(functionDefinitionAst);
+  public IOnLoadCallbackElement CreateOnLoad(FunctionDefinitionAst functionDefinitionAst) {
+    return new OnLoadCallbackElement(functionDefinitionAst);
   }
 
-  public IOnErrorElement CreateOnError(FunctionDefinitionAst functionDefinitionAst) {
-    return new OnErrorElement(functionDefinitionAst);
+  public IOnErrorCallbackElement CreateOnError(FunctionDefinitionAst functionDefinitionAst) {
+    return new OnErrorCallbackElement(functionDefinitionAst);
   }
 }

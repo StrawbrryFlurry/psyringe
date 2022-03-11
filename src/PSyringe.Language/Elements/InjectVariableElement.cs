@@ -21,5 +21,5 @@ public class InjectVariableElement : IInjectVariableElement {
   //   // Expression => [Attribute] ([Inject()]), [Child] => [Attribute] ([ILogger])
   //   var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithInjectVariableExpression_ImplicitTarget);
   // }
-  public Ast Ast { get; }
+  public AttributedExpressionAst Ast { get; }
 }

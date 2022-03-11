@@ -11,5 +11,5 @@ public class InjectionSiteParameterElement : IInjectionSiteParameter {
 
   public string Target { get; }
 
-  public Ast Ast { get; }
+  public ParameterAst Ast { get; }
 }

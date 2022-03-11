@@ -8,5 +8,5 @@ public class InjectDatabaseElement : IInjectDatabaseElement {
     Ast = injectDatabaseAst;
   }
 
-  public Ast Ast { get; }
+  public AttributedExpressionAst Ast { get; }
 }

@@ -5,15 +5,15 @@ using PSyringe.Common.Language.Parsing.Elements;
 namespace PSyringe.Language.Elements;
 
 public class ScriptElement : IScriptElement {
-  private readonly List<IBeforeUnloadElement> _beforeUnloadFunctions = new();
+  private readonly List<IBeforeUnloadCallbackElement> _beforeUnloadFunctions = new();
   private readonly List<IInjectCredentialElement> _injectCredentialElements = new();
   private readonly List<IInjectDatabaseElement> _injectDatabaseElements = new();
   private readonly List<IInjectionSiteElement> _injectionSiteElements = new();
   private readonly List<IInjectTemplateElement> _injectTemplateElements = new();
   private readonly List<IInjectVariableElement> _injectVariableElements = new();
 
-  private readonly List<IOnErrorElement> _onErrorFunctions = new();
-  private readonly List<IOnLoadElement> _onLoadFunctions = new();
+  private readonly List<IOnErrorCallbackElement> _onErrorFunctions = new();
+  private readonly List<IOnLoadCallbackElement> _onLoadFunctions = new();
 
   public ScriptElement(ScriptBlockAst ast) {
     ScriptBlockAst = ast;
@@ -28,9 +28,9 @@ public class ScriptElement : IScriptElement {
   public IEnumerable<IInjectTemplateElement> InjectTemplateElements => _injectTemplateElements;
   public IEnumerable<IInjectDatabaseElement> InjectDatabaseElements => _injectDatabaseElements;
 
-  public IEnumerable<IBeforeUnloadElement> BeforeUnloadFunctions => _beforeUnloadFunctions;
-  public IEnumerable<IOnLoadElement> OnLoadFunctions => _onLoadFunctions;
-  public IEnumerable<IOnErrorElement> OnErrorFunctions => _onErrorFunctions;
+  public IEnumerable<IBeforeUnloadCallbackElement> BeforeUnloadFunctions => _beforeUnloadFunctions;
+  public IEnumerable<IOnLoadCallbackElement> OnLoadFunctions => _onLoadFunctions;
+  public IEnumerable<IOnErrorCallbackElement> OnErrorFunctions => _onErrorFunctions;
 
   public void AddInjectionSite(IInjectionSiteElement site) {
     _injectionSiteElements.Add(site);
@@ -56,15 +56,15 @@ public class ScriptElement : IScriptElement {
     StartupFunction = startupFunctionFunction;
   }
 
-  public void AddBeforeUnloadFunction(IBeforeUnloadElement beforeUnloadFunction) {
-    _beforeUnloadFunctions.Add(beforeUnloadFunction);
+  public void AddBeforeUnloadFunction(IBeforeUnloadCallbackElement beforeUnloadCallbackFunction) {
+    _beforeUnloadFunctions.Add(beforeUnloadCallbackFunction);
   }
 
-  public void AddOnLoadFunction(IOnLoadElement onLoadFunction) {
-    _onLoadFunctions.Add(onLoadFunction);
+  public void AddOnLoadFunction(IOnLoadCallbackElement onLoadCallbackFunction) {
+    _onLoadFunctions.Add(onLoadCallbackFunction);
   }
 
-  public void AddOnErrorFunction(IOnErrorElement onErrorFunction) {
-    _onErrorFunctions.Add(onErrorFunction);
+  public void AddOnErrorFunction(IOnErrorCallbackElement onErrorCallbackFunction) {
+    _onErrorFunctions.Add(onErrorCallbackFunction);
   }
 }

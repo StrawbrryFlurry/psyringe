@@ -8,5 +8,5 @@ public class InjectCredentialElement : IInjectCredentialElement {
     Ast = ast;
   }
 
-  public Ast Ast { get; }
+  public AttributedExpressionAst Ast { get; }
 }

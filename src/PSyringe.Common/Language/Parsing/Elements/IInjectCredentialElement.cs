@@ -2,5 +2,5 @@ using PSyringe.Common.Language.Parsing.Elements.Base;
 
 namespace PSyringe.Common.Language.Parsing.Elements;
 
-public interface IInjectCredentialElement : IInjectTargetElement {
+public interface IInjectCredentialElement : IInjectExpressionElement {
 }

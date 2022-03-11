@@ -1,4 +1,4 @@
 namespace PSyringe.Common.Language.Attributes;
 
-public interface IInjectionSiteAttribute : IAcceptsParameters {
+public interface IInjectionSiteAttribute  {
 }

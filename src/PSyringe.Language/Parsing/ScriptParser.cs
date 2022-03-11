@@ -142,10 +142,11 @@ public class ScriptParser : IScriptParser {
   }
 
   internal static void PrependAssemblyReference(ref string script) {
-    var assemblyName = GetAttributeAssemblyNamespace();
     var sb = new StringBuilder();
+    var assemblyName = GetAttributeAssemblyNamespace();
     sb.AppendLine($"using namespace {assemblyName};");
     sb.AppendLine(script);
+    
     script = sb.ToString();
   }
 
