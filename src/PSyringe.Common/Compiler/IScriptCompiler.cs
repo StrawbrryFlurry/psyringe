@@ -3,7 +3,7 @@ using PSyringe.Common.Language.Parsing;
 
 namespace PSyringe.Common.Compiler;
 
-public class IScriptCompiler {
+public interface IScriptCompiler {
   /// <summary>
   ///   Reassembles the script element into a single script string that can be run by the powershell engine.
   ///   That script will be passed to a pipeline which contains the injected variables, templates and assemblies
@@ -13,8 +13,5 @@ public class IScriptCompiler {
   /// <param name="scriptElement"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
-  public Pipeline Compile(Runspace rs, IScriptElement scriptElement) {
-    var p = rs.CreatePipeline();
-    return p;
-  }
+  public IScript CompileToScript(IScriptElement scriptElement);
 }

@@ -1,3 +1,7 @@
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
+using PSyringe.Common.Runtime;
+
 namespace PSyringe.Core;
 
 /// <summary>
@@ -54,7 +58,19 @@ public class ScriptManager {
   public void DisableScript<T>(T script) {
   }
 
-
+  private void InitializeRunspace(Runspace rs) {
+    IScriptInvocationContext context = null;
+    
+    var state = rs.SessionStateProxy;
+    state.SetVariable("PS_INVOCATION_CONTEXT", context);
+  }
+  
+  private void InitializePowerShell(PowerShell ps) {
+    ps.AddScript("$ErrorActionPreference = 'Stop'");
+    ps.AddScript("function Get-TimeElapsedSinceInvocation { return $PS_INVOCATION_CONTEXT.GetTimeElapsedSinceInvocation(); }");
+    ps.AddScript("Trap { foreach($OnErrorFunction in $PS_ON_ERROR_FUNCTIONS) { $OnErrorFunction.Invoke(@{ Error = $Error }) } }");
+  }
+  
   public interface IScriptRepository {
     IReadOnlyCollection<T> GetScripts<T>();
     void DisableScript<T>(T script);
