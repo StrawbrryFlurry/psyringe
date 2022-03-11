@@ -58,17 +58,7 @@ public class ScriptVisitorTest {
 
     sut.ProvideExpressions.Should().NotBeEmpty();
   }
-
-  [Fact]
-  public void AddFunctionParameters_AddsParameterToProperty_WhenAttributeAllowsParameters() {
-    var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithInjectParameterFunction_NoTarget);
-
-    var site = sut.InjectionSites.FirstOrDefault()!;
-    var parameters = sut.GetParametersForFunction(site);
-
-    parameters.Should().NotBeNull();
-  }
-
+  
   [Fact]
   public void VisitAttributedExpression_AddsInjectExpression_WhenExpressionIsInjectVariable() {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithInjectVariableExpression_NoTarget);

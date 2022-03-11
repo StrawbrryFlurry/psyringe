@@ -3,197 +3,143 @@ using System.Text;
 using PSyringe.Common.Language.Parsing;
 using PSyringe.Common.Language.Parsing.Elements;
 using PSyringe.Language.Attributes;
-using PSyringe.Language.Attributes.Base;
 
 namespace PSyringe.Language.Parsing;
 
 public class ScriptParser : IScriptParser {
   internal readonly IElementFactory ElementFactory;
-  internal readonly IScriptElement ScriptElement;
 
-  internal readonly IScriptVisitor Visitor;
-
-  public ScriptParser(IScriptVisitor visitor, IElementFactory elementFactory) {
-    Visitor = visitor;
+  public ScriptParser(IElementFactory elementFactory) {
     ElementFactory = elementFactory;
-    ScriptElement = ElementFactory.CreateScript();
   }
 
-  internal string ScriptBeforeParsing { get; private set; } = "";
-  internal ScriptBlockAst ScriptAst { get; private set; }
-
-  private IEnumerable<AttributedExpressionAst> InjectExpressions => Visitor.InjectExpressions;
-  private IEnumerable<FunctionDefinitionAst> CallbackFunctions => Visitor.CallbackFunctions;
-
-  public IScriptElement Parse(string script) {
-    PrepareAndParseScript(script);
-    VisitScriptAst();
-    return CreateScriptElementFromVisitor();
-  }
-
-  private IScriptElement CreateScriptElementFromVisitor() {
-    AddStartupFunctionElementIfDefined();
-    AddAllInjectionSiteElements();
-    AddAllInjectElements();
-    AddAllCallbackElements();
-
-    return ScriptElement;
-  }
-
-  private void AddAllCallbackElements() {
-    AddAllOnErrorElements();
-    AddAllOnLoadedElements();
-    AddAllBeforeUnloadElements();
-  }
-
-  private void AddAllOnErrorElements() {
-    AddAllCallbackElementsWithAttribute<OnErrorAttribute>(AddOnErrorElement);
-  }
-
-  private void AddAllOnLoadedElements() {
-    AddAllCallbackElementsWithAttribute<OnLoadedAttribute>(AddOnLoadedElement);
-  }
-
-  private void AddAllBeforeUnloadElements() {
-    AddAllCallbackElementsWithAttribute<BeforeUnloadAttribute>(AddBeforeUnloadElement);
-  }
-
-  private void AddOnErrorElement(FunctionDefinitionAst onErrorFnAst) {
-    var onErrorFn = ElementFactory.CreateOnError(onErrorFnAst);
-    ScriptElement.AddOnError(onErrorFn);
-  }
-
-  private void AddOnLoadedElement(FunctionDefinitionAst onLoadedFnAst) {
-    var onLoadedFn = ElementFactory.CreateOnLoad(onLoadedFnAst);
-    ScriptElement.AddOnLoad(onLoadedFn);
-  }
-
-  private void AddBeforeUnloadElement(FunctionDefinitionAst beforeUnloadFnAst) {
-    var beforeUnloadFn = ElementFactory.CreateBeforeUnload(beforeUnloadFnAst);
-    ScriptElement.AddBeforeUnload(beforeUnloadFn);
-  }
-
-  private void AddAllCallbackElementsWithAttribute<T>(
-    Action<FunctionDefinitionAst> addCallbackElement
-  ) where T : CallbackAttribute {
-    var callbackAstsOfType = CallbackFunctions.GetFunctionDefinitionWithAttribute<T>();
-
-    foreach (var callbackAst in callbackAstsOfType) {
-      addCallbackElement(callbackAst);
-    }
-  }
-
-  private void AddAllInjectElements() {
-    AddAllInjectVariableElements();
-    AddAllInjectCredentialElements();
-    AddAllInjectTemplateElements();
-  }
-
-  private void AddAllInjectVariableElements() {
-    AddAllInjectVariableElementsWithAttribute<InjectAttribute>(AddInjectVariableElement);
-  }
-  
-  private void AddAllInjectCredentialElements() {
-    AddAllInjectVariableElementsWithAttribute<InjectCredentialAttribute>(AddInjectCredentialElement);
-  }
-
-  private void AddInjectVariableElement(AttributedExpressionAst injectVariableAst) {
-    var injectVariable = ElementFactory.CreateInjectVariable(injectVariableAst);
-    ScriptElement.AddInjectVariable(injectVariable);
-  }
-
-  private void AddInjectCredentialElement(AttributedExpressionAst injectCredentialAst) {
-    var injectCredential = ElementFactory.CreateInjectCredential(injectCredentialAst);
-    ScriptElement.AddInjectCredential(injectCredential);
-  }
-
-  private void AddAllInjectVariableElementsWithAttribute<T>(
-    Action<AttributedExpressionAst> addInjectVariableElement
-  ) where T : InjectionTargetAttribute {
-    var injectAstsOfType = InjectExpressions.GetAttributedVariableExpressionsOfType<T>();
-
-    foreach (var injectAst in injectAstsOfType) {
-      addInjectVariableElement(injectAst);
-    }
-  }
-  private void AddAllInjectTemplateElements() {
-    AddAllInjectScriptBlockElementsWithAttribute<InjectTemplateAttribute>(AddInjectTemplateElement);
-  }
-
-  private void AddInjectTemplateElement(AttributedExpressionAst injectTemplateAst) {
-    var injectTemplate = ElementFactory.CreateInjectTemplate(injectTemplateAst);
-    ScriptElement.AddInjectTemplate(injectTemplate);
-  }
-
-  private void AddAllInjectScriptBlockElementsWithAttribute<T>(
-    Action<AttributedExpressionAst> addInjectScriptBlockElement
-    ) where T : InjectionTargetAttribute {
-    var injectAstsOfType = InjectExpressions.GetAttributedExpressionsOfType<T>();
+  public IScriptElement Parse(string script, IScriptVisitor visitor) {
+    var scriptBlockAst = PrepareAndParseScript(script);
+    visitor.Visit(scriptBlockAst);
     
-    foreach (var injectAst in injectAstsOfType) {
-      addInjectScriptBlockElement(injectAst);
-    }
+    var scriptElement = ElementFactory.CreateScript(scriptBlockAst);
+    var startupFunction = GetStartupFunction(visitor);
+    
+    AddStartupFunctionElementToScriptIfDefined(scriptElement, startupFunction);
+    AddAllInjectionSiteElementsToScript(scriptElement, visitor.InjectionSites);
+    AddAllInjectElementsToScript(scriptElement, visitor.InjectExpressions);
+    AddAllCallbackElementsToScript(scriptElement, visitor.CallbackFunctions);
+
+    return scriptElement;
   }
   
-  private void AddStartupFunctionElementIfDefined() {
-    var startupFunctionAst = GetStartupFunction();
-
-    if (startupFunctionAst is not null) {
-      CreateAndSetStartupFunction(startupFunctionAst);
-    }
-  }
-
-  private void CreateAndSetStartupFunction(FunctionDefinitionAst startupFunctionAst) {
-    var startupFn = ElementFactory.CreateStartupFunction(startupFunctionAst);
-    ScriptElement.SetStartupFunction(startupFn);
-  }
-
-  private FunctionDefinitionAst? GetStartupFunction() {
-    var injectionSites = Visitor.InjectionSites;
+  private FunctionDefinitionAst? GetStartupFunction(IScriptVisitor visitor) {
+    var injectionSites = visitor.InjectionSites;
     return injectionSites.GetFunctionDefinitionWithAttribute<StartupAttribute>().FirstOrDefault();
   }
+  
+  private void AddStartupFunctionElementToScriptIfDefined(
+    IScriptElement scriptElement,
+    FunctionDefinitionAst? startupFunctionAst
+  ) {
+    if (startupFunctionAst is null) {
+      return;
+    }
 
-  private void AddAllInjectionSiteElements() {
-    var injectionSiteAsts = Visitor.InjectionSites;
-
+    var startupFn = ElementFactory.CreateStartupFunction(startupFunctionAst);
+    scriptElement.SetStartupFunction(startupFn);
+  }
+  
+  private void AddAllInjectionSiteElementsToScript(
+    IScriptElement scriptElement, 
+    IEnumerable<FunctionDefinitionAst> injectionSiteAsts
+  ) {
     foreach (var injectionSiteAst in injectionSiteAsts) {
-      AddInjectionSiteElementWithParameters(injectionSiteAst);
+      var injectionSite = ElementFactory.CreateInjectionSite(injectionSiteAst);
+      scriptElement.AddInjectionSite(injectionSite);
+      
+      var parameterAsts = injectionSiteAst.GetParameters();
+      AddAllParametersToInjectionSite(injectionSite, parameterAsts);
     }
   }
 
-  private void AddInjectionSiteElementWithParameters(FunctionDefinitionAst injectionSiteAst) {
-    var injectionSite = ElementFactory.CreateInjectionSite(injectionSiteAst);
-    ScriptElement.AddInjectionSite(injectionSite);
-
-    AddAllParametersToInjectionSite(injectionSite);
-  }
-
-  private void AddAllParametersToInjectionSite(IInjectionSiteElement injectionSite) {
-    var parameterAsts = Visitor.GetParametersForFunction(injectionSite.Ast as FunctionDefinitionAst);
-
+  private void AddAllParametersToInjectionSite(
+    IInjectionSiteElement injectionSite,
+    IEnumerable<ParameterAst> parameterAsts
+  ) {
     foreach (var parameterAst in parameterAsts) {
-      AddParametersToInjectionSite(injectionSite, parameterAst);
+      var parameter = ElementFactory.CreateInjectionSiteParameter(parameterAst);
+      injectionSite.AddParameter(parameter);    
+    }
+  }
+  
+  private void AddAllInjectElementsToScript(
+    IScriptElement scriptElement,
+    IEnumerable<AttributedExpressionAst> injectExpressionAsts
+    ) {
+    foreach(var injectExpressionAst in injectExpressionAsts) {
+      if (IsInjectVariableExpression(injectExpressionAst)) {
+        var injectVariable = ElementFactory.CreateInjectVariable(injectExpressionAst);
+        scriptElement.AddInjectVariable(injectVariable);
+      } 
+      
+      else if (IsInjectCredentialExpression(injectExpressionAst)) {
+        var injectCredential = ElementFactory.CreateInjectCredential(injectExpressionAst);
+        scriptElement.AddInjectCredential(injectCredential);
+      }
+      
+      else if (IsInjectTemplateExpression(injectExpressionAst)) {
+        var injectTemplate = ElementFactory.CreateInjectTemplate(injectExpressionAst);
+        scriptElement.AddInjectTemplate(injectTemplate);
+      }
     }
   }
 
-  private void AddParametersToInjectionSite(IInjectionSiteElement injectionSite, ParameterAst parameterAst) {
-    var parameter = ElementFactory.CreateInjectionSiteParameter(parameterAst);
-    injectionSite.AddParameter(parameter);
+  private bool IsInjectVariableExpression(AttributedExpressionAst injectExpressionAst) {
+    return injectExpressionAst.IsAttributedVariableExpressionOfType<InjectAttribute>();
+  }
+  
+  private bool IsInjectCredentialExpression(AttributedExpressionAst injectExpressionAst) {
+    return injectExpressionAst.IsAttributedVariableExpressionOfType<InjectCredentialAttribute>();
+  }
+  
+  private bool IsInjectTemplateExpression(AttributedExpressionAst injectExpressionAst) {
+    return injectExpressionAst.IsAttributedScriptBlockExpressionOfType<InjectTemplateAttribute>();
+  }
+  
+  private void AddAllCallbackElementsToScript(
+    IScriptElement scriptElement,
+    IEnumerable<FunctionDefinitionAst> callbackFunctionAsts
+  ) {
+    foreach (var functionAst in callbackFunctionAsts) {
+      if (IsOnErrorCallbackFunction(functionAst)) {
+        var onErrorFn = ElementFactory.CreateOnError(functionAst);
+        scriptElement.AddOnError(onErrorFn);
+      }
+
+      else if (IsBeforeUnloadCallbackFunction(functionAst)) {
+        var beforeUnloadFn = ElementFactory.CreateBeforeUnload(functionAst);
+        scriptElement.AddBeforeUnload(beforeUnloadFn);
+      }
+      
+      else if (IsOnLoadedCallbackFunction(functionAst)) {
+        var onLoadedFn = ElementFactory.CreateOnLoad(functionAst);
+        scriptElement.AddOnLoad(onLoadedFn);
+      }
+    }
   }
 
-  private void VisitScriptAst() {
-    Visitor.Visit(ScriptAst);
+  private bool IsOnErrorCallbackFunction(FunctionDefinitionAst callbackFunctionAst) {
+    return callbackFunctionAst.HasAttributeOfType<OnErrorAttribute>();
   }
 
-  private void PrepareAndParseScript(string script) {
+  private bool IsBeforeUnloadCallbackFunction(FunctionDefinitionAst callbackFunctionAst) {
+    return callbackFunctionAst.HasAttributeOfType<BeforeUnloadAttribute>();
+  }
+  
+  private bool IsOnLoadedCallbackFunction(FunctionDefinitionAst callbackFunctionAst) {
+    return callbackFunctionAst.HasAttributeOfType<OnLoadedAttribute>();
+  }
+  
+  private ScriptBlockAst PrepareAndParseScript(string script) {
     PrependAssemblyReference(ref script);
-    ScriptAst = ParseScriptToAst(script);
-  }
-
-  private ScriptBlockAst ParseScriptToAst(string script) {
-    ScriptBeforeParsing = script;
-    var ast = Parser.ParseInput(script, out _, out _);
-    return ast;
+    var scriptAst = Parser.ParseInput(script, out _, out _);
+    return scriptAst;
   }
 
   internal static void PrependAssemblyReference(ref string script) {

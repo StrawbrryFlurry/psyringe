@@ -8,7 +8,6 @@ namespace PSyringe.Language.Parsing;
 public class ScriptVisitor : AstVisitor2, IScriptVisitor {
   private readonly AstVisitAction _continue = AstVisitAction.Continue;
   public readonly List<UsingStatementAst> UsingStatements = new();
-  private Dictionary<FunctionDefinitionAst, IEnumerable<ParameterAst>> FunctionParameters { get; } = new();
 
   public ScriptBlockAst? Ast { get; private set; }
   public bool HasVisited { get; private set; }
@@ -18,10 +17,6 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
   public List<AttributedExpressionAst> InjectExpressions { get; } = new();
   public List<FunctionDefinitionAst> InjectionSites { get; } = new();
   public List<AttributedExpressionAst> ProvideExpressions { get; } = new();
-
-  public IEnumerable<ParameterAst> GetParametersForFunction(FunctionDefinitionAst functionDefinitionAst) {
-    return FunctionParameters[functionDefinitionAst];
-  }
 
   public void Visit(ScriptBlockAst scriptBlockAst) {
     Ast = scriptBlockAst;
@@ -55,17 +50,6 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
     return ast.Attribute.IsAssignableToType<IProvideTargetAttribute>();
   }
 
-  private AstVisitAction AddCallbackFunction(FunctionDefinitionAst ast) {
-    CallbackFunctions.Add(ast);
-    return _continue;
-  }
-
-  private bool IsCallbackFunction(FunctionDefinitionAst ast) {
-    var attributes = ast.GetAttributes();
-    return attributes.HasAttributeAssignableToType<ICallbackAttribute>();
-  }
-
-
   private bool IsInjectExpression(AttributedExpressionAst ast) {
     return ast.Attribute.IsAssignableToType<IInjectionTargetAttribute>();
   }
@@ -76,10 +60,6 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
   }
 
   public override AstVisitAction VisitFunctionDefinition(FunctionDefinitionAst ast) {
-    if (AcceptsParameters(ast)) {
-      AddFunctionParameters(ast);
-    }
-
     if (IsInjectionSite(ast)) {
       return AddInjectionSite(ast);
     }
@@ -90,24 +70,24 @@ public class ScriptVisitor : AstVisitor2, IScriptVisitor {
 
     return _continue;
   }
-
-  private bool AcceptsParameters(FunctionDefinitionAst ast) {
+  
+  private bool IsInjectionSite(FunctionDefinitionAst ast) {
     var attributes = ast.GetAttributes();
-    return attributes.HasAttributeAssignableToType<IAcceptsParameters>();
+    return attributes.HasAttributeAssignableToType<IInjectionSiteAttribute>();
   }
-
+  
   private AstVisitAction AddInjectionSite(FunctionDefinitionAst site) {
     InjectionSites.Add(site);
     return _continue;
   }
-
-  private void AddFunctionParameters(FunctionDefinitionAst site) {
-    var parameterBlock = site.GetParameterBlock()!;
-    FunctionParameters.Add(site, parameterBlock.Parameters);
-  }
-
-  private bool IsInjectionSite(FunctionDefinitionAst ast) {
+  
+  private bool IsCallbackFunction(FunctionDefinitionAst ast) {
     var attributes = ast.GetAttributes();
-    return attributes.HasAttributeAssignableToType<IInjectionSiteAttribute>();
+    return attributes.HasAttributeAssignableToType<ICallbackAttribute>();
+  }
+  
+  private AstVisitAction AddCallbackFunction(FunctionDefinitionAst ast) {
+    CallbackFunctions.Add(ast);
+    return _continue;
   }
 }

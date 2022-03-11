@@ -5,9 +5,11 @@ namespace PSyringe.Language.Parsing;
 
 internal static class ParserAstExtensions {
   internal static IEnumerable<FunctionDefinitionAst> GetFunctionDefinitionWithAttribute<T>(
-    this IEnumerable<FunctionDefinitionAst> functionDefinitionAst
+    this IEnumerable<FunctionDefinitionAst>? functionDefinitionAst
   ) where T : Attribute {
-    return functionDefinitionAst.Where(HasAttributeOfType<T>);
+    return functionDefinitionAst is null 
+      ? Enumerable.Empty<FunctionDefinitionAst>() 
+      : functionDefinitionAst.Where(HasAttributeOfType<T>);
   }
 
   internal static bool HasAttributeOfType<T>(this FunctionDefinitionAst ast) where T : Attribute {
@@ -16,21 +18,32 @@ internal static class ParserAstExtensions {
   }
 
   internal static IEnumerable<AttributedExpressionAst> GetAttributedScriptBlockExpressionOfType<T> (
-    this IEnumerable<AttributedExpressionAst> attributedExpressions
+    this IEnumerable<AttributedExpressionAst>? attributedExpressions
   ) where T : Attribute {
-    return attributedExpressions.Where(IsAttributedScriptBlockExpressionOfType<T>);
+    return attributedExpressions is null 
+      ? Enumerable.Empty<AttributedExpressionAst>() 
+      : attributedExpressions.Where(IsAttributedScriptBlockExpressionOfType<T>);
   }
 
   internal static IEnumerable<AttributedExpressionAst> GetAttributedVariableExpressionsOfType<T>(
-    this IEnumerable<AttributedExpressionAst> attributedExpressions
+    this IEnumerable<AttributedExpressionAst>? attributedExpressions
   ) where T : Attribute {
-    return attributedExpressions.Where(IsAttributedVariableExpressionOfType<T>);
+    return attributedExpressions is null 
+      ? Enumerable.Empty<AttributedExpressionAst>() 
+      : attributedExpressions.Where(IsAttributedVariableExpressionOfType<T>);
   }
 
   internal static IEnumerable<AttributedExpressionAst> GetAttributedExpressionsOfType<T>(
-    this IEnumerable<AttributedExpressionAst> attributedExpressions
+    this IEnumerable<AttributedExpressionAst>? attributedExpressions
   ) where T : Attribute {
-    return attributedExpressions.Where(IsAttributedWithType<T>);
+    return attributedExpressions is null 
+      ? Enumerable.Empty<AttributedExpressionAst>() 
+      : attributedExpressions.Where(IsAttributedWithType<T>);
+  }
+
+  internal static IEnumerable<ParameterAst> GetParameters(this FunctionDefinitionAst ast) {
+    var parameterBlock = ast.GetParameterBlock();
+    return parameterBlock?.Parameters ?? Enumerable.Empty<ParameterAst>();
   }
 
   internal static bool IsAttributedVariableExpressionOfType<T>(this AttributedExpressionAst ast) {

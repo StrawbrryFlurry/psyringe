@@ -4,7 +4,7 @@ using PSyringe.Common.Language.Parsing.Elements;
 namespace PSyringe.Common.Language.Parsing;
 
 public interface IElementFactory {
-  public IScriptElement CreateScript();
+  public IScriptElement CreateScript(ScriptBlockAst ast);
   public IInjectionSiteElement CreateInjectionSite(FunctionDefinitionAst functionDefinitionAst);
   public IInjectionSiteParameter CreateInjectionSiteParameter(ParameterAst parameterAst);
   public IStartupFunctionElement CreateStartupFunction(FunctionDefinitionAst functionDefinitionAst);

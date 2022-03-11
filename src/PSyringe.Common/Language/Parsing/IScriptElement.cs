@@ -1,10 +1,12 @@
+using System.Management.Automation.Language;
 using PSyringe.Common.Language.Parsing.Elements;
 
 namespace PSyringe.Common.Language.Parsing;
 
 public interface IScriptElement {
   public IStartupFunctionElement? StartupFunction { get; }
-
+  public ScriptBlockAst ScriptBlockAst { get; }
+  
   public IEnumerable<IInjectionSiteElement> InjectionSites { get; }
   public IEnumerable<IInjectVariableElement> InjectVariables { get; }
   public IEnumerable<IInjectCredentialElement> InjectCredentials { get; }

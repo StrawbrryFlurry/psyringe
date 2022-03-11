@@ -6,8 +6,8 @@ using PSyringe.Language.Elements;
 namespace PSyringe.Language.Parsing;
 
 public class ElementFactory : IElementFactory {
-  public IScriptElement CreateScript() {
-    return new ScriptElement();
+  public IScriptElement CreateScript(ScriptBlockAst ast) {
+    return new ScriptElement(ast);
   }
 
   public IInjectionSiteElement CreateInjectionSite(FunctionDefinitionAst functionDefinitionAst) {

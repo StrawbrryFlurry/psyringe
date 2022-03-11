@@ -1,3 +1,4 @@
+using System.Management.Automation.Language;
 using PSyringe.Common.Language.Parsing;
 using PSyringe.Common.Language.Parsing.Elements;
 
@@ -13,6 +14,7 @@ public class ScriptElement : IScriptElement {
   private readonly List<IOnLoadElement> _onLoadFunctions = new();
 
   public IStartupFunctionElement? StartupFunction { get; private set; }
+  public ScriptBlockAst ScriptBlockAst { get; }
 
   public IEnumerable<IInjectionSiteElement> InjectionSites => _injectionSites;
   public IEnumerable<IInjectVariableElement> InjectVariables => _injectVariables;
@@ -23,6 +25,10 @@ public class ScriptElement : IScriptElement {
   public IEnumerable<IOnLoadElement> OnLoadFunctions => _onLoadFunctions;
   public IEnumerable<IOnErrorElement> OnErrorFunctions => _onErrorFunctions;
 
+  public ScriptElement(ScriptBlockAst ast) {
+    ScriptBlockAst = ast;
+  }
+  
   public void AddInjectionSite(IInjectionSiteElement site) {
     _injectionSites.Add(site);
   }

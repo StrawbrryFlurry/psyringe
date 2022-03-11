@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Management.Automation.Language;
 using FluentAssertions;
+using Moq;
 using PSyringe.Common.Language.Parsing;
 using PSyringe.Common.Language.Parsing.Elements;
 using PSyringe.Common.Test.Scripts;
@@ -10,25 +11,22 @@ using Xunit;
 namespace PSyringe.Language.Test.Parsing;
 
 public class ScriptParserTest {
+  private IElementFactory _elementFactory = new ElementFactory();
+  
   [Fact]
   public void Parse_PrependsAssemblyReference_BeforeParsing() {
-    var sut = MakeParserAndParse(ScriptTemplates.EmptyScript);
+    var script = ScriptTemplates.EmptyScript;
+    
+    ScriptParser.PrependAssemblyReference(ref script);
 
-    sut.ScriptBeforeParsing.Should().StartWith("using namespace PSyringe.Language.Attributes;");
+    script.Should().StartWith("using namespace PSyringe.Language.Attributes;");
   }
 
   [Fact]
   public void Parse_CreatesScriptBlockAst_WhenCalled() {
-    var sut = MakeParserAndParse(ScriptTemplates.EmptyScript);
-
-    sut.ScriptAst.Should().BeOfType<ScriptBlockAst>();
-  }
-
-  [Fact]
-  public void Parse_CallsScriptVisitor_WhenCalled() {
-    var sut = MakeParserAndParse(ScriptTemplates.WithStartupFunction);
-
-    sut.Visitor.HasVisited.Should().BeTrue();
+    MakeParserAndParse(ScriptTemplates.EmptyScript, out var scriptElement);
+    
+    scriptElement.ScriptBlockAst.Should().BeAssignableTo<ScriptBlockAst>();
   }
 
   [Fact]
@@ -74,7 +72,6 @@ public class ScriptParserTest {
     script.InjectCredentials.Should().NotBeEmpty();
   }
   
-  
   [Fact]
   public void AddAllInjectTemplateElements_AddsInjectTemplateInScript_WhenScriptHasInjectTemplate() {
     MakeParserAndParse(ScriptTemplates.WithInjectTemplateAttribute_NoTarget, out var script);
@@ -84,19 +81,17 @@ public class ScriptParserTest {
   
   private ScriptParser MakeParserAndParse(string script) {
     var visitor = new ScriptVisitor();
-    var factory = new ElementFactory();
-    var parser = new ScriptParser(visitor, factory);
+    var parser = new ScriptParser(_elementFactory);
     
-    parser.Parse(script);
+    parser.Parse(script, visitor);
     return parser;
   }
   
   private ScriptParser MakeParserAndParse(string script, out IScriptElement scriptElement) {
     var visitor = new ScriptVisitor();
-    var factory = new ElementFactory();
-    var parser = new ScriptParser(visitor, factory);
+    var parser = new ScriptParser(_elementFactory);
     
-    scriptElement = parser.Parse(script);
+    scriptElement = parser.Parse(script, visitor);
     return parser;
   }
 }
