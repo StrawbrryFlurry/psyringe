@@ -19,6 +19,7 @@ public class ScriptParserTest {
     ScriptParser.PrependAssemblyReference(ref script);
 
     script.Should().StartWith("using namespace PSyringe.Language.Attributes;");
+    script.Should().Contain("using namespace PSyringe.Common.Providers;");
   }
 
   [Fact]
@@ -58,11 +59,20 @@ public class ScriptParserTest {
   }
 
   [Fact]
-  public void AddAllInjectElementsToScript_AddsInjectVariableToScript_WhenScriptHasInjectVariable() {
+  public void AddAllInjectElementsToScript_AddsInjectVariableToScript_WhenScriptHasInjectVariableExpression() {
     MakeParserAndParse(ScriptTemplates.WithInjectVariableExpression_NoTarget, out var script);
 
     script.InjectVariableElements.Should().NotBeEmpty();
   }
+
+
+  [Fact]
+  public void AddAllInjectElementsToScript_AddsInjectVariableToScript_WhenScriptHasInjectVariableAssignment() {
+    MakeParserAndParse(ScriptTemplates.WithInjectVariableAssigment_NoTarget, out var script);
+
+    script.InjectVariableElements.Should().NotBeEmpty();
+  }
+
 
   [Fact]
   public void AddAllInjectElementsToScript_AddsInjectCredentialToScript_WhenScriptHasInjectCredential() {
@@ -89,21 +99,21 @@ public class ScriptParserTest {
   public void AddAllCallbackElementsToScript_AddsOnErrorCallbackToScript_WhenScriptHasOnErrorCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithOnErrorFunction, out var script);
 
-    script.OnErrorFunctions.Should().NotBeEmpty();
+    script.OnErrorCallbacks.Should().NotBeEmpty();
   }
 
   [Fact]
   public void AddAllCallbackElementsToScript_AddsOnLoadedCallbackToScript_WhenScriptHasOnLoadedCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithOnLoadedFunction, out var script);
 
-    script.OnLoadFunctions.Should().NotBeEmpty();
+    script.OnLoadCallbacks.Should().NotBeEmpty();
   }
 
   [Fact]
   public void AddAllCallbackElementsToScript_AddsBeforeUnloadCallbackToScript_WhenScriptHasBeforeUnloadCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithBeforeUnloadFunction, out var script);
 
-    script.BeforeUnloadFunctions.Should().NotBeEmpty();
+    script.BeforeUnloadCallbacks.Should().NotBeEmpty();
   }
 
   private ScriptParser MakeParserAndParse(string script) {

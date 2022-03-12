@@ -3,6 +3,10 @@ using PSyringe.Common.Language.Parsing.Elements;
 
 namespace PSyringe.Common.Language.Parsing;
 
+/// <summary>
+/// Abstraction of a script, containing all parsed wrapper elements
+/// that are used by the compiler to create a script.
+/// </summary>
 public interface IScriptElement {
   public IStartupFunctionElement? StartupFunction { get; }
   public ScriptBlockAst ScriptBlockAst { get; }
@@ -13,9 +17,9 @@ public interface IScriptElement {
   public IEnumerable<IInjectDatabaseElement> InjectDatabaseElements { get; }
   public IEnumerable<IInjectTemplateElement> InjectTemplateElements { get; }
 
-  public IEnumerable<IBeforeUnloadCallbackElement> BeforeUnloadFunctions { get; }
-  public IEnumerable<IOnLoadCallbackElement> OnLoadFunctions { get; }
-  public IEnumerable<IOnErrorCallbackElement> OnErrorFunctions { get; }
+  public IEnumerable<IBeforeUnloadCallbackElement> BeforeUnloadCallbacks { get; }
+  public IEnumerable<IOnLoadCallbackElement> OnLoadCallbacks { get; }
+  public IEnumerable<IOnErrorCallbackElement> OnErrorCallbacks { get; }
 
   public void SetStartupFunction(IStartupFunctionElement injectionSite);
   public void AddInjectionSite(IInjectionSiteElement injectionSite);
@@ -26,7 +30,7 @@ public interface IScriptElement {
 
   public void AddInjectTemplate(IInjectTemplateElement injectTemplate);
 
-  public void AddBeforeUnloadFunction(IBeforeUnloadCallbackElement beforeUnloadCallback);
-  public void AddOnLoadFunction(IOnLoadCallbackElement onLoadCallback);
-  public void AddOnErrorFunction(IOnErrorCallbackElement onErrorCallback);
+  public void AddBeforeUnloadCallback(IBeforeUnloadCallbackElement beforeUnloadCallback);
+  public void AddOnLoadCallback(IOnLoadCallbackElement onLoadCallback);
+  public void AddOnErrorCallback(IOnErrorCallbackElement onErrorCallback);
 }

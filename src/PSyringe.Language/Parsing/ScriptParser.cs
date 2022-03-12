@@ -2,6 +2,7 @@ using System.Management.Automation.Language;
 using System.Text;
 using PSyringe.Common.Language.Parsing;
 using PSyringe.Common.Language.Parsing.Elements;
+using PSyringe.Common.Providers;
 using PSyringe.Language.Attributes;
 using PSyringe.Language.Extensions;
 
@@ -116,17 +117,17 @@ public class ScriptParser : IScriptParser {
     foreach (var functionAst in callbackFunctionAsts) {
       if (IsCallbackFunctionWithAttribute<OnErrorAttribute>(functionAst)) {
         var onErrorFn = ElementFactory.CreateOnError(functionAst);
-        scriptElement.AddOnErrorFunction(onErrorFn);
+        scriptElement.AddOnErrorCallback(onErrorFn);
       }
 
       else if (IsCallbackFunctionWithAttribute<BeforeUnloadAttribute>(functionAst)) {
         var beforeUnloadFn = ElementFactory.CreateBeforeUnload(functionAst);
-        scriptElement.AddBeforeUnloadFunction(beforeUnloadFn);
+        scriptElement.AddBeforeUnloadCallback(beforeUnloadFn);
       }
 
       else if (IsCallbackFunctionWithAttribute<OnLoadedAttribute>(functionAst)) {
         var onLoadedFn = ElementFactory.CreateOnLoad(functionAst);
-        scriptElement.AddOnLoadFunction(onLoadedFn);
+        scriptElement.AddOnLoadCallback(onLoadedFn);
       }
     }
   }
@@ -143,15 +144,18 @@ public class ScriptParser : IScriptParser {
 
   internal static void PrependAssemblyReference(ref string script) {
     var sb = new StringBuilder();
-    var assemblyName = GetAttributeAssemblyNamespace();
-    sb.AppendLine($"using namespace {assemblyName};");
+    var attributeNamespace = GetAttributeAssemblyNamespace<InjectAttribute>();
+    var genericProviderNamespace = GetAttributeAssemblyNamespace<ILogger>();
+    
+    sb.AppendLine($"using namespace {attributeNamespace};");
+    sb.AppendLine($"using namespace {genericProviderNamespace};");
     sb.AppendLine(script);
     
     script = sb.ToString();
   }
 
-  private static string GetAttributeAssemblyNamespace() {
-    var type = typeof(InjectionSiteAttribute);
+  private static string GetAttributeAssemblyNamespace<T>() {
+    var type = typeof(T);
     return type.Namespace!;
   }
 }

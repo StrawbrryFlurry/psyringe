@@ -5,15 +5,16 @@ using PSyringe.Common.Language.Parsing.Elements;
 namespace PSyringe.Language.Elements;
 
 public class ScriptElement : IScriptElement {
-  private readonly List<IBeforeUnloadCallbackElement> _beforeUnloadFunctions = new();
+  private readonly List<IInjectionSiteElement> _injectionSiteElements = new();
+
   private readonly List<IInjectCredentialElement> _injectCredentialElements = new();
   private readonly List<IInjectDatabaseElement> _injectDatabaseElements = new();
-  private readonly List<IInjectionSiteElement> _injectionSiteElements = new();
   private readonly List<IInjectTemplateElement> _injectTemplateElements = new();
   private readonly List<IInjectVariableElement> _injectVariableElements = new();
 
-  private readonly List<IOnErrorCallbackElement> _onErrorFunctions = new();
-  private readonly List<IOnLoadCallbackElement> _onLoadFunctions = new();
+  private readonly List<IBeforeUnloadCallbackElement> _beforeUnloadCallbacks = new();
+  private readonly List<IOnErrorCallbackElement> _onErrorCallbacks = new();
+  private readonly List<IOnLoadCallbackElement> _onLoadCallbacks = new();
 
   public ScriptElement(ScriptBlockAst ast) {
     ScriptBlockAst = ast;
@@ -28,9 +29,9 @@ public class ScriptElement : IScriptElement {
   public IEnumerable<IInjectTemplateElement> InjectTemplateElements => _injectTemplateElements;
   public IEnumerable<IInjectDatabaseElement> InjectDatabaseElements => _injectDatabaseElements;
 
-  public IEnumerable<IBeforeUnloadCallbackElement> BeforeUnloadFunctions => _beforeUnloadFunctions;
-  public IEnumerable<IOnLoadCallbackElement> OnLoadFunctions => _onLoadFunctions;
-  public IEnumerable<IOnErrorCallbackElement> OnErrorFunctions => _onErrorFunctions;
+  public IEnumerable<IBeforeUnloadCallbackElement> BeforeUnloadCallbacks => _beforeUnloadCallbacks;
+  public IEnumerable<IOnLoadCallbackElement> OnLoadCallbacks => _onLoadCallbacks;
+  public IEnumerable<IOnErrorCallbackElement> OnErrorCallbacks => _onErrorCallbacks;
 
   public void AddInjectionSite(IInjectionSiteElement site) {
     _injectionSiteElements.Add(site);
@@ -56,15 +57,15 @@ public class ScriptElement : IScriptElement {
     StartupFunction = startupFunctionFunction;
   }
 
-  public void AddBeforeUnloadFunction(IBeforeUnloadCallbackElement beforeUnloadCallbackFunction) {
-    _beforeUnloadFunctions.Add(beforeUnloadCallbackFunction);
+  public void AddBeforeUnloadCallback(IBeforeUnloadCallbackElement beforeUnloadCallbackFunction) {
+    _beforeUnloadCallbacks.Add(beforeUnloadCallbackFunction);
   }
 
-  public void AddOnLoadFunction(IOnLoadCallbackElement onLoadCallbackFunction) {
-    _onLoadFunctions.Add(onLoadCallbackFunction);
+  public void AddOnLoadCallback(IOnLoadCallbackElement onLoadCallbackFunction) {
+    _onLoadCallbacks.Add(onLoadCallbackFunction);
   }
 
-  public void AddOnErrorFunction(IOnErrorCallbackElement onErrorCallbackFunction) {
-    _onErrorFunctions.Add(onErrorCallbackFunction);
+  public void AddOnErrorCallback(IOnErrorCallbackElement onErrorCallbackFunction) {
+    _onErrorCallbacks.Add(onErrorCallbackFunction);
   }
 }
