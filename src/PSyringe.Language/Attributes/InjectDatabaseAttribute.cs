@@ -4,9 +4,9 @@ namespace PSyringe.Language.Attributes;
 ///   TODO:
 /// </summary>
 public class InjectDatabaseAttribute : InjectionTargetAttribute {
-  public bool IsProviderConnectionString { get; private set; }
-
   public InjectDatabaseAttribute(string ConnectionStrting, bool IsConnectionString = false) : base(ConnectionStrting) {
     IsProviderConnectionString = IsConnectionString;
   }
+
+  public bool IsProviderConnectionString { get; }
 }

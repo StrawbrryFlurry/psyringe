@@ -146,11 +146,11 @@ public class ScriptParser : IScriptParser {
     var sb = new StringBuilder();
     var attributeNamespace = GetAttributeAssemblyNamespace<InjectAttribute>();
     var genericProviderNamespace = GetAttributeAssemblyNamespace<ILogger>();
-    
+
     sb.AppendLine($"using namespace {attributeNamespace};");
     sb.AppendLine($"using namespace {genericProviderNamespace};");
     sb.AppendLine(script);
-    
+
     script = sb.ToString();
   }
 

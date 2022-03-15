@@ -40,6 +40,17 @@ namespace PSyringe.Core;
 /// $Foo = $PS_INJECT_InjectionSiteExample_INJECT_Foo
 /// )
 /// }
+/// 
+/*Run scopes
+
+// Is only included when RunScope is POST
+[RunScope(Type = "POST")]{ 
+}
+
+// Flag is set
+[RunScope(Flag = "Some Flag")]{ 
+}
+*/
 public class ScriptManager {
   public ScriptManager(
     IScriptLoader loader,

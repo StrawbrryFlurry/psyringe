@@ -1,16 +1,9 @@
-using System.Management.Automation;
 using System.Management.Automation.Language;
-using System.Reflection;
 using PSyringe.Language.Exceptions;
 using PSyringe.Language.Extensions;
 using PSyringe.Language.TypeLoader.Parameters;
 
-namespace PSyringe.Language.TypeLoader; 
-
-/*
-   IEnumerable<NamedAttributeArgumentAst> namedAttributeArguments,
-   IEnumerable<ExpressionAst> positionalArguments
-   */
+namespace PSyringe.Language.TypeLoader;
 
 public static class AttributeTypeLoader {
   public static T CreateAttributeInstanceFromAst<T>(
@@ -22,34 +15,44 @@ public static class AttributeTypeLoader {
 
     var attributeType = attributeAst.GetReflectionAttributeType();
 
-    return (T)TypeConstructorLoader.CreateInstanceOfType(attributeType, collection);
+    return (T) TypeLoader.CreateInstanceOfType(attributeType, collection);
   }
 
-  internal static IList<NamedParameter> MakeNamedParametersFromArguments(IEnumerable<NamedAttributeArgumentAst> namedArguments) {
+  internal static IList<NamedParameter> MakeNamedParametersFromArguments(
+    IEnumerable<NamedAttributeArgumentAst> namedArguments) {
     var namedParameters = new List<NamedParameter>();
-   
+
     foreach (var namedArgument in namedArguments) {
-      var value = GetNamedAttributeValue(namedArgument, out var name);
-      
+      var value = GetNamedAttributeParameterValue(namedArgument);
+
+      if (value is null) {
+        throw InvalidAttributeUsageException.NonStaticParameter((AttributeAst) namedArgument.Parent,
+          namedArgument.ArgumentName);
+      }
+
       namedParameters.Add(new NamedParameter {
-        Name = name,
+        Name = namedArgument.ArgumentName,
         Value = value,
         Type = value.GetType()
       });
     }
-    
+
     return namedParameters;
   }
 
   internal static IList<PositionalParameter> MakePositionalParametersFromArguments(
     IEnumerable<ExpressionAst> positionalArguments
-    ) {
+  ) {
     var positionalParameters = new List<PositionalParameter>();
 
     for (var i = 0; i < positionalArguments.Count(); i++) {
       var positionalArgument = positionalArguments.ElementAt(i);
       var value = GetValueFromExpressionAst(positionalArgument);
-      
+
+      if (value is null) {
+        throw InvalidAttributeUsageException.NonStaticParameter((AttributeAst) positionalArgument.Parent, i);
+      }
+
       positionalParameters.Add(new PositionalParameter {
         Value = value,
         Type = value.GetType()
@@ -59,7 +62,17 @@ public static class AttributeTypeLoader {
     return positionalParameters;
   }
 
-  internal static dynamic? GetValueFromExpressionAst(ExpressionAst ast) {
+  private static object? GetNamedAttributeParameterValue(NamedAttributeArgumentAst argumentAst) {
+    // If the parameter has no expression it is
+    // implicitly treated as true
+    if (argumentAst.ExpressionOmitted) {
+      return true;
+    }
+
+    return GetValueFromExpressionAst(argumentAst.Argument);
+  }
+
+  private static object? GetValueFromExpressionAst(ExpressionAst ast) {
     return ast switch {
       StringConstantExpressionAst stringExpressionAst => stringExpressionAst.Value,
       TypeExpressionAst typeExpressionAst => typeExpressionAst.TypeName.GetReflectionType(),
@@ -82,22 +95,5 @@ public static class AttributeTypeLoader {
       "null" => false,
       _ => null
     };
-  }
-  
-  private static dynamic GetNamedAttributeValue(NamedAttributeArgumentAst argumentAst, out string argumentName) {
-    argumentName = argumentAst.ArgumentName;
-
-    // If the parameter has no expression it is
-    // implicitly treated as true
-    if (argumentAst.ExpressionOmitted) {
-      return true;
-    }
-
-    return GetValueFromExpressionAst(argumentAst.Argument);
-  }
-  
-  private static IEnumerable<ConstructorInfo> GetAttributeConstructors(AttributeAst attributeAst) {
-    var attributeType = attributeAst.GetReflectionAttributeType();
-    return attributeType.GetConstructors();
   }
 }

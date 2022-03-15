@@ -5,14 +5,13 @@ using PSyringe.Common.Language.Parsing.Elements;
 namespace PSyringe.Language.Elements;
 
 public class ScriptElement : IScriptElement {
-  private readonly List<IInjectionSiteElement> _injectionSiteElements = new();
+  private readonly List<IBeforeUnloadCallbackElement> _beforeUnloadCallbacks = new();
 
   private readonly List<IInjectCredentialElement> _injectCredentialElements = new();
   private readonly List<IInjectDatabaseElement> _injectDatabaseElements = new();
+  private readonly List<IInjectionSiteElement> _injectionSiteElements = new();
   private readonly List<IInjectTemplateElement> _injectTemplateElements = new();
   private readonly List<IInjectVariableElement> _injectVariableElements = new();
-
-  private readonly List<IBeforeUnloadCallbackElement> _beforeUnloadCallbacks = new();
   private readonly List<IOnErrorCallbackElement> _onErrorCallbacks = new();
   private readonly List<IOnLoadCallbackElement> _onLoadCallbacks = new();
 

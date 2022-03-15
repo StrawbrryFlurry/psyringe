@@ -1,59 +1,113 @@
-namespace PSyringe.Language.TypeLoader.Parameters; 
+using System.Reflection;
+using PSyringe.Language.TypeLoader.Extensions;
+
+namespace PSyringe.Language.TypeLoader.Parameters;
 
 public class ParameterCollection {
-  public IList<NamedParameter> NamedParameters { get;  }
-  public IList<PositionalParameter> PositionalParameters { get; private set; }
-
-  private List<PositionalParameter> _constructorParameters = new ();
-
   public ParameterCollection(
     IList<NamedParameter> namedParameters,
     IList<PositionalParameter> positionalParameters
-    ) {
+  ) {
     NamedParameters = namedParameters;
     PositionalParameters = positionalParameters;
   }
 
-  public IList<PositionalParameter> GetPositionalParametersWithoutNamedParameterIndexes(
-    IList<int> positionsCoveredByNamedParameters
-    ) {
-    var sortedPositionalParameters = PositionalParameters.OrderBy(p => p.Position);
-    var updatedPositionalParameters = new List<PositionalParameter>();
-    var newPosition = 0;
-    
-    foreach(var parameter in sortedPositionalParameters) {
-      while (positionsCoveredByNamedParameters.Contains(newPosition)) {
-        newPosition++;
-      }
-      
-      updatedPositionalParameters.Add(
-        new PositionalParameter {
-          Position = newPosition,
-          Type = parameter.Type,
-          Value = parameter.Value
-        });
-      
-      newPosition++;
-    }
-
-    return updatedPositionalParameters;
-  }
+  public IList<NamedParameter> NamedParameters { get; }
+  public IList<PositionalParameter> PositionalParameters { get; }
 
   public int GetParameterCount() {
     return NamedParameters.Count + PositionalParameters.Count;
   }
-  
-  public void AddConstructorParameter(PositionalParameter parameter) {
-    _constructorParameters.Add(parameter);
+
+  public bool TryGetMethodOverloadArguments(
+    ParameterInfo[] overloadParameters,
+    out object[]? outOverloadArguments
+  ) {
+    outOverloadArguments = null;
+    var overloadArguments = new List<PositionalParameter>();
+
+    foreach (var parameter in NamedParameters) {
+      var parameterInfo = overloadParameters.GetEquivalentParameter(parameter);
+
+      if (parameterInfo == null) {
+        return false;
+      }
+
+      overloadArguments.Add(new PositionalParameter {
+        Position = parameterInfo.Position,
+        Type = parameterInfo.ParameterType,
+        Value = parameter.Value
+      });
+    }
+
+    var position = 0;
+    var positionalParameters = PositionalParameters
+                               .OrderBy(p => p.Position)
+                               .Select(p => {
+                                 while (overloadArguments.Any(a => a.Position == position)) {
+                                   position++;
+                                 }
+
+                                 return new PositionalParameter {
+                                   Position = position,
+                                   Type = p.Type,
+                                   Value = p.Value
+                                 };
+                               });
+
+    foreach (var parameter in positionalParameters) {
+      var parameterInfo = overloadParameters.GetEquivalentParameter(parameter);
+
+      if (parameterInfo == null) {
+        return false;
+      }
+
+      overloadArguments.Add(parameter);
+    }
+
+    if (!TryValidateParameterOverload(overloadParameters, overloadArguments, out var arguments)) {
+      return false;
+    }
+
+    outOverloadArguments = arguments;
+    return true;
   }
 
-  public object[] GetConstructorParameters() {
-    return _constructorParameters.OrderBy(p => p.Position)
-                                 .Select(p => p.Value)
-                                 .ToArray();
-  }
+  internal static bool TryValidateParameterOverload(
+    ParameterInfo[] overloadParameters,
+    List<PositionalParameter> actualParameters,
+    out object[] arguments
+  ) {
+    arguments = null;
+    // Make sure parameters are ordered by their position
+    // to match up with the overload parameter position.
+    actualParameters = actualParameters.OrderBy(p => p.Position).ToList();
+    var argumentList = new List<object>();
 
-  public ParameterCollection Clone() {
-    return new ParameterCollection(NamedParameters, PositionalParameters);
+    for (var i = 0; i < overloadParameters.Length; i++) {
+      var parameter = overloadParameters[i];
+      var valueParameter = actualParameters.ElementAtOrDefault(i);
+
+      if (valueParameter is null) {
+        if (!parameter.IsOptional) {
+          return false;
+        }
+
+        argumentList.Add(null);
+        continue;
+      }
+
+      var value = valueParameter.Value;
+      if (parameter.IsOfSameTypeAs(value)) {
+        argumentList.Add(value);
+        continue;
+      }
+
+      // A mandatory parameter is missing
+      return false;
+    }
+
+    arguments = argumentList.ToArray();
+    return true;
   }
 }
