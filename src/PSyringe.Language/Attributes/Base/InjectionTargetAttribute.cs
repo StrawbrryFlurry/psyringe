@@ -1,6 +1,6 @@
 using PSyringe.Common.Language.Attributes;
 
-namespace PSyringe.Language.Attributes;
+namespace PSyringe.Language.Attributes.Base;
 
 public abstract class InjectionTargetAttribute : Attribute, IInjectionTargetAttribute {
   public readonly bool IsOptional;

@@ -35,6 +35,9 @@ function {StartupFunctionName} {{
   public const string WithInjectVariableExpression_ExplicitTarget_Named_Provider = @$"
 [Inject(Target = 'LoggerProvider')]${InjectVariableName} = 'value'";
   
+  public const string WithInjectVariableExpression_ExplicitTarget_Named_Provider_Type = @$"
+[Inject(Target = [ILogger])]${InjectVariableName} = 'value'";
+  
   public const string WithInjectVariableExpression_ExplicitTarget_Named_Provider_Optional = @$"
 [Inject(Target = 'LoggerProvider', Optional = $true)]${InjectVariableName} = 'value'";
 

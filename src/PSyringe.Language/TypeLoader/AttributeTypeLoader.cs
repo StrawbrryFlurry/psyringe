@@ -13,7 +13,7 @@ public static class AttributeTypeLoader {
     var positionalParameters = MakePositionalParametersFromArguments(attributeAst.PositionalArguments);
     var collection = new ParameterCollection(namedParameters, positionalParameters);
 
-    var attributeType = attributeAst.GetReflectionAttributeType();
+    var attributeType = attributeAst.GetAttributeType();
 
     return (T) TypeLoader.CreateInstanceOfType(attributeType, collection);
   }

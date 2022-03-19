@@ -22,6 +22,6 @@ public class InvalidAttributeUsageException : Exception {
   }
 
   private static string GetAttributeName(AttributeAst attributeAst) {
-    return attributeAst.GetReflectionAttributeType().Name;
+    return attributeAst.GetAttributeType().Name;
   }
 }

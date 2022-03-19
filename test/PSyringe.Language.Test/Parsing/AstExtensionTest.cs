@@ -14,7 +14,7 @@ public class AstExtensionTest {
     var ast = ParsingUtil.ParseScript(script);
     var attributeExpression = ast.Find(e => e is AttributedExpressionAst, true) as AttributedExpressionAst;
 
-    var type = attributeExpression?.Attribute.GetReflectionAttributeType();
+    var type = attributeExpression?.Attribute.GetAttributeType();
 
     type.Should().NotBeNull();
     type.Should().Be(typeof(InjectAttribute));

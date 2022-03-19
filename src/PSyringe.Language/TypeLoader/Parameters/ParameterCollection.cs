@@ -12,8 +12,8 @@ public class ParameterCollection {
     PositionalParameters = positionalParameters;
   }
 
-  public IList<NamedParameter> NamedParameters { get; }
-  public IList<PositionalParameter> PositionalParameters { get; }
+  private IList<NamedParameter> NamedParameters { get; }
+  private IList<PositionalParameter> PositionalParameters { get; }
 
   public int GetParameterCount() {
     return NamedParameters.Count + PositionalParameters.Count;

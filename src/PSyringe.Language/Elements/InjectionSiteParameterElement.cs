@@ -3,6 +3,8 @@ using PSyringe.Common.Language.Parsing.Elements;
 
 namespace PSyringe.Language.Elements;
 
+//  TODO: Nested AttributedExpressions
+// [ParameterDescription("Foo Parameter")][InjectParameter("Foo")]$Foo;
 public class InjectionSiteParameterElement : IInjectionSiteParameter {
   public InjectionSiteParameterElement(ParameterAst ast) {
     Ast = ast;

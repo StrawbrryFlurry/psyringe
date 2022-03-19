@@ -13,13 +13,9 @@ public class InjectVariableElement : IInjectVariableElement {
     Ast = ast;
   }
 
-  // [Fact]
-  // public void AddInjectVariable_CreatesInjectVariable_WhenEncountered() {
-  //   // Expression => [Attribute] ([Inject()]), [Child] => [Attribute] ([ILogger])
-  //   var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithInjectVariableExpression_ImplicitTarget);
-  // }
   public AttributedExpressionAst Ast { get; }
-
+  
+  
   public bool HasDefaultValue() {
     return false;
   }

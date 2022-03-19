@@ -33,7 +33,7 @@ public class VariableInjectionTargetTest {
       ScriptTemplates.WithInjectVariableExpression_ImplicitTarget
     );
 
-    sut.GetVariableTypeConstraint().Should().Be(typeof(ILogger));
+    sut.GetVariableTypeConstraint().Should().Be<ILogger>();
   }
 
   [Fact]
@@ -46,14 +46,43 @@ public class VariableInjectionTargetTest {
   }
 
   [Fact]
-  public void GetInjectAttributeInstance_ReturnsNull_WhenVariableHasNoTypeConstraint() {
+  public void GetVariableTypeConstraint_ReturnsTypeConstraint_WhenVariableHasMultipleExpressions() {
     var sut = MakeInjectionTargetFromAttributedExpressionInScript(
-      ScriptTemplates.WithInjectVariableExpression_ExplicitTarget
+      "[Inject([ILogger])][LogExpression()][ILogger]$Variable"
     );
 
-    sut.GetInjectAttributeInstance<InjectAttribute>().Should().BeNull();
+    sut.GetVariableTypeConstraint().Should().Be<ILogger>();
+  }
+  
+  [Fact]
+  public void GetVariableTypeConstraint_ReturnsTypeConstraint_WhenTypeConstraintComesBeforeAttribute() {
+    var sut = MakeInjectionTargetFromAttributedExpressionInScript(
+      "[ILogger][Inject([ILogger])][LogExpression()]$Variable"
+    );
+
+    sut.GetVariableTypeConstraint().Should().Be<ILogger>();
+  }
+  
+  [Fact]
+  public void GetInjectAttributeInstance_ReturnsAttributeInstanceWithExplicitTarget_WhenVariableHasExplicitTarget() {
+    var sut = MakeInjectionTargetFromAttributedExpressionInScript(
+      ScriptTemplates.WithInjectVariableExpression_ExplicitTarget_Named_Provider_Type
+    );
+
+    var injectAttribute = sut.GetInjectAttributeInstance<InjectAttribute>();
+    
+    injectAttribute.TargetType.Should().Be(typeof(ILogger));
   }
 
+  [Fact]
+  public void GetAttributedVariableExpression_ReturnsVariableExpression_WhenCalled() {
+    var sut = MakeInjectionTargetFromAttributedExpressionInScript(
+      ScriptTemplates.WithInjectVariableExpression_ExplicitTarget_Named_Provider
+    );
+    
+    sut.GetAttributedVariableExpression().Should().BeOfType<VariableExpressionAst>();
+  }
+  
   private VariableInjectionTarget MakeInjectionTargetFromAttributedExpressionInScript(string script) {
     var attributedVariableExpressionAst = ParsingUtil.GetAttributedExpressionAstFromScript(script);
     return new VariableInjectionTarget(attributedVariableExpressionAst!);

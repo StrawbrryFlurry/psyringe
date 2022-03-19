@@ -7,16 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\PSyringe.Common\PSyringe.Common.csproj"/>
+        <ProjectReference Include="..\PSyringe.Common\PSyringe.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.3.0-preview.2"/>
+        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.3.0-preview.2" />
     </ItemGroup>
-
-    <ItemGroup>
-        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-            <_Parameter1>$(AssemblyName).Test</_Parameter1>
-        </AssemblyAttribute>
-    </ItemGroup>
+    
+     <ItemGroup>
+         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+             <_Parameter1>$(AssemblyName).Test</_Parameter1>
+         </AssemblyAttribute>
+     </ItemGroup>
 </Project>

@@ -1,3 +1,5 @@
+using PSyringe.Language.Attributes.Base;
+
 namespace PSyringe.Language.Attributes;
 
 /// <summary>

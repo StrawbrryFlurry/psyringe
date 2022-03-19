@@ -1,4 +1,6 @@
-﻿namespace PSyringe.Language.Attributes;
+﻿using PSyringe.Language.Attributes.Base;
+
+namespace PSyringe.Language.Attributes;
 
 public class InjectAttribute : InjectionTargetAttribute {
   public InjectAttribute(string? Target = null, bool Optional = false) : base(Target, Optional) {
