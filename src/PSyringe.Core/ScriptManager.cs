@@ -1,5 +1,4 @@
 using System.Management.Automation;
-using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
 using PSyringe.Common.Runtime;
 
@@ -22,25 +21,6 @@ namespace PSyringe.Core;
 ///   - Add Command that calls the entrypoint method with injection paramters
 ///   Invoke the script
 /// </summary>
-/// InjectionSiteExample
-/// function InjectionSiteExample {
-/// [InjectionSite()]
-/// param(
-/// [Inject([Foo])]$Foo
-/// )
-/// }
-/// 
-/// InjectionSiteGenerated
-/// // Generated code
-/// // Start of script
-/// $PS_PROVIDE_InjectionSiteExample_INJECT_Foo = // Instance of Foo;
-/// 
-/// function InjectionSiteExample {
-/// param(
-/// $Foo = $PS_INJECT_InjectionSiteExample_INJECT_Foo
-/// )
-/// }
-/// 
 /*Run scopes
 
 // Is only included when RunScope is POST
@@ -55,7 +35,8 @@ public class ScriptManager {
   public ScriptManager(
     IScriptLoader loader,
     IScriptParser parser,
-    IScriptRepository repository
+    IScriptRepository repository,
+    IScriptEnvironment globalEnvironment
   ) {
   }
 
@@ -94,7 +75,11 @@ public class ScriptManager {
   }
 
   public interface IScriptLoader {
-    public void Load(string script);
+    public void Load(string script, IScriptEnvironment environment);
     public void LoadAll(IList<string> scripts);
   }
+}
+
+public interface IScriptEnvironment {
+  public IDictionary<string, object> Constants { get; }
 }

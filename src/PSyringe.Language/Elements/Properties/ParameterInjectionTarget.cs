@@ -7,7 +7,6 @@ namespace PSyringe.Language.Elements.Properties;
 public class ParameterInjectionTarget : IInjectionTarget {
   public AttributedExpressionAst ast;
 
-
   public ParameterInjectionTarget(AttributedExpressionAst ast) {
   }
 

@@ -1,6 +1,6 @@
 using PSyringe.Common.Language.Parsing;
 
-namespace PSyringe.Common.Compiler;
+namespace PSyringe.Common.Language.Compiler;
 
 public interface IScriptCompiler {
   /// <summary>
@@ -12,5 +12,5 @@ public interface IScriptCompiler {
   /// <param name="scriptElement"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
-  public IScript CompileToScript(IScriptElement scriptElement);
+  public IScript CompileScriptElement(IScriptElement scriptElement);
 }
