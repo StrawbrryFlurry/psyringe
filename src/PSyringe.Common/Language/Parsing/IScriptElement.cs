@@ -15,6 +15,7 @@ public interface IScriptElement {
   public IEnumerable<IInjectVariableElement> InjectVariableElements { get; }
   public IEnumerable<IInjectCredentialElement> InjectCredentialElements { get; }
   public IEnumerable<IInjectDatabaseElement> InjectDatabaseElements { get; }
+  public IEnumerable<IInjectConstantElement> InjectConstantElements { get; }
   public IEnumerable<IInjectTemplateElement> InjectTemplateElements { get; }
 
   public IEnumerable<IBeforeUnloadCallbackElement> BeforeUnloadCallbacks { get; }
@@ -33,4 +34,5 @@ public interface IScriptElement {
   public void AddBeforeUnloadCallback(IBeforeUnloadCallbackElement beforeUnloadCallback);
   public void AddOnLoadCallback(IOnLoadCallbackElement onLoadCallback);
   public void AddOnErrorCallback(IOnErrorCallbackElement onErrorCallback);
+  public void AddInjectConstant(IInjectConstantElement injectConstant);
 }

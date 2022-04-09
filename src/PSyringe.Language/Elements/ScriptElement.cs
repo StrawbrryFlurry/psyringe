@@ -14,6 +14,7 @@ public class ScriptElement : IScriptElement {
   private readonly List<IInjectVariableElement> _injectVariableElements = new();
   private readonly List<IOnErrorCallbackElement> _onErrorCallbacks = new();
   private readonly List<IOnLoadCallbackElement> _onLoadCallbacks = new();
+  private readonly List<IInjectConstantElement> _injectConstantElements = new();
 
   public ScriptElement(ScriptBlockAst ast) {
     ScriptBlockAst = ast;
@@ -25,6 +26,7 @@ public class ScriptElement : IScriptElement {
   public IEnumerable<IInjectionSiteElement> InjectionSiteElements => _injectionSiteElements;
   public IEnumerable<IInjectVariableElement> InjectVariableElements => _injectVariableElements;
   public IEnumerable<IInjectCredentialElement> InjectCredentialElements => _injectCredentialElements;
+  public IEnumerable<IInjectConstantElement> InjectConstantElements => _injectConstantElements;
   public IEnumerable<IInjectTemplateElement> InjectTemplateElements => _injectTemplateElements;
   public IEnumerable<IInjectDatabaseElement> InjectDatabaseElements => _injectDatabaseElements;
 
@@ -52,6 +54,10 @@ public class ScriptElement : IScriptElement {
     _injectDatabaseElements.Add(injectDatabase);
   }
 
+  public void AddInjectConstant(IInjectConstantElement injectConstant) {
+    _injectConstantElements.Add(injectConstant);
+  }
+  
   public void SetStartupFunction(IStartupFunctionElement startupFunctionFunction) {
     StartupFunction = startupFunctionFunction;
   }

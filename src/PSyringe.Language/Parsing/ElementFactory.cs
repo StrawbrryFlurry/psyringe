@@ -34,6 +34,10 @@ public class ElementFactory : IElementFactory {
     return new InjectDatabaseElement(attributedExpressionAst);
   }
 
+  public IInjectConstantElement CreateInjectConstant(AttributedExpressionAst attributedExpressionAst) {
+    return new InjectConstantElement(attributedExpressionAst);
+  }
+
   public IInjectTemplateElement CreateInjectTemplate(AttributedExpressionAst attributedExpressionAst) {
     return new InjectTemplateElement(attributedExpressionAst);
   }

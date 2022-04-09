@@ -10,9 +10,12 @@ public interface IElementFactory {
   public IStartupFunctionElement CreateStartupFunction(FunctionDefinitionAst functionDefinitionAst);
   public IInjectVariableElement CreateInjectVariable(AttributedExpressionAst attributedExpressionAst);
   public IInjectCredentialElement CreateInjectCredential(AttributedExpressionAst attributedExpressionAst);
+  public IInjectDatabaseElement CreateInjectDatabase(AttributedExpressionAst attributedExpressionAst);
+  public IInjectConstantElement CreateInjectConstant(AttributedExpressionAst attributedExpressionAst);
+
   public IInjectTemplateElement CreateInjectTemplate(AttributedExpressionAst attributedExpressionAst);
+  
   public IBeforeUnloadCallbackElement CreateBeforeUnload(FunctionDefinitionAst functionDefinitionAst);
   public IOnLoadCallbackElement CreateOnLoad(FunctionDefinitionAst functionDefinitionAst);
   public IOnErrorCallbackElement CreateOnError(FunctionDefinitionAst functionDefinitionAst);
-  public IInjectDatabaseElement CreateInjectDatabase(AttributedExpressionAst attributedExpressionAst);
 }

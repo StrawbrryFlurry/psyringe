@@ -95,6 +95,14 @@ public class ScriptParserTest {
     script.InjectDatabaseElements.Should().NotBeEmpty();
   }
 
+  
+  [Fact]
+  public void AddAllInjectElementsToScript_AddsInjectConstantToScript_WhenScriptHasInjectConstant() {
+    MakeParserAndParse(ScriptTemplates.WithInjectConstantVariable_NoTarget, out var script);
+
+    script.InjectConstantElements.Should().NotBeEmpty();
+  }
+  
   [Fact]
   public void AddAllCallbackElementsToScript_AddsOnErrorCallbackToScript_WhenScriptHasOnErrorCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithOnErrorFunction, out var script);

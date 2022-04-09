@@ -47,8 +47,7 @@ function {StartupFunctionName} {{
   
   public const string WithInjectVariableExpression_ExplicitTarget_Positional_Provider_Optional = @$"
 [Inject('LoggerProvider', $true)]${InjectVariableName} = 'value'";
-
-
+  
   public const string WithInjectVariableExpression_ExplicitTarget_Mixed_Provider_Optional = @$"
 [Inject(Target = 'LoggerProvider', $true)]${InjectVariableName} = 'value'";
   
@@ -59,13 +58,13 @@ function {StartupFunctionName} {{
 [Inject()][ILogger]${InjectVariableName} = 'value'";
 
   public const string WithInjectCredentialVariable_NoTarget = @$"
-[InjectCredential()]${InjectVariableName};";
+[InjectSecret()]${InjectVariableName};";
 
   public const string WithInjectCredentialVariable_NamedParameter = @$"
-[InjectCredential(Target = 'Credential')]${InjectVariableName};";
+[InjectSecret(Target = 'Credential')]${InjectVariableName};";
 
   public const string WithInjectCredentialVariable_IndexParameter = @$"
-[InjectCredential('Credential')]${InjectVariableName};";
+[InjectSecret('Credential')]${InjectVariableName};";
 
   public const string WithInjectDatabaseVariable_NoTarget = @$"
 [InjectDatabase()]${InjectVariableName};";
@@ -79,6 +78,9 @@ function {StartupFunctionName} {{
   public const string WithInjectDatabaseVariable_ProviderToken = @$"
 [InjectDatabase(Target = '{DatabaseProviderName}')]${InjectVariableName};";
 
+  public const string WithInjectConstantVariable_NoTarget = @$"
+[InjectConstant()]${InjectVariableName};";
+  
   public const string WithInjectParameterFunction_NamedParameter = @$"
 function {InjectionSiteFunctionName} {{
   [InjectionSite()]

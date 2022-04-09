@@ -14,7 +14,7 @@ public class ScriptParser : IScriptParser {
   public ScriptParser(IElementFactory elementFactory) {
     ElementFactory = elementFactory;
   }
-
+  
   public IScriptElement Parse(string script, IScriptVisitor visitor) {
     var scriptBlockAst = PrepareAndParseScript(script);
     visitor.Visit(scriptBlockAst);
@@ -83,7 +83,7 @@ public class ScriptParser : IScriptParser {
         var injectVariable = ElementFactory.CreateInjectVariable(expressionAst);
         scriptElement.AddInjectVariable(injectVariable);
       }
-      else if (IsVariableExpressionWithAttribute<InjectCredentialAttribute>(expressionAst)) {
+      else if (IsVariableExpressionWithAttribute<InjectSecretAttribute>(expressionAst)) {
         var injectCredential = ElementFactory.CreateInjectCredential(expressionAst);
         scriptElement.AddInjectCredential(injectCredential);
       }
@@ -94,19 +94,23 @@ public class ScriptParser : IScriptParser {
       else if (IsScriptBlockExpressionWithAttribute<InjectTemplateAttribute>(expressionAst)) {
         var injectTemplate = ElementFactory.CreateInjectTemplate(expressionAst);
         scriptElement.AddInjectTemplate(injectTemplate);
+      } 
+      else if(IsVariableExpressionWithAttribute<InjectConstantAttribute>(expressionAst)) {
+        var injectConstant = ElementFactory.CreateInjectConstant(expressionAst);
+        scriptElement.AddInjectConstant(injectConstant);
       }
     }
   }
 
   // Variable Expressions [InjectX()]$Variable;
   private bool IsVariableExpressionWithAttribute<T>(AttributedExpressionAst expressionAst) where T : Attribute {
-    var isVariableExpression = expressionAst.Child is VariableExpressionAst;
+    var isVariableExpression = expressionAst.GetNestedChildAssignableToType<VariableExpressionAst>() is not null;
     return isVariableExpression && expressionAst.Attribute.IsOfExactType<T>();
   }
 
   // ScriptBlock Expressions [InjectX()]{ ... };
   private bool IsScriptBlockExpressionWithAttribute<T>(AttributedExpressionAst expressionAst) where T : Attribute {
-    var isScriptBlockExpression = expressionAst.Child is ScriptBlockExpressionAst;
+    var isScriptBlockExpression = expressionAst.GetNestedChildAssignableToType<ScriptBlockExpressionAst>() is not null;
     return isScriptBlockExpression && expressionAst.Attribute.IsOfExactType<T>();
   }
 
