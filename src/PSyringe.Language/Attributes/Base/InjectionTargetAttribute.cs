@@ -3,10 +3,6 @@ using PSyringe.Common.Language.Attributes;
 namespace PSyringe.Language.Attributes.Base;
 
 public abstract class InjectionTargetAttribute : Attribute, IInjectionTargetAttribute {
-  public readonly bool IsOptional;
-  public readonly string? TargetProviderName;
-  public readonly Type? TargetType;
-
   public InjectionTargetAttribute(Type? targetType, bool optional = false) {
     TargetType = targetType;
     IsOptional = optional;
@@ -16,4 +12,8 @@ public abstract class InjectionTargetAttribute : Attribute, IInjectionTargetAttr
     TargetProviderName = targetProviderName;
     IsOptional = optional;
   }
+
+  public bool IsOptional { get; }
+  public string? TargetProviderName { get; }
+  public Type? TargetType { get; }
 }

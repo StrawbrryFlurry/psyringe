@@ -26,6 +26,58 @@ public static class AttributeAstExtension {
   }
   
   /// <summary>
+  /// Returns the child of a nested attributed expression e.g.
+  /// [Inject()][LogExpression()]"SomeExpression" if that child
+  /// is assignable to type T
+  /// </summary>
+  /// <param name="ast"></param>
+  /// <typeparam name="T"></typeparam>
+  /// <returns></returns>
+  public static T? GetNestedChildAssignableToType<T>(this AttributedExpressionAst? ast) where T : Ast {
+    Ast? currentAst = ast;
+    
+    while (currentAst is not null) {
+      switch (currentAst) {
+        case T targetAst:
+          return targetAst;
+        case AttributedExpressionAst attributedExpressionAst:
+          currentAst = attributedExpressionAst.Child;
+          break;
+        default:
+          return null;
+      }
+    }
+
+    return null;
+  }
+  
+  /// <summary>
+  /// Returns the direct parent of a nested attributed expression e.g.
+  /// "ParentAst.Child" { [Inject()][LogExpression()]"SomeExpression" }
+  /// if that parent is assignable to type T
+  /// </summary>
+  /// <param name="ast"></param>
+  /// <typeparam name="T"></typeparam>
+  /// <returns></returns>
+  public static T? GetDirectParentAssignableToType<T>(this AttributedExpressionAst? ast) where T : Ast {
+    Ast? currentAst = ast;
+
+    while (currentAst is not null) {
+      switch (currentAst) {
+        case T targetAst:
+          return targetAst;
+        case AttributedExpressionAst attributedExpressionAst:
+          currentAst = attributedExpressionAst.Parent;
+          break;
+        default:
+          return null;
+      }
+    }
+
+    return null;
+  }
+  
+  /// <summary>
   /// Traverses the ast's children's and parent's AttributedExpressionAsts
   /// checking if it's type is assignable to the specified type. Also
   /// accepts matches for a direct parent, child or itself of an AttributedExpressionAst.
@@ -36,34 +88,7 @@ public static class AttributeAstExtension {
   /// </code>
   /// </summary>
   public static T? GetAstInTreeAssignableToType<T>(this AttributedExpressionAst? ast) where T : Ast {
-    Ast? currentAst = ast;
-
-    while (currentAst is not null) {
-      switch (currentAst) {
-        case T targetAst:
-          return targetAst;
-        case AttributedExpressionAst attributedExpressionAst:
-          currentAst = attributedExpressionAst.Child;
-          break;
-        default: currentAst = null;
-          break;
-      }
-    }
-    
-    currentAst = ast;
-    while (currentAst is not null) {
-      switch (currentAst) {
-        case T targetAst:
-          return targetAst;
-        case AttributedExpressionAst attributedExpressionAst:
-          currentAst = attributedExpressionAst.Parent;
-          break;
-        default:
-          currentAst = null;
-          break;
-      }
-    }
-
-    return null;
+    var childAssignableToType = ast.GetNestedChildAssignableToType<T>();
+    return childAssignableToType ?? ast.GetDirectParentAssignableToType<T>();
   }
 }

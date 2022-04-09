@@ -12,7 +12,11 @@ public class VariableInjectionTarget : IInjectionTarget {
 
   public VariableInjectionTarget(AttributedExpressionAst ast) {
     _ast = ast;
-    Attribute = _ast.Attribute as AttributeAst;
+    // Elements that extend this class can't have a
+    // TypeConstraint as their attribute so we can
+    // safely assume that the attribute of the expression
+    // is an AttributeAst. 
+    Attribute = (AttributeAst)_ast.Attribute;
   }
 
   public bool HasDefaultValue() {

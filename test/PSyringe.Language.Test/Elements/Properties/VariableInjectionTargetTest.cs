@@ -13,7 +13,7 @@ namespace PSyringe.Language.Test.Elements.Properties;
 public class VariableInjectionTargetTest {
   [Fact]
   public void HasDefaultValue_ReturnsTrue_WhenVariableIsPartOfAssignmentExpression() {
-    var sut = MakeInjectionTargetFromAttributedExpressionInScript(ScriptTemplates.WithInjectVariableAssigment_NoTarget);
+    var sut = MakeInjectionTargetFromAttributedExpressionInScript("[Inject()]$Variable = 'value';");
 
     sut.HasDefaultValue().Should().BeTrue();
   }
@@ -21,7 +21,7 @@ public class VariableInjectionTargetTest {
   [Fact]
   public void HasDefaultValue_ReturnsFalse_WhenVariableIsNotPartOfAssignmentExpression() {
     var sut = MakeInjectionTargetFromAttributedExpressionInScript(
-      ScriptTemplates.WithInjectVariableExpression_NoTarget
+      "[Inject()]$Variable;"
       );
 
     sut.HasDefaultValue().Should().BeFalse();
@@ -30,7 +30,7 @@ public class VariableInjectionTargetTest {
   [Fact]
   public void GetVariableTypeConstraint_ReturnsTypeConstraint_WhenVariableHasTypeConstraint() {
     var sut = MakeInjectionTargetFromAttributedExpressionInScript(
-      ScriptTemplates.WithInjectVariableExpression_ImplicitTarget
+      "[Inject()][ILogger]$Variable;"
     );
 
     sut.GetVariableTypeConstraint().Should().Be<ILogger>();
@@ -39,7 +39,7 @@ public class VariableInjectionTargetTest {
   [Fact]
   public void GetVariableTypeConstraint_ReturnsNull_WhenVariableHasNoTypeConstraint() {
     var sut = MakeInjectionTargetFromAttributedExpressionInScript(
-      ScriptTemplates.WithInjectVariableExpression_ExplicitTarget
+      "[Inject()]$Variable;"
     );
 
     sut.GetVariableTypeConstraint().Should().BeNull();
@@ -57,7 +57,7 @@ public class VariableInjectionTargetTest {
   [Fact]
   public void GetVariableTypeConstraint_ReturnsTypeConstraint_WhenTypeConstraintComesBeforeAttribute() {
     var sut = MakeInjectionTargetFromAttributedExpressionInScript(
-      "[ILogger][Inject([ILogger])][LogExpression()]$Variable"
+      "[Inject([ILogger])][LogExpression()][ILogger]$Variable"
     );
 
     sut.GetVariableTypeConstraint().Should().Be<ILogger>();
@@ -66,7 +66,7 @@ public class VariableInjectionTargetTest {
   [Fact]
   public void GetInjectAttributeInstance_ReturnsAttributeInstanceWithExplicitTarget_WhenVariableHasExplicitTarget() {
     var sut = MakeInjectionTargetFromAttributedExpressionInScript(
-      ScriptTemplates.WithInjectVariableExpression_ExplicitTarget_Named_Provider_Type
+      "[Inject(Target = [ILogger])]$Variable = 'value'"
     );
 
     var injectAttribute = sut.GetInjectAttributeInstance<InjectAttribute>();
@@ -77,7 +77,7 @@ public class VariableInjectionTargetTest {
   [Fact]
   public void GetAttributedVariableExpression_ReturnsVariableExpression_WhenCalled() {
     var sut = MakeInjectionTargetFromAttributedExpressionInScript(
-      ScriptTemplates.WithInjectVariableExpression_ExplicitTarget_Named_Provider
+      "[Inject(Target = 'LoggerProvider')]$Variable = 'value'"
     );
     
     sut.GetAttributedVariableExpression().Should().BeOfType<VariableExpressionAst>();
