@@ -3,8 +3,20 @@ using System.Management.Automation.Language;
 namespace PSyringe.Language.Compiler;
 
 public static class CompilerAstExtensions {
-  public static TR ReplaceAst<T, TR>(this TR ast, T astToReplace, T replacementAst) where T : Ast where TR : Ast {
-    var visitor = new ReplaceAstRefVisitor(astToReplace, replacementAst);
+  /// <summary>
+  ///   Checks all children of a given AST node using the provided predicate.
+  ///   Replaces nodes that match the predicate with the provided replacement.
+  ///   Does not replace the node, if the replacement returns null.
+  /// </summary>
+  /// <param name="ast"></param>
+  /// <param name="predicate"></param>
+  /// <param name="replacementFunc"></param>
+  /// <typeparam name="T"></typeparam>
+  /// <typeparam name="TR"></typeparam>
+  /// <returns>The updated AST</returns>
+  public static TR ReplaceAst<T, TR>(this TR ast, Func<Ast?, bool> predicate, Func<T, T?> replacementFunc)
+    where T : Ast where TR : Ast {
+    var visitor = new ReplaceAstVisitor<T>(predicate, replacementFunc);
     return (TR) ast.Visit(visitor);
   }
 
@@ -20,13 +32,13 @@ public static class CompilerAstExtensions {
     return (IEnumerable<T>) ast.FindAll(a => a is T, true);
   }
 
-  internal class ReplaceAstRefVisitor : ICustomAstVisitor2 {
-    private readonly Ast _astToReplace;
-    private readonly Ast _replacementAst;
+  internal class ReplaceAstVisitor<T> : ICustomAstVisitor2 where T : Ast {
+    private readonly Func<Ast?, bool> _predicate;
+    private readonly Func<T, T?> _replacementFunc;
 
-    public ReplaceAstRefVisitor(Ast astToReplace, Ast replacementAst) {
-      _astToReplace = astToReplace;
-      _replacementAst = replacementAst;
+    public ReplaceAstVisitor(Func<Ast?, bool> predicate, Func<T, T?> replacementFunc) {
+      _predicate = predicate;
+      _replacementFunc = replacementFunc;
     }
 
     public object? VisitAttribute(AttributeAst attributeAst) {
@@ -335,8 +347,8 @@ public static class CompilerAstExtensions {
     }
 
     private T? VisitElement<T>(T? element) where T : Ast {
-      if (ReplaceIfSameRef(element, out var newElement)) {
-        return newElement as T;
+      if (ReplaceAstIfMatches(element, out var newElement)) {
+        return newElement as T ?? element!.Copy() as T;
       }
 
       return element?.Visit(this) as T ?? (element?.Copy() as T)!;
@@ -356,11 +368,11 @@ public static class CompilerAstExtensions {
       return newElements;
     }
 
-    private bool ReplaceIfSameRef(Ast? ast, out Ast? replacementAst) {
+    private bool ReplaceAstIfMatches(Ast? ast, out Ast? replacementAst) {
       replacementAst = null;
 
-      if (ReferenceEquals(ast, _astToReplace)) {
-        replacementAst = _replacementAst;
+      if (_predicate.Invoke(ast)) {
+        replacementAst = _replacementFunc.Invoke((T) ast);
         return true;
       }
 
