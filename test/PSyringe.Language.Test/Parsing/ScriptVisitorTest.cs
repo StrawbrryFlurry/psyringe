@@ -88,8 +88,8 @@ public class ScriptVisitorTest {
   }
 
 
-  private ScriptVisitor MakeVisitorAndVisitScript(string script) {
-    var visitor = new ScriptVisitor();
+  private ScriptParserVisitor MakeVisitorAndVisitScript(string script) {
+    var visitor = new ScriptParserVisitor();
     var ast = GetAst(script);
     visitor.Visit(ast);
     return visitor;

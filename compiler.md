@@ -11,7 +11,7 @@ $script:ɵɵprov_<Scope>_<Target Name>_inj_<Provider Name>
 $script:ɵɵprov_GLOBAL_Logger_inj_ILogger
 ```
 Where:
-- `<SCOPE>` is either the name of the function or `GLOBAL` if the variable is part of the global scope.
+- `<Scope>` is either the name of the function or `GLOBAL` if the variable is part of the global scope.
 - `<Target Name>` is the name of the variable / parameter into which the provider will be injected.
 - `<Provider Name>` is the name of the provider.
 

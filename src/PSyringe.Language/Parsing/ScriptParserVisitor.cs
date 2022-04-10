@@ -5,7 +5,7 @@ using PSyringe.Language.Extensions;
 
 namespace PSyringe.Language.Parsing;
 
-public class ScriptVisitor : AstVisitor2, IScriptVisitor {
+public class ScriptParserVisitor : AstVisitor2, IScriptVisitor {
   private readonly AstVisitAction _continue = AstVisitAction.Continue;
   public readonly List<UsingStatementAst> UsingStatements = new();
 

@@ -3,10 +3,9 @@ using PSyringe.Common.Language.Parsing;
 
 namespace PSyringe.Language.Compiler;
 
-public class Script : IScript {
-  public IScriptElement Element { get; }
+public class CompiledScript : ICompiledScript {
+  public IScriptElement ScriptElement { init; get; }
   public IList<IScriptVariableDependency> Dependencies { get; } = new List<IScriptVariableDependency>();
-  public string Name { get; }
 
   public string GetScriptBlockText() {
     throw new NotImplementedException();

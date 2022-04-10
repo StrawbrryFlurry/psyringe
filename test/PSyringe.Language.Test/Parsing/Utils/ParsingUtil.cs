@@ -10,7 +10,7 @@ public class ParsingUtil {
     PrepareScript(ref script);
     return ParseScriptBlock(script);
   }
-  
+
   private static ScriptBlockAst ParseScriptBlock(string script) {
     var ast = Parser.ParseInput(script, out var tokens, out var errors);
     return ast;
@@ -18,7 +18,7 @@ public class ParsingUtil {
 
   public static IScriptElement ParseScriptUsingPSyringeParser(string script) {
     var factory = new ElementFactory();
-    var visitor = new ScriptVisitor();
+    var visitor = new ScriptParserVisitor();
     var parser = new ScriptParser(factory);
 
     return parser.Parse(script, visitor);
@@ -30,12 +30,12 @@ public class ParsingUtil {
   private static void PrepareScript(ref string script) {
     ScriptParser.PrependAssemblyReference(ref script);
   }
-  
+
   public static AttributedExpressionAst GetAttributedExpressionAstFromScript(string script) {
     var ast = ParseScript(script);
-    return  GetAttributedExpressionFromScriptBlock(ast);
+    return GetAttributedExpressionFromScriptBlock(ast);
   }
-  
+
   private static AttributedExpressionAst GetAttributedExpressionFromScriptBlock(ScriptBlockAst ast) {
     var statementAst = ast.EndBlock.Statements.FirstOrDefault();
     AttributedExpressionAst attributedExpressionAst = null;

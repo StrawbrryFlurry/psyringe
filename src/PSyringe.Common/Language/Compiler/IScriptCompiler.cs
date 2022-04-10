@@ -12,5 +12,5 @@ public interface IScriptCompiler {
   /// <param name="scriptElement"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
-  public IScript CompileScriptElement(IScriptElement scriptElement);
+  public ICompiledScript CompileScriptElement(IScriptElement scriptElement);
 }
