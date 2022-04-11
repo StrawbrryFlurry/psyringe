@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Management.Automation.Language;
 using FluentAssertions;
+using PSyringe.Common.Language.Elements;
 using PSyringe.Common.Language.Parsing;
 using PSyringe.Common.Language.Parsing.Elements;
 using PSyringe.Common.Test.Scripts;
@@ -30,98 +31,79 @@ public class ScriptParserTest {
   }
 
   [Fact]
-  public void AddStartupFunctionIfDefined_SetsStartupFunctionToScript_WhenScriptHasStartupFunction() {
+  public void AddAllFunctionDefinitionElementsToScript_AddsStartupFunctionToScript_WhenScriptHasStartupFunction() {
     MakeParserAndParse(ScriptTemplates.WithStartupFunction, out var script);
 
-    script.StartupFunction.Should().BeAssignableTo<IStartupFunctionElement>();
+    script.Elements.First().Should().BeAssignableTo<IStartupFunctionElement>();
   }
 
   [Fact]
-  public void AddStartupFunctionIfDefined_DoesNotSetAnythingToScript_WhenScriptHasNoStartupFunctionDefined() {
+  public void AddAllFunctionDefinitionElementsToScript_AddsInjectionSiteToScript_WhenScriptHasInjectionSite() {
     MakeParserAndParse(ScriptTemplates.WithInjectionSiteFunction, out var script);
 
-    script.StartupFunction.Should().BeNull();
+    script.Elements.First().Should().BeAssignableTo<IInjectionSiteElement>();
   }
 
   [Fact]
-  public void AddAllInjectionSiteElementsToScript_AddsInjectionSiteToScript_WhenScriptHasInjectionSite() {
-    MakeParserAndParse(ScriptTemplates.WithInjectionSiteFunction, out var script);
-
-    script.InjectionSiteElements.Should().NotBeEmpty();
-  }
-
-  [Fact]
-  public void AddAllInjectionSiteElementsToScript_AddsParametersToSite_WhenScriptHasParameters() {
-    MakeParserAndParse(ScriptTemplates.WithInjectParameterFunction_NoTarget, out var script);
-
-    var site = script.InjectionSiteElements.First();
-    site.Parameters.Should().NotBeEmpty();
-  }
-
-  [Fact]
-  public void AddAllInjectElementsToScript_AddsInjectVariableToScript_WhenScriptHasInjectVariableExpression() {
+  public void
+    AddAllVariableExpressionElementsToScript_AddsInjectVariableToScript_WhenScriptHasInjectVariableExpression() {
     MakeParserAndParse(ScriptTemplates.WithInjectVariableExpression_NoTarget, out var script);
 
-    script.InjectVariableElements.Should().NotBeEmpty();
+    script.Elements.First().Should().BeAssignableTo<IInjectElement>();
   }
 
 
   [Fact]
-  public void AddAllInjectElementsToScript_AddsInjectVariableToScript_WhenScriptHasInjectVariableAssignment() {
+  public void
+    AddAllVariableExpressionElementsToScript_AddsInjectVariableToScript_WhenScriptHasInjectVariableAssignment() {
     MakeParserAndParse(ScriptTemplates.WithInjectVariableAssigment_NoTarget, out var script);
 
-    script.InjectVariableElements.Should().NotBeEmpty();
+    script.Elements.First().Should().BeAssignableTo<IInjectElement>();
   }
 
 
   [Fact]
-  public void AddAllInjectElementsToScript_AddsInjectCredentialToScript_WhenScriptHasInjectCredential() {
+  public void AddAllVariableExpressionElementsToScript_AddsInjectCredentialToScript_WhenScriptHasInjectCredential() {
     MakeParserAndParse(ScriptTemplates.WithInjectCredentialVariable_NoTarget, out var script);
 
-    script.InjectCredentialElements.Should().NotBeEmpty();
+    script.Elements.First().Should().BeAssignableTo<IInjectSecretElement>();
   }
 
   [Fact]
-  public void AddAllInjectElementsToScript_AddsInjectTemplateToScript_WhenScriptHasInjectTemplate() {
-    MakeParserAndParse(ScriptTemplates.WithInjectTemplateAttribute_NoTarget, out var script);
-
-    script.InjectTemplateElements.Should().NotBeEmpty();
-  }
-
-  [Fact]
-  public void AddAllInjectElementsToScript_AddsInjectDatabaseToScript_WhenScriptHasInjectDatabase() {
+  public void AddAllVariableExpressionElementsToScript_AddsInjectDatabaseToScript_WhenScriptHasInjectDatabase() {
     MakeParserAndParse(ScriptTemplates.WithInjectDatabaseVariable_ConnectionString, out var script);
 
-    script.InjectDatabaseElements.Should().NotBeEmpty();
+    script.Elements.First().Should().BeAssignableTo<IInjectDatabaseElement>();
   }
 
 
   [Fact]
-  public void AddAllInjectElementsToScript_AddsInjectConstantToScript_WhenScriptHasInjectConstant() {
+  public void AddAllVariableExpressionElementsToScript_AddsInjectConstantToScript_WhenScriptHasInjectConstant() {
     MakeParserAndParse(ScriptTemplates.WithInjectConstantVariable_NoTarget, out var script);
 
-    script.InjectConstantElements.Should().NotBeEmpty();
+    script.Elements.First().Should().BeAssignableTo<IInjectConstantElement>();
   }
 
   [Fact]
-  public void AddAllCallbackElementsToScript_AddsOnErrorCallbackToScript_WhenScriptHasOnErrorCallbackFn() {
+  public void AddAllFunctionDefinitionElementsToScript_AddsOnErrorCallbackToScript_WhenScriptHasOnErrorCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithOnErrorFunction, out var script);
 
-    script.OnErrorCallbacks.Should().NotBeEmpty();
+    script.Elements.First().Should().BeAssignableTo<IOnErrorCallbackElement>();
   }
 
   [Fact]
-  public void AddAllCallbackElementsToScript_AddsOnLoadedCallbackToScript_WhenScriptHasOnLoadedCallbackFn() {
+  public void AddAllFunctionDefinitionElementsToScript_AddsOnLoadedCallbackToScript_WhenScriptHasOnLoadedCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithOnLoadedFunction, out var script);
 
-    script.OnLoadCallbacks.Should().NotBeEmpty();
+    script.Elements.First().Should().BeAssignableTo<IOnLoadedCallbackElement>();
   }
 
   [Fact]
-  public void AddAllCallbackElementsToScript_AddsBeforeUnloadCallbackToScript_WhenScriptHasBeforeUnloadCallbackFn() {
+  public void
+    AddAllFunctionDefinitionElementsToScript_AddsBeforeUnloadCallbackToScript_WhenScriptHasBeforeUnloadCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithBeforeUnloadFunction, out var script);
 
-    script.BeforeUnloadCallbacks.Should().NotBeEmpty();
+    script.Elements.First().Should().BeAssignableTo<IBeforeUnloadCallbackElement>();
   }
 
   private ScriptParser MakeParserAndParse(string script) {

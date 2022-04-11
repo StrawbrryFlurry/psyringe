@@ -1,10 +1,9 @@
 using System.Management.Automation.Language;
 using System.Text.RegularExpressions;
-using PSyringe.Common.Language.Parsing.Elements.Properties;
 
 namespace PSyringe.Language.Elements.Properties;
 
-public class ParameterInjectionTarget : IInjectionTarget {
+public class ParameterInjectionTarget {
   public AttributedExpressionAst ast;
 
   public ParameterInjectionTarget(AttributedExpressionAst ast) {
@@ -23,6 +22,7 @@ public class ParameterInjectionTarget : IInjectionTarget {
       return variableExpression.VariablePath.UserPath;
     }
 
+    // If the path is "qualified", remove the scope name "$script:xxx".
     return new Regex(".*:").Replace(variableExpression.VariablePath.UserPath, "", 1);
   }
 }

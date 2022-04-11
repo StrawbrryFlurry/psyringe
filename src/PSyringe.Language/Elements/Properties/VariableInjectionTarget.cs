@@ -1,14 +1,12 @@
 using System.Management.Automation.Language;
-using PSyringe.Common.Language.Attributes;
-using PSyringe.Common.Language.Parsing.Elements.Properties;
 using PSyringe.Language.Extensions;
 using PSyringe.Language.TypeLoader;
 
 namespace PSyringe.Language.Elements.Properties;
 
-public class VariableInjectionTarget : IInjectionTarget {
-  public readonly AttributeAst Attribute;
+public class VariableInjectionTarget {
   private readonly AttributedExpressionAst _ast;
+  public readonly AttributeAst Attribute;
 
   public VariableInjectionTarget(AttributedExpressionAst ast) {
     _ast = ast;
@@ -16,7 +14,7 @@ public class VariableInjectionTarget : IInjectionTarget {
     // TypeConstraint as their attribute so we can
     // safely assume that the attribute of the expression
     // is an AttributeAst. 
-    Attribute = (AttributeAst)_ast.Attribute;
+    Attribute = (AttributeAst) _ast.Attribute;
   }
 
   public bool HasDefaultValue() {
@@ -26,15 +24,15 @@ public class VariableInjectionTarget : IInjectionTarget {
     var isPartOfAssignment = GetVariableAssignmentStatement() is not null;
     return isPartOfAssignment;
   }
-  
+
   private AssignmentStatementAst? GetVariableAssignmentStatement() {
     return _ast.GetAstInTreeAssignableToType<AssignmentStatementAst>();
   }
 
-  public T GetInjectAttributeInstance<T>() where T : Attribute, IInjectionTargetAttribute {
+  public T GetInjectAttributeInstance<T>() where T : Attribute {
     return AttributeTypeLoader.CreateAttributeInstanceFromAst<T>(Attribute);
   }
-  
+
   public VariableExpressionAst? GetAttributedVariableExpression() {
     return _ast.GetAstInTreeAssignableToType<VariableExpressionAst>();
   }
@@ -43,7 +41,7 @@ public class VariableInjectionTarget : IInjectionTarget {
     var typeConstraintExpressionAst = GetTypeConstraintAst();
     return typeConstraintExpressionAst?.GetAttributeType();
   }
-  
+
   private TypeConstraintAst? GetTypeConstraintAst() {
     var convertExpressionAst = _ast.GetAstInTreeAssignableToType<ConvertExpressionAst>();
     return convertExpressionAst?.Type;

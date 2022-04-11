@@ -1,11 +1,12 @@
 using System.Management.Automation.Language;
+using PSyringe.Common.Language.Elements;
 using PSyringe.Common.Language.Parsing.Elements;
 using PSyringe.Language.Attributes;
 
 namespace PSyringe.Language.Elements;
 
 public class InjectionSiteElement : IInjectionSiteElement {
-  private readonly List<IInjectionSiteParameter> _parameters = new();
+  private readonly List<IInjectParameterElement> _parameters = new();
 
   public InjectionSiteElement(FunctionDefinitionAst ast) {
     Ast = ast;
@@ -19,9 +20,9 @@ public class InjectionSiteElement : IInjectionSiteElement {
 
   public FunctionDefinitionAst Ast { get; }
 
-  public IEnumerable<IInjectionSiteParameter> Parameters => _parameters;
+  public IEnumerable<IInjectParameterElement> Parameters => _parameters;
 
-  public void AddParameter(IInjectionSiteParameter parameter) {
-    _parameters.Add(parameter);
+  public void AddParameter(IInjectParameterElement parameterElement) {
+    _parameters.Add(parameterElement);
   }
 }

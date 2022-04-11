@@ -3,8 +3,8 @@ using PSyringe.Common.Language.Parsing.Elements;
 
 namespace PSyringe.Language.Elements;
 
-public class OnLoadCallbackElement : IOnLoadCallbackElement {
-  public OnLoadCallbackElement(FunctionDefinitionAst ast) {
+public class OnLoadedCallbackElement : IOnLoadedCallbackElement {
+  public OnLoadedCallbackElement(FunctionDefinitionAst ast) {
     Ast = ast;
   }
 

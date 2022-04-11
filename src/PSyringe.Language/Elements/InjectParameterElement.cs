@@ -1,12 +1,12 @@
 using System.Management.Automation.Language;
-using PSyringe.Common.Language.Parsing.Elements;
+using PSyringe.Common.Language.Elements;
 
 namespace PSyringe.Language.Elements;
 
 //  TODO: Nested AttributedExpressions
 // [ParameterDescription("Foo Parameter")][InjectParameter("Foo")]$Foo;
-public class InjectionSiteParameterElement : IInjectionSiteParameter {
-  public InjectionSiteParameterElement(ParameterAst ast) {
+public class InjectParameterElement : IInjectParameterElement {
+  public InjectParameterElement(ParameterAst ast) {
     Ast = ast;
     Target ??= ast.Name.VariablePath.ToString();
   }

@@ -1,8 +1,6 @@
-using System.Linq;
 using System.Management.Automation.Language;
 using FluentAssertions;
 using PSyringe.Common.Providers;
-using PSyringe.Common.Test.Scripts;
 using PSyringe.Language.Attributes;
 using PSyringe.Language.Elements.Properties;
 using PSyringe.Language.Test.Parsing.Utils;
@@ -22,7 +20,7 @@ public class VariableInjectionTargetTest {
   public void HasDefaultValue_ReturnsFalse_WhenVariableIsNotPartOfAssignmentExpression() {
     var sut = MakeInjectionTargetFromAttributedExpressionInScript(
       "[Inject()]$Variable;"
-      );
+    );
 
     sut.HasDefaultValue().Should().BeFalse();
   }
@@ -53,7 +51,7 @@ public class VariableInjectionTargetTest {
 
     sut.GetVariableTypeConstraint().Should().Be<ILogger>();
   }
-  
+
   [Fact]
   public void GetVariableTypeConstraint_ReturnsTypeConstraint_WhenTypeConstraintComesBeforeAttribute() {
     var sut = MakeInjectionTargetFromAttributedExpressionInScript(
@@ -62,7 +60,7 @@ public class VariableInjectionTargetTest {
 
     sut.GetVariableTypeConstraint().Should().Be<ILogger>();
   }
-  
+
   [Fact]
   public void GetInjectAttributeInstance_ReturnsAttributeInstanceWithExplicitTarget_WhenVariableHasExplicitTarget() {
     var sut = MakeInjectionTargetFromAttributedExpressionInScript(
@@ -70,8 +68,8 @@ public class VariableInjectionTargetTest {
     );
 
     var injectAttribute = sut.GetInjectAttributeInstance<InjectAttribute>();
-    
-    injectAttribute.TargetType.Should().Be(typeof(ILogger));
+
+    injectAttribute.Provider.Type.Should().Be(typeof(ILogger));
   }
 
   [Fact]
@@ -79,10 +77,10 @@ public class VariableInjectionTargetTest {
     var sut = MakeInjectionTargetFromAttributedExpressionInScript(
       "[Inject(Target = 'LoggerProvider')]$Variable = 'value'"
     );
-    
+
     sut.GetAttributedVariableExpression().Should().BeOfType<VariableExpressionAst>();
   }
-  
+
   private VariableInjectionTarget MakeInjectionTargetFromAttributedExpressionInScript(string script) {
     var attributedVariableExpressionAst = ParsingUtil.GetAttributedExpressionAstFromScript(script);
     return new VariableInjectionTarget(attributedVariableExpressionAst!);

@@ -1,4 +1,6 @@
 using System.Management.Automation.Language;
+using System.Reflection;
+using PSyringe.Common.Language.Attributes;
 
 namespace PSyringe.Language.Extensions;
 
@@ -21,21 +23,24 @@ public static class AttributeAstExtension {
     return ast.TypeName.GetReflectionType();
   }
 
-  public static bool ContainsAttributeAssignableToType<T>(this IEnumerable<AttributeBaseAst> attributes) {
-    return attributes.Any(IsAssignableToType<T>);
+  public static bool CanBeUsedForType(this AttributeBaseAst ast, PSAttributeTargets target) {
+    var attributeType = ast.GetAttributeType();
+    var psAttributeUsage = attributeType?.GetCustomAttribute<PSAttributeUsageAttribute>();
+
+    return psAttributeUsage is not null && psAttributeUsage.Target.HasFlag(target);
   }
-  
+
   /// <summary>
-  /// Returns the child of a nested attributed expression e.g.
-  /// [Inject()][LogExpression()]"SomeExpression" if that child
-  /// is assignable to type T
+  ///   Returns the child of a nested attributed expression e.g.
+  ///   [Inject()][LogExpression()]"SomeExpression" if that child
+  ///   is assignable to type T
   /// </summary>
   /// <param name="ast"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
   public static T? GetNestedChildAssignableToType<T>(this AttributedExpressionAst? ast) where T : Ast {
     Ast? currentAst = ast;
-    
+
     while (currentAst is not null) {
       switch (currentAst) {
         case T targetAst:
@@ -50,11 +55,11 @@ public static class AttributeAstExtension {
 
     return null;
   }
-  
+
   /// <summary>
-  /// Returns the direct parent of a nested attributed expression e.g.
-  /// "ParentAst.Child" { [Inject()][LogExpression()]"SomeExpression" }
-  /// if that parent is assignable to type T
+  ///   Returns the direct parent of a nested attributed expression e.g.
+  ///   "ParentAst.Child" { [Inject()][LogExpression()]"SomeExpression" }
+  ///   if that parent is assignable to type T
   /// </summary>
   /// <param name="ast"></param>
   /// <typeparam name="T"></typeparam>
@@ -76,14 +81,13 @@ public static class AttributeAstExtension {
 
     return null;
   }
-  
+
   /// <summary>
-  /// Traverses the ast's children's and parent's AttributedExpressionAsts
-  /// checking if it's type is assignable to the specified type. Also
-  /// accepts matches for a direct parent, child or itself of an AttributedExpressionAst.
-  ///
-  /// Used to find related asts in nested expressions like this:
-  /// <code>
+  ///   Traverses the ast's children's and parent's AttributedExpressionAsts
+  ///   checking if it's type is assignable to the specified type. Also
+  ///   accepts matches for a direct parent, child or itself of an AttributedExpressionAst.
+  ///   Used to find related asts in nested expressions like this:
+  ///   <code>
   /// [Inject([ILogger])][LogExpression()][ILogger]$Logger
   /// </code>
   /// </summary>

@@ -1,56 +1,49 @@
 using System.Management.Automation.Language;
+using System.Reflection;
+using System.Runtime.Serialization;
+using PSyringe.Common.Language.Attributes;
 using PSyringe.Common.Language.Parsing;
-using PSyringe.Common.Language.Parsing.Elements;
+using PSyringe.Common.Language.Parsing.Elements.Base;
 using PSyringe.Language.Elements;
 
 namespace PSyringe.Language.Parsing;
 
 public class ElementFactory : IElementFactory {
+  private readonly MethodInfo _createElementMethodInfo;
+
+  public ElementFactory() {
+    // The `ICanCreateAssociatedElement` interface is
+    // the base type for all PowerShell attributes that
+    // are provided with PSyringe. It has a single method
+    // that all these attributes inherit to create the
+    // element for it's associated script element.
+    //
+    // E.g. InjectAttribute.CreateElement => InjectElement
+    //
+    // We store the MethodInfo in this property such that
+    // we don't need to do reflection every time we need
+    // to create an element.
+    _createElementMethodInfo = typeof(ICanCreateAssociatedElement<>).GetMethods().First();
+  }
+
   public IScriptElement CreateScript(ScriptBlockAst ast) {
     return new ScriptElement(ast);
   }
 
-  public IInjectionSiteElement CreateInjectionSite(FunctionDefinitionAst functionDefinitionAst) {
-    return new InjectionSiteElement(functionDefinitionAst);
+  public T CreateElement<T, TA>(TA ast, Type attribute) where T : IElement<TA> where TA : Ast {
+    var instance = MakeDummyMethodTarget(attribute);
+    var method = GetCreateElementMethod(attribute);
+
+    var createElementArgs = new object[] {ast};
+
+    return (T) method.Invoke(instance, createElementArgs)!;
   }
 
-  public IInjectionSiteParameter CreateInjectionSiteParameter(ParameterAst parameterAst) {
-    return new InjectionSiteParameterElement(parameterAst);
+  private object MakeDummyMethodTarget(Type type) {
+    return FormatterServices.GetUninitializedObject(type);
   }
 
-  public IStartupFunctionElement CreateStartupFunction(FunctionDefinitionAst functionDefinitionAst) {
-    return new StartupFunctionElement(functionDefinitionAst);
-  }
-
-  public IInjectVariableElement CreateInjectVariable(AttributedExpressionAst attributedExpressionAst) {
-    return new InjectVariableElement(attributedExpressionAst);
-  }
-
-  public IInjectCredentialElement CreateInjectCredential(AttributedExpressionAst attributedExpressionAst) {
-    return new InjectCredentialElement(attributedExpressionAst);
-  }
-
-  public IInjectDatabaseElement CreateInjectDatabase(AttributedExpressionAst attributedExpressionAst) {
-    return new InjectDatabaseElement(attributedExpressionAst);
-  }
-
-  public IInjectConstantElement CreateInjectConstant(AttributedExpressionAst attributedExpressionAst) {
-    return new InjectConstantElement(attributedExpressionAst);
-  }
-
-  public IInjectTemplateElement CreateInjectTemplate(AttributedExpressionAst attributedExpressionAst) {
-    return new InjectTemplateElement(attributedExpressionAst);
-  }
-
-  public IBeforeUnloadCallbackElement CreateBeforeUnload(FunctionDefinitionAst functionDefinitionAst) {
-    return new BeforeUnloadCallbackElement(functionDefinitionAst);
-  }
-
-  public IOnLoadCallbackElement CreateOnLoad(FunctionDefinitionAst functionDefinitionAst) {
-    return new OnLoadCallbackElement(functionDefinitionAst);
-  }
-
-  public IOnErrorCallbackElement CreateOnError(FunctionDefinitionAst functionDefinitionAst) {
-    return new OnErrorCallbackElement(functionDefinitionAst);
+  private MethodInfo GetCreateElementMethod(Type attribute) {
+    return attribute.GetMethod(_createElementMethodInfo.Name)!;
   }
 }

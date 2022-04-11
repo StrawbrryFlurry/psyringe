@@ -21,70 +21,57 @@ public class ScriptVisitorTest {
   public void VisitFunctionDefinition_AddsInjectionSite_WhenFunctionIsInjectionSite() {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithInjectionSiteFunction);
 
-    sut.InjectionSites.Should().NotBeEmpty();
+    sut.FunctionDefinitions.Should().NotBeEmpty();
   }
 
   [Fact]
   public void VisitFunctionDefinition_AddsInjectionSite_WhenFunctionIsStartupFunction() {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithStartupFunction);
 
-    sut.InjectionSites.Should().NotBeEmpty();
+    sut.FunctionDefinitions.Should().NotBeEmpty();
   }
 
   [Fact]
   public void VisitFunctionDefinition_AddsCallbackFunction_WhenFunctionIsOnLoaded() {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithOnLoadedFunction);
 
-    sut.CallbackFunctions.Should().NotBeEmpty();
+    sut.FunctionDefinitions.Should().NotBeEmpty();
   }
 
   [Fact]
   public void VisitFunctionDefinition_AddsCallbackFunction_WhenFunctionIsOnError() {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithOnErrorFunction);
 
-    sut.CallbackFunctions.Should().NotBeEmpty();
+    sut.FunctionDefinitions.Should().NotBeEmpty();
   }
 
   [Fact]
   public void VisitFunctionDefinition_AddsCallbackFunction_WhenFunctionIsBeforeUnload() {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithBeforeUnloadFunction);
 
-    sut.CallbackFunctions.Should().NotBeEmpty();
+    sut.FunctionDefinitions.Should().NotBeEmpty();
   }
 
-  [Fact]
-  public void VisitFunctionDefinition_AddsProviderFunction_WhenFunctionProviderFunction() {
-    var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithProvideExpressionAttribute_NoTarget);
-
-    sut.ProvideExpressions.Should().NotBeEmpty();
-  }
 
   [Fact]
   public void VisitAttributedExpression_AddsInjectExpression_WhenExpressionIsInjectVariable() {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithInjectVariableExpression_NoTarget);
 
-    sut.InjectExpressions.Should().NotBeEmpty();
+    sut.AttributedVariableExpressions.Should().NotBeEmpty();
   }
 
   [Fact]
   public void VisitAttributedExpression_AddsInjectExpression_WhenExpressionIsInjectVariableWithDefault() {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithInjectVariableAssigment_NoTarget);
 
-    sut.InjectExpressions.Should().NotBeEmpty();
-  }
-
-  [Fact]
-  public void VisitAttributedExpression_AddsInjectExpression_WhenExpressionIsInjectTemplate() {
-    var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithInjectTemplateAttribute_NoTarget);
-
-    sut.InjectExpressions.Should().NotBeEmpty();
+    sut.AttributedVariableExpressions.Should().NotBeEmpty();
   }
 
   [Fact]
   public void VisitAttributedExpression_AddsInjectExpression_WhenExpressionIsInjectCredential() {
     var sut = MakeVisitorAndVisitScript(ScriptTemplates.WithInjectCredentialVariable_NoTarget);
 
-    sut.InjectExpressions.Should().NotBeEmpty();
+    sut.AttributedVariableExpressions.Should().NotBeEmpty();
   }
 
 
