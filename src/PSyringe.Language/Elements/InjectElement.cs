@@ -9,11 +9,11 @@ public class InjectElement : IInjectElement {
   ///   or a VariableAssignmentExpression
   /// </summary>
   /// <param name="ast"></param>
-  public InjectElement(AttributedExpressionAst ast) {
+  public InjectElement(Ast ast) {
     Ast = ast;
   }
 
-  public AttributedExpressionAst Ast { get; }
+  public Ast Ast { get; }
 
   public bool HasDefaultValue() {
     return false;

@@ -1,6 +1,6 @@
-using System.Management.Automation.Language;
+using PSyringe.Common.Language.Elements.Base;
 
-namespace PSyringe.Common.Language.Parsing.Elements.Base;
+namespace PSyringe.Common.Language.Elements;
 
 /// <summary>
 ///   A base class for all variable-related operations
@@ -9,5 +9,5 @@ namespace PSyringe.Common.Language.Parsing.Elements.Base;
 ///   rather than a VariableExpression. The underlying expression
 ///   will always be a VariableExpression though.
 /// </summary>
-public interface IVariableElement : IElement<AttributedExpressionAst> {
+public interface IVariableElement : IElement {
 }

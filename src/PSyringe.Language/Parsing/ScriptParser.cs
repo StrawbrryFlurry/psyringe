@@ -1,7 +1,8 @@
 using System.Management.Automation.Language;
 using System.Text;
+using PSyringe.Common.Language.Elements;
+using PSyringe.Common.Language.Elements.Base;
 using PSyringe.Common.Language.Parsing;
-using PSyringe.Common.Language.Parsing.Elements.Base;
 using PSyringe.Common.Providers;
 using PSyringe.Language.Attributes;
 
@@ -30,9 +31,9 @@ public class ScriptParser : IScriptParser {
     IScriptElement scriptElement,
     IEnumerable<IAttributedScriptElement<FunctionDefinitionAst>> functionDefinitionAsts
   ) {
-    foreach (var ast in functionDefinitionAsts) {
+    foreach (var functionAst in functionDefinitionAsts) {
       var functionDefinitionElement =
-        ElementFactory.CreateElement<IFunctionElement, FunctionDefinitionAst>(ast.Ast, ast.Attribute);
+        ElementFactory.CreateElement<IFunctionElement, FunctionDefinitionAst>(functionAst);
       scriptElement.AddElement(functionDefinitionElement);
     }
   }
@@ -41,9 +42,9 @@ public class ScriptParser : IScriptParser {
     IScriptElement scriptElement,
     IEnumerable<IAttributedScriptElement<AttributedExpressionAst>> variableExpressionAsts
   ) {
-    foreach (var ast in variableExpressionAsts) {
+    foreach (var variableAst in variableExpressionAsts) {
       var variableExpressionElement =
-        ElementFactory.CreateElement<IVariableElement, AttributedExpressionAst>(ast.Ast, ast.Attribute);
+        ElementFactory.CreateElement<IVariableElement, AttributedExpressionAst>(variableAst);
       scriptElement.AddElement(variableExpressionElement);
     }
   }

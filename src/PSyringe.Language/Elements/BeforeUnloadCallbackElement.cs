@@ -4,9 +4,9 @@ using PSyringe.Common.Language.Elements;
 namespace PSyringe.Language.Elements;
 
 public class BeforeUnloadCallbackElement : IBeforeUnloadCallbackElement {
-  public BeforeUnloadCallbackElement(FunctionDefinitionAst ast) {
+  public BeforeUnloadCallbackElement(Ast ast) {
     Ast = ast;
   }
 
-  public FunctionDefinitionAst Ast { get; }
+  public Ast Ast { get; }
 }

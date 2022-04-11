@@ -13,5 +13,5 @@ public class InjectParameterElement : IInjectParameterElement {
 
   public string Target { get; }
 
-  public ParameterAst Ast { get; }
+  public Ast Ast { get; }
 }

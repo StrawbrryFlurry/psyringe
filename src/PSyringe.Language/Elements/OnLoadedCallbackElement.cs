@@ -8,5 +8,5 @@ public class OnLoadedCallbackElement : IOnLoadedCallbackElement {
     Ast = ast;
   }
 
-  public FunctionDefinitionAst Ast { get; }
+  public Ast Ast { get; }
 }

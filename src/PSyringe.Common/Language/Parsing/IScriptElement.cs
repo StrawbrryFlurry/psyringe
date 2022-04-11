@@ -1,5 +1,5 @@
 using System.Management.Automation.Language;
-using PSyringe.Common.Language.Parsing.Elements.Base;
+using PSyringe.Common.Language.Elements.Base;
 
 namespace PSyringe.Common.Language.Parsing;
 
@@ -9,7 +9,7 @@ namespace PSyringe.Common.Language.Parsing;
 /// </summary>
 public interface IScriptElement {
   public ScriptBlockAst ScriptBlockAst { get; }
-  public IEnumerable<IElement<Ast>> Elements { get; }
+  public IEnumerable<IElement> Elements { get; }
 
-  public void AddElement(IElement<Ast> element);
+  public void AddElement(IElement element);
 }

@@ -9,5 +9,5 @@ public class InjectSecretElement : VariableInjectionTarget, IInjectSecretElement
     Ast = ast;
   }
 
-  public AttributedExpressionAst Ast { get; }
+  public Ast Ast { get; }
 }

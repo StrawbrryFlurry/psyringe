@@ -1,6 +1,6 @@
-using System.Management.Automation.Language;
+using PSyringe.Common.Language.Elements.Base;
 
 namespace PSyringe.Common.Language.Attributes;
 
-public interface IPSyringeAttribute<T> : ICanCreateAssociatedElement<T> where T : Ast {
+public interface IPSyringeAttribute<out T> : ICanCreateAssociatedElement<T> where T : IElement {
 }

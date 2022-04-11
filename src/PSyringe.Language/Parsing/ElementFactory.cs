@@ -1,49 +1,52 @@
 using System.Management.Automation.Language;
-using System.Reflection;
-using System.Runtime.Serialization;
 using PSyringe.Common.Language.Attributes;
+using PSyringe.Common.Language.Elements;
+using PSyringe.Common.Language.Elements.Base;
 using PSyringe.Common.Language.Parsing;
-using PSyringe.Common.Language.Parsing.Elements.Base;
 using PSyringe.Language.Elements;
+using PSyringe.Language.Extensions;
 
 namespace PSyringe.Language.Parsing;
 
 public class ElementFactory : IElementFactory {
-  private readonly MethodInfo _createElementMethodInfo;
+  private readonly string _canCreateAssociatedElementInterfaceName;
 
   public ElementFactory() {
-    // The `ICanCreateAssociatedElement` interface is
-    // the base type for all PowerShell attributes that
-    // are provided with PSyringe. It has a single method
-    // that all these attributes inherit to create the
-    // element for it's associated script element.
-    //
-    // E.g. InjectAttribute.CreateElement => InjectElement
-    //
-    // We store the MethodInfo in this property such that
+    // We store the interface name in this property such that
     // we don't need to do reflection every time we need
     // to create an element.
-    _createElementMethodInfo = typeof(ICanCreateAssociatedElement<>).GetMethods().First();
+    _canCreateAssociatedElementInterfaceName = typeof(ICanCreateAssociatedElement<>).Name;
   }
 
   public IScriptElement CreateScript(ScriptBlockAst ast) {
     return new ScriptElement(ast);
   }
 
-  public T CreateElement<T, TA>(TA ast, Type attribute) where T : IElement<TA> where TA : Ast {
-    var instance = MakeDummyMethodTarget(attribute);
-    var method = GetCreateElementMethod(attribute);
+  public T CreateElement<T, TA>(IAttributedScriptElement<TA> attributedElement) where T : IElement where TA : Ast {
+    // All PSyringe attributes must derive from `IPSyringeAttribute`
+    // which in itself requires a type parameter for `ICanCreateAssociatedElement<>`.
+    // Using the type parameter defined for that interface, we can determine,
+    // which element the attribute needs to create.
+    var attribute = attributedElement.Attribute.GetAttributeType();
+    // Get the generic interface implemented by the attribute
+    var genericCreateElementInterface = attribute?.GetInterface(_canCreateAssociatedElementInterfaceName);
 
-    var createElementArgs = new object[] {ast};
+    if (genericCreateElementInterface is null) {
+      throw new Exception(
+        $"Attribute {attribute.Name} does not implement {_canCreateAssociatedElementInterfaceName} and is therefore not a valid PSyringe Attribute");
+    }
 
-    return (T) method.Invoke(instance, createElementArgs)!;
-  }
+    var ast = attributedElement.Ast;
+    // The `ICanCreateAssociatedElement<>` only takes one type parameter,
+    // which is the type of the element that this attribute creates.
+    // e.g. InjectAttribute implements IPSyringeAttribute<InjectElement>
+    var elementType = genericCreateElementInterface.GetGenericArguments().First();
+    // All elements require get access to their AST node through the constructor.
+    // The constructor of an element should only consist of one parameter, the ast node.
+    // TODO: Determine if IElement should be an abstract class that has a constructor for the Ast node.
+    var elementCtorArgs = new object[] {ast};
 
-  private object MakeDummyMethodTarget(Type type) {
-    return FormatterServices.GetUninitializedObject(type);
-  }
-
-  private MethodInfo GetCreateElementMethod(Type attribute) {
-    return attribute.GetMethod(_createElementMethodInfo.Name)!;
+    var instance = (T) Activator.CreateInstance(elementType, elementCtorArgs)!;
+    return instance;
   }
 }

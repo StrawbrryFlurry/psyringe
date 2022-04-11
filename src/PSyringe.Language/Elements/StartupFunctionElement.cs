@@ -13,7 +13,7 @@ public class StartupFunctionElement : IStartupFunctionElement {
 
   public IEnumerable<IInjectParameterElement> Parameters => _parameters;
 
-  public FunctionDefinitionAst Ast { get; }
+  public Ast Ast { get; }
 
   public void AddParameter(IInjectParameterElement parameterElement) {
     _parameters.Add(parameterElement);

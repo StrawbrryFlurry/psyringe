@@ -18,7 +18,7 @@ public class InjectionSiteElement : IInjectionSiteElement {
 
   public string InjectionScope { get; private set; }
 
-  public FunctionDefinitionAst Ast { get; }
+  public Ast Ast { get; }
 
   public IEnumerable<IInjectParameterElement> Parameters => _parameters;
 

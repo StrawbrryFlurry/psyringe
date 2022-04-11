@@ -1,4 +1,4 @@
-using PSyringe.Common.Language.Parsing.Elements.Base;
+using PSyringe.Common.Language.Elements.Base;
 
 namespace PSyringe.Common.Language.Parsing.Elements;
 

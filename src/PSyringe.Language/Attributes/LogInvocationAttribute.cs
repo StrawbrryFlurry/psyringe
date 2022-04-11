@@ -1,6 +1,4 @@
-using System.Management.Automation.Language;
 using PSyringe.Common.Language.Attributes;
-using PSyringe.Common.Language.Parsing.Elements.Base;
 using static PSyringe.Common.Language.Attributes.PSAttributeTargets;
 
 namespace PSyringe.Language.Attributes;
@@ -17,11 +15,8 @@ namespace PSyringe.Language.Attributes;
 /// // $__PS_INJECTED__LOGGER__PROVIDER__.LogMethodInvocation($MyInvocation.MyCommand.Name);
 /// }
 [PSAttributeUsage(Function)]
-public class LogInvocationAttribute : Attribute, IPSyringeAttribute<FunctionDefinitionAst> {
+public class LogInvocationAttribute : Attribute {
+  // TODO:
   public LogInvocationAttribute(bool IncludeParameters = false) {
-  }
-
-  public IElement<FunctionDefinitionAst> CreateElement(FunctionDefinitionAst ast) {
-    throw new NotImplementedException();
   }
 }

@@ -19,7 +19,7 @@ public static class AttributeAstExtension {
     return attributeType == type;
   }
 
-  public static Type GetAttributeType(this AttributeBaseAst ast) {
+  public static Type? GetAttributeType(this AttributeBaseAst ast) {
     return ast.TypeName.GetReflectionType();
   }
 
