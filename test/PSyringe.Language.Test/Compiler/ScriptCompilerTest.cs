@@ -1,6 +1,6 @@
 using FluentAssertions;
 using PSyringe.Common.Language.Compiler;
-using PSyringe.Common.Language.Parsing;
+using PSyringe.Common.Language.Elements;
 using PSyringe.Language.Compiler;
 using PSyringe.Language.Parsing;
 using Xunit;
@@ -25,7 +25,7 @@ public class ScriptCompilerTest {
 
     var script = sut.CompileScriptElement(scriptElement);
 
-    script.ScriptElement.Should().Be(scriptElement);
+    script.ScriptDefinition.Should().Be(scriptElement);
   }
 
   public void InsertInjectionSites_AddsInjectionSiteFromScript_InCompiledScriptAst() {
@@ -40,7 +40,7 @@ function TestInjectionSite() {
     var script = sut.CompileScriptElement(scriptElement);
   }
 
-  private IScriptElement MakeScriptElement(string script) {
+  private IScriptDefinition MakeScriptElement(string script) {
     var elementFactory = new ElementFactory();
     var parser = new ScriptParser(elementFactory);
     var visitor = new ScriptParserVisitor();

@@ -1,4 +1,4 @@
-using PSyringe.Common.Language.Parsing;
+using PSyringe.Common.Language.Elements;
 
 namespace PSyringe.Common.Language.Compiler;
 
@@ -12,5 +12,5 @@ public interface IScriptCompiler {
   /// <param name="scriptElement"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
-  public ICompiledScript CompileScriptElement(IScriptElement scriptElement);
+  public ICompiledScript CompileScriptElement(IScriptDefinition scriptElement);
 }

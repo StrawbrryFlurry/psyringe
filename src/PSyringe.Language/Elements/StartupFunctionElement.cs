@@ -1,21 +1,17 @@
 using System.Management.Automation.Language;
 using PSyringe.Common.Language.Elements;
-using PSyringe.Common.Language.Parsing.Elements;
 
 namespace PSyringe.Language.Elements;
 
-public class StartupFunctionElement : IStartupFunctionElement {
-  private readonly List<IInjectParameterElement> _parameters = new();
+public class StartupFunctionElement : ScriptElement {
+  private readonly List<InjectParameterElement> _parameters = new();
 
-  public StartupFunctionElement(FunctionDefinitionAst ast) {
-    Ast = ast;
+  public StartupFunctionElement(Ast ast) : base(ast) {
   }
 
-  public IEnumerable<IInjectParameterElement> Parameters => _parameters;
+  public IEnumerable<InjectParameterElement> Parameters => _parameters;
 
-  public Ast Ast { get; }
-
-  public void AddParameter(IInjectParameterElement parameterElement) {
+  public void AddParameter(InjectParameterElement parameterElement) {
     _parameters.Add(parameterElement);
   }
 }

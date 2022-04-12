@@ -2,9 +2,8 @@ using System.Linq;
 using System.Management.Automation.Language;
 using FluentAssertions;
 using PSyringe.Common.Language.Elements;
-using PSyringe.Common.Language.Parsing;
-using PSyringe.Common.Language.Parsing.Elements;
 using PSyringe.Common.Test.Scripts;
+using PSyringe.Language.Elements;
 using PSyringe.Language.Parsing;
 using Xunit;
 
@@ -27,21 +26,21 @@ public class ScriptParserTest {
   public void Parse_CreatesScriptBlockAst_WhenCalled() {
     MakeParserAndParse(ScriptTemplates.EmptyScript, out var scriptElement);
 
-    scriptElement.ScriptBlockAst.Should().BeAssignableTo<ScriptBlockAst>();
+    scriptElement.ScriptBlock.Should().BeAssignableTo<ScriptBlockAst>();
   }
 
   [Fact]
   public void AddAllFunctionDefinitionElementsToScript_AddsStartupFunctionToScript_WhenScriptHasStartupFunction() {
     MakeParserAndParse(ScriptTemplates.WithStartupFunction, out var script);
 
-    script.Elements.First().Should().BeAssignableTo<IStartupFunctionElement>();
+    script.Elements.First().Should().BeOfType<StartupFunctionElement>();
   }
 
   [Fact]
   public void AddAllFunctionDefinitionElementsToScript_AddsInjectionSiteToScript_WhenScriptHasInjectionSite() {
     MakeParserAndParse(ScriptTemplates.WithInjectionSiteFunction, out var script);
 
-    script.Elements.First().Should().BeAssignableTo<IInjectionSiteElement>();
+    script.Elements.First().Should().BeOfType<InjectionSiteElement>();
   }
 
   [Fact]
@@ -49,7 +48,7 @@ public class ScriptParserTest {
     AddAllVariableExpressionElementsToScript_AddsInjectVariableToScript_WhenScriptHasInjectVariableExpression() {
     MakeParserAndParse(ScriptTemplates.WithInjectVariableExpression_NoTarget, out var script);
 
-    script.Elements.First().Should().BeAssignableTo<IInjectElement>();
+    script.Elements.First().Should().BeOfType<InjectElement>();
   }
 
 
@@ -58,7 +57,7 @@ public class ScriptParserTest {
     AddAllVariableExpressionElementsToScript_AddsInjectVariableToScript_WhenScriptHasInjectVariableAssignment() {
     MakeParserAndParse(ScriptTemplates.WithInjectVariableAssigment_NoTarget, out var script);
 
-    script.Elements.First().Should().BeAssignableTo<IInjectElement>();
+    script.Elements.First().Should().BeOfType<InjectElement>();
   }
 
 
@@ -66,14 +65,14 @@ public class ScriptParserTest {
   public void AddAllVariableExpressionElementsToScript_AddsInjectCredentialToScript_WhenScriptHasInjectCredential() {
     MakeParserAndParse(ScriptTemplates.WithInjectCredentialVariable_NoTarget, out var script);
 
-    script.Elements.First().Should().BeAssignableTo<IInjectSecretElement>();
+    script.Elements.First().Should().BeOfType<InjectSecretElement>();
   }
 
   [Fact]
   public void AddAllVariableExpressionElementsToScript_AddsInjectDatabaseToScript_WhenScriptHasInjectDatabase() {
     MakeParserAndParse(ScriptTemplates.WithInjectDatabaseVariable_ConnectionString, out var script);
 
-    script.Elements.First().Should().BeAssignableTo<IInjectDatabaseElement>();
+    script.Elements.First().Should().BeOfType<InjectDatabaseElement>();
   }
 
 
@@ -81,21 +80,21 @@ public class ScriptParserTest {
   public void AddAllVariableExpressionElementsToScript_AddsInjectConstantToScript_WhenScriptHasInjectConstant() {
     MakeParserAndParse(ScriptTemplates.WithInjectConstantVariable_NoTarget, out var script);
 
-    script.Elements.First().Should().BeAssignableTo<IInjectConstantElement>();
+    script.Elements.First().Should().BeOfType<InjectConstantElement>();
   }
 
   [Fact]
   public void AddAllFunctionDefinitionElementsToScript_AddsOnErrorCallbackToScript_WhenScriptHasOnErrorCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithOnErrorFunction, out var script);
 
-    script.Elements.First().Should().BeAssignableTo<IOnErrorCallbackElement>();
+    script.Elements.First().Should().BeOfType<OnErrorCallbackElement>();
   }
 
   [Fact]
   public void AddAllFunctionDefinitionElementsToScript_AddsOnLoadedCallbackToScript_WhenScriptHasOnLoadedCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithOnLoadedFunction, out var script);
 
-    script.Elements.First().Should().BeAssignableTo<IOnLoadedCallbackElement>();
+    script.Elements.First().Should().BeOfType<OnLoadedCallbackElement>();
   }
 
   [Fact]
@@ -103,7 +102,7 @@ public class ScriptParserTest {
     AddAllFunctionDefinitionElementsToScript_AddsBeforeUnloadCallbackToScript_WhenScriptHasBeforeUnloadCallbackFn() {
     MakeParserAndParse(ScriptTemplates.WithBeforeUnloadFunction, out var script);
 
-    script.Elements.First().Should().BeAssignableTo<IBeforeUnloadCallbackElement>();
+    script.Elements.First().Should().BeOfType<BeforeUnloadCallbackElement>();
   }
 
   private ScriptParser MakeParserAndParse(string script) {
@@ -114,7 +113,7 @@ public class ScriptParserTest {
     return parser;
   }
 
-  private ScriptParser MakeParserAndParse(string script, out IScriptElement scriptElement) {
+  private ScriptParser MakeParserAndParse(string script, out IScriptDefinition scriptElement) {
     var visitor = new ScriptParserVisitor();
     var parser = new ScriptParser(_elementFactory);
 

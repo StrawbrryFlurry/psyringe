@@ -1,5 +1,7 @@
+using PSyringe.Common.Language.Elements;
+
 namespace PSyringe.Common.Language.Parsing;
 
 public interface IScriptParser {
-  public IScriptElement Parse(string script, IScriptParserVisitor visitor);
+  public IScriptDefinition Parse(string script, IScriptParserVisitor visitor);
 }

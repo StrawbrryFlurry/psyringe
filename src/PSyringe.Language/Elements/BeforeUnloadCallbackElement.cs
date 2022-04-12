@@ -3,10 +3,7 @@ using PSyringe.Common.Language.Elements;
 
 namespace PSyringe.Language.Elements;
 
-public class BeforeUnloadCallbackElement : IBeforeUnloadCallbackElement {
-  public BeforeUnloadCallbackElement(Ast ast) {
-    Ast = ast;
+public class BeforeUnloadCallbackElement : ScriptElement {
+  public BeforeUnloadCallbackElement(Ast ast) : base(ast) {
   }
-
-  public Ast Ast { get; }
 }

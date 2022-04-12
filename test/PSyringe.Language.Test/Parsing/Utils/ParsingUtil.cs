@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Management.Automation.Language;
-using PSyringe.Common.Language.Parsing;
+using PSyringe.Common.Language.Elements;
 using PSyringe.Language.Parsing;
 
 namespace PSyringe.Language.Test.Parsing.Utils;
@@ -16,7 +16,7 @@ public class ParsingUtil {
     return ast;
   }
 
-  public static IScriptElement ParseScriptUsingPSyringeParser(string script) {
+  public static IScriptDefinition ParseScriptUsingPSyringeParser(string script) {
     var factory = new ElementFactory();
     var visitor = new ScriptParserVisitor();
     var parser = new ScriptParser(factory);

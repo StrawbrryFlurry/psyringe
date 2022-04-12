@@ -1,4 +1,4 @@
-using PSyringe.Common.Language.Parsing;
+using PSyringe.Common.Language.Elements;
 
 namespace PSyringe.Common.Language.Compiler;
 
@@ -9,7 +9,7 @@ public interface ICompiledScript {
   /// </summary>
   public IList<IScriptVariableDependency> Dependencies { get; }
 
-  public IScriptElement ScriptElement { get; }
+  public IScriptDefinition ScriptDefinition { get; }
 
   //  public Task Invoke(IScriptInvocationContext context);
 }

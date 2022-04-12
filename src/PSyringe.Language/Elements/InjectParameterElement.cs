@@ -3,15 +3,7 @@ using PSyringe.Common.Language.Elements;
 
 namespace PSyringe.Language.Elements;
 
-//  TODO: Nested AttributedExpressions
-// [ParameterDescription("Foo Parameter")][InjectParameter("Foo")]$Foo;
-public class InjectParameterElement : IInjectParameterElement {
-  public InjectParameterElement(ParameterAst ast) {
-    Ast = ast;
-    Target ??= ast.Name.VariablePath.ToString();
+public class InjectParameterElement : ScriptElement {
+  public InjectParameterElement(Ast ast) : base(ast) {
   }
-
-  public string Target { get; }
-
-  public Ast Ast { get; }
 }

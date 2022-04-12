@@ -1,6 +1,6 @@
-using PSyringe.Common.Language.Elements.Base;
+using PSyringe.Common.Language.Elements;
 
 namespace PSyringe.Common.Language.Attributes;
 
-public interface IPSyringeAttribute<out T> : ICanCreateAssociatedElement<T> where T : IElement {
+public interface IPSyringeAttribute<out T> : ICanCreateAssociatedElement<T> where T : ScriptElement {
 }

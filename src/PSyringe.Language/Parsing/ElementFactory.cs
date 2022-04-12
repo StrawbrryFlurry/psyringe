@@ -1,7 +1,6 @@
 using System.Management.Automation.Language;
 using PSyringe.Common.Language.Attributes;
 using PSyringe.Common.Language.Elements;
-using PSyringe.Common.Language.Elements.Base;
 using PSyringe.Common.Language.Parsing;
 using PSyringe.Language.Elements;
 using PSyringe.Language.Extensions;
@@ -18,25 +17,25 @@ public class ElementFactory : IElementFactory {
     _canCreateAssociatedElementInterfaceName = typeof(ICanCreateAssociatedElement<>).Name;
   }
 
-  public IScriptElement CreateScript(ScriptBlockAst ast) {
-    return new ScriptElement(ast);
+  public IScriptDefinition CreateScript(ScriptBlockAst ast) {
+    return new ScriptDefinition(ast);
   }
 
-  public T CreateElement<T, TA>(IAttributedScriptElement<TA> attributedElement) where T : IElement where TA : Ast {
+  public ScriptElement CreateElement<T>(IAttributedScriptElement<T> element) where T : Ast {
     // All PSyringe attributes must derive from `IPSyringeAttribute`
     // which in itself requires a type parameter for `ICanCreateAssociatedElement<>`.
     // Using the type parameter defined for that interface, we can determine,
     // which element the attribute needs to create.
-    var attribute = attributedElement.Attribute.GetAttributeType();
+    var attribute = element.Attribute.GetAttributeType();
     // Get the generic interface implemented by the attribute
     var genericCreateElementInterface = attribute?.GetInterface(_canCreateAssociatedElementInterfaceName);
 
     if (genericCreateElementInterface is null) {
       throw new Exception(
-        $"Attribute {attribute.Name} does not implement {_canCreateAssociatedElementInterfaceName} and is therefore not a valid PSyringe Attribute");
+        $"Attribute {element.Attribute.TypeName.Name} does not implement {_canCreateAssociatedElementInterfaceName} and is therefore not a valid PSyringe Attribute");
     }
 
-    var ast = attributedElement.Ast;
+    var ast = element.Ast;
     // The `ICanCreateAssociatedElement<>` only takes one type parameter,
     // which is the type of the element that this attribute creates.
     // e.g. InjectAttribute implements IPSyringeAttribute<InjectElement>
@@ -46,7 +45,7 @@ public class ElementFactory : IElementFactory {
     // TODO: Determine if IElement should be an abstract class that has a constructor for the Ast node.
     var elementCtorArgs = new object[] {ast};
 
-    var instance = (T) Activator.CreateInstance(elementType, elementCtorArgs)!;
+    var instance = (ScriptElement) Activator.CreateInstance(elementType, elementCtorArgs)!;
     return instance;
   }
 }
