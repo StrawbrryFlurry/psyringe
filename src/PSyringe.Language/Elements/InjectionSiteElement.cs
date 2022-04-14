@@ -1,4 +1,5 @@
 using System.Management.Automation.Language;
+using PSyringe.Common.Language.Compiler;
 using PSyringe.Common.Language.Elements;
 using PSyringe.Language.Attributes;
 
@@ -10,6 +11,10 @@ public class InjectionSiteElement : ScriptElement {
   public InjectionSiteElement(Ast ast) : base(ast) {
   }
 
+  public InjectionSiteElement(Ast ast, AttributeAst attribute) : base(ast, attribute) {
+  }
+
+
   public Type SiteDefinitionAttribute { get; set; } = typeof(StartupAttribute);
 
   public string Name { get; }
@@ -20,5 +25,9 @@ public class InjectionSiteElement : ScriptElement {
 
   public void AddParameter(ScriptElement parameterElement) {
     _parameters.Add(parameterElement);
+  }
+
+  public override void TransformAst(IAstTransformer transformer) {
+    throw new NotImplementedException();
   }
 }

@@ -45,7 +45,9 @@ public abstract class ScriptElement {
   public AttributeAst? Attribute { get; }
 
   /// <summary>
-  ///   Method used by the compiler to update the ScriptBlockAst
+  ///   Method used by the compiler to update the ScriptBlockAst of the
+  ///   input script for this element. The AttributeAst of this element in the
+  ///   ScriptBlock will already be removed by the compiler.
   /// </summary>
-  public abstract Ast TransformAst(IAstTransformer transformer);
+  public abstract void TransformAst(IAstTransformer transformer);
 }

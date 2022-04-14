@@ -41,10 +41,10 @@ public class ElementFactory : IElementFactory {
     // which is the type of the element that this attribute creates.
     // e.g. InjectAttribute implements IPSyringeAttribute<InjectElement>
     var elementType = genericCreateElementInterface.GetGenericArguments().First();
+
     // All elements extend `ScriptElement` whose constructor only takes 
     // an Ast. That Ast being the attributed script element the parser
     // associated the element with.
-
     var ctorWithAstAndAttribute = elementType.GetConstructor(new[] {typeof(Ast), typeof(AttributeAst)});
 
     if (ctorWithAstAndAttribute is not null) {
