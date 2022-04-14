@@ -14,6 +14,11 @@ public class ScriptParser : IScriptParser {
     ElementFactory = elementFactory;
   }
 
+  public IScriptDefinition Parse(string script) {
+    var visitor = new ScriptParserVisitor();
+    return Parse(script, visitor);
+  }
+
   public IScriptDefinition Parse(string script, IScriptParserVisitor visitor) {
     var scriptBlockAst = PrepareAndParseScript(script);
     visitor.Visit(scriptBlockAst);

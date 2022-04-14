@@ -1,4 +1,5 @@
 using System.Management.Automation.Language;
+using System.Reflection;
 using PSyringe.Common.Language.Attributes;
 using PSyringe.Common.Language.Elements;
 using PSyringe.Common.Language.Parsing;
@@ -40,12 +41,29 @@ public class ElementFactory : IElementFactory {
     // which is the type of the element that this attribute creates.
     // e.g. InjectAttribute implements IPSyringeAttribute<InjectElement>
     var elementType = genericCreateElementInterface.GetGenericArguments().First();
-    // All elements require get access to their AST node through the constructor.
-    // The constructor of an element should only consist of one parameter, the ast node.
-    // TODO: Determine if IElement should be an abstract class that has a constructor for the Ast node.
-    var elementCtorArgs = new object[] {ast};
+    // All elements extend `ScriptElement` whose constructor only takes 
+    // an Ast. That Ast being the attributed script element the parser
+    // associated the element with.
 
-    var instance = (ScriptElement) Activator.CreateInstance(elementType, elementCtorArgs)!;
-    return instance;
+    var ctorWithAstAndAttribute = elementType.GetConstructor(new[] {typeof(Ast), typeof(AttributeAst)});
+
+    if (ctorWithAstAndAttribute is not null) {
+      return CreateElementInstance(ctorWithAstAndAttribute, ast, element.Attribute);
+    }
+
+    var ctorWithAst = elementType.GetConstructor(new[] {typeof(Ast)});
+
+    if (ctorWithAst is not null) {
+      return CreateElementInstance(ctorWithAst, ast);
+    }
+
+    throw new Exception(
+      "Could not find a constructor overload that matches the parameters required by ScriptElement. " +
+      "Descendants of ScriptElement must not have a different constructor signature than the ones supported by " +
+      "ScriptElement.");
+  }
+
+  private ScriptElement CreateElementInstance(ConstructorInfo ctor, params object[] ctorArgs) {
+    return (ScriptElement) ctor.Invoke(ctorArgs);
   }
 }

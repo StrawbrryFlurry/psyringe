@@ -1,3 +1,4 @@
+using System.Management.Automation;
 using PSyringe.Common.DI;
 
 namespace PSyringe.Common.Language.Compiler;
@@ -13,9 +14,9 @@ public interface IScriptVariableDependency {
   public IScriptProvider Provider { get; }
 
   /// <summary>
-  ///   The name of the variable that the provider will be injected into.
+  ///   The variable that the provider will be injected into.
   /// </summary>
-  public string VariableName { get; }
+  public PSVariable Variable { get; }
 
   public bool Optional { get; }
 }

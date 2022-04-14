@@ -1,7 +1,9 @@
+using System.Management.Automation.Language;
 using FluentAssertions;
 using PSyringe.Common.Language.Compiler;
 using PSyringe.Common.Language.Elements;
 using PSyringe.Language.Compiler;
+using PSyringe.Language.Extensions;
 using PSyringe.Language.Parsing;
 using Xunit;
 
@@ -13,7 +15,7 @@ public class ScriptCompilerTest {
     var scriptElement = MakeScriptElement("[Inject([ILogger])]$Logger;");
     var sut = new ScriptCompiler();
 
-    var compiledScript = sut.CompileScriptElement(scriptElement);
+    var compiledScript = sut.CompileScriptDefinition(scriptElement);
 
     compiledScript.Should().BeAssignableTo<ICompiledScript>();
   }
@@ -23,28 +25,31 @@ public class ScriptCompilerTest {
     var scriptElement = MakeScriptElement("[Inject([ILogger])]$Logger;");
     var sut = new ScriptCompiler();
 
-    var script = sut.CompileScriptElement(scriptElement);
+    var script = sut.CompileScriptDefinition(scriptElement);
 
     script.ScriptDefinition.Should().Be(scriptElement);
   }
 
-  public void InsertInjectionSites_AddsInjectionSiteFromScript_InCompiledScriptAst() {
+  [Fact]
+  public void UpdateFunctionDefinitions_RemovesAllPSyringeAttributes_InCompiledScriptAst() {
     var scriptElement = MakeScriptElement(@"
 function TestInjectionSite() {
   [InjectionSite()]
   param()
 }
 ");
-    var sut = new ScriptCompiler();
 
-    var script = sut.CompileScriptElement(scriptElement);
+    var sut = new ScriptCompiler();
+    var script = sut.CompileScriptDefinition(scriptElement);
+
+    var functionDefinition = script.ScriptBlock.FindOfType<FunctionDefinitionAst>()!;
+    functionDefinition.GetAttributes().Should().BeEmpty();
   }
 
   private IScriptDefinition MakeScriptElement(string script) {
     var elementFactory = new ElementFactory();
     var parser = new ScriptParser(elementFactory);
-    var visitor = new ScriptParserVisitor();
 
-    return parser.Parse(script, visitor);
+    return parser.Parse(script);
   }
 }

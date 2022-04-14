@@ -9,8 +9,7 @@ public interface IScriptCompiler {
   ///   required by the script.
   ///   The returned pipeline can be invoked through the Runspace host.
   /// </summary>
-  /// <param name="scriptElement"></param>
-  /// <typeparam name="T"></typeparam>
+  /// <param name="scriptDefinition"></param>
   /// <returns></returns>
-  public ICompiledScript CompileScriptElement(IScriptDefinition scriptElement);
+  public ICompiledScript CompileScriptDefinition(IScriptDefinition scriptDefinition);
 }
