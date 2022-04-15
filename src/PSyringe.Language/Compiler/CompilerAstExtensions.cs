@@ -28,7 +28,7 @@ public static class CompilerAstExtensions {
     return (T) ast.Copy();
   }
 
-  public static IEnumerable<T> FindAllOfType<T>(this T ast) where T : Ast {
+  public static IEnumerable<T> FindAllOfType<T>(this Ast ast) where T : Ast {
     return (IEnumerable<T>) ast.FindAll(a => a is T, true);
   }
 

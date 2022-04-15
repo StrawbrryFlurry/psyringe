@@ -5,18 +5,28 @@ using PSyringe.Common.Language.Elements;
 namespace PSyringe.Language.Compiler;
 
 public class ScriptCompiler : IScriptCompiler {
-  public ICompiledScript CompileScriptDefinition(IScriptDefinition scriptDefinition) {
+  public ICompiledScript CompileScriptDefinition(IScriptDefinition definition) {
     var script = new CompiledScript {
-      ScriptDefinition = scriptDefinition
+      ScriptDefinition = definition,
+      Dependencies = new List<IScriptVariableDependency>()
     };
 
-    var functionElements = scriptDefinition.Elements.Where(e => e.Equals(1));
+    var sb = definition.ScriptBlock;
 
+    foreach (var element in definition.Elements) {
+      RemoveElementAttributeFromAst(ref sb, element);
+      TransformElementAst(ref sb,);
+    }
 
     return script;
   }
 
-  private void UpdateAllFunctionDefinitionsInAst(ref ScriptBlockAst scriptBlock) {
+  private void RemoveElementAttributeFromAst(ref ScriptBlockAst scriptBlock, ScriptElement element) {
+  }
+
+  private void TransformElementAst(ref ScriptBlockAst scriptBlock, ScriptElement element) {
+    var transformer = new ScriptTransformer();
+    scriptBlock.element.TransformAst(transformer);
   }
 }
 
