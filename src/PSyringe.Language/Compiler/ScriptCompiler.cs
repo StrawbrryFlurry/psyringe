@@ -15,7 +15,7 @@ public class ScriptCompiler : IScriptCompiler {
 
     foreach (var element in definition.Elements) {
       RemoveElementAttributeFromAst(ref sb, element);
-      TransformElementAst(ref sb,);
+      TransformElementAst(ref sb, element);
     }
 
     return script;
@@ -26,9 +26,28 @@ public class ScriptCompiler : IScriptCompiler {
 
   private void TransformElementAst(ref ScriptBlockAst scriptBlock, ScriptElement element) {
     var transformer = new ScriptTransformer();
-    scriptBlock.element.TransformAst(transformer);
+    element.TransformAst(transformer);
   }
 }
 
-internal class ScriptTransformer {
+internal class ScriptTransformer : IAstTransformer {
+  public void TransformChild(ScriptElement scriptElement) {
+    throw new NotImplementedException();
+  }
+
+  public void ReplaceAst(ref ScriptBlockAst scriptBlock, Ast replacement) {
+    throw new NotImplementedException();
+  }
+
+  public void InsertStatement(ref ScriptBlockAst scriptBlock, StatementAst statement) {
+    throw new NotImplementedException();
+  }
+
+  public StatementAst CreateStatement() {
+    throw new NotImplementedException();
+  }
+
+  public void ReplaceScriptExtent(ref Ast ast, Ast replacementAst, string replacementExtent) {
+    throw new NotImplementedException();
+  }
 }
