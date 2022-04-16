@@ -8,7 +8,9 @@ namespace PSyringe.Language.Test.AstTransformation;
 public class AstBaseClassExtensionsTest {
   [Fact]
   public void GetExtensionMethodOverloadDerivedAstType_ReturnsCorrectMethodOverload_ForExpressionAst() {
-    var actual = AstBaseClassExtensions.GetExtensionMethodOverloadDerivedAstType(TrueExpression);
+    var actual =
+      ExtensionMethodFinder.GetExtensionMethodOverloadForConcreteType(TrueExpression,
+        nameof(ExpressionAstExtensions.GetAstAsString));
     var expected = typeof(ExpressionAstExtensions).GetMethods();
 
     expected.Should().Contain(actual);
