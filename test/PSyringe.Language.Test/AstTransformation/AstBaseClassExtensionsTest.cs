@@ -1,6 +1,5 @@
-using System.Linq;
 using FluentAssertions;
-using PSyringe.Language.AstExtensions;
+using PSyringe.Language.AstTransformation;
 using Xunit;
 using static PSyringe.Language.Test.AstTransformation.TransformationConstants;
 
@@ -10,8 +9,8 @@ public class AstBaseClassExtensionsTest {
   [Fact]
   public void GetExtensionMethodOverloadDerivedAstType_ReturnsCorrectMethodOverload_ForExpressionAst() {
     var actual = AstBaseClassExtensions.GetExtensionMethodOverloadDerivedAstType(TrueExpression);
-    var expected = typeof(VariableExpressionAstExtension).GetMethods().First();
+    var expected = typeof(ExpressionAstExtensions).GetMethods();
 
-    actual.Should().BeSameAs(expected);
+    expected.Should().Contain(actual);
   }
 }

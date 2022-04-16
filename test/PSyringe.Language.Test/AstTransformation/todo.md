@@ -51,8 +51,8 @@
 - [ ] AssignmentStatementAst : PipelineBaseAst
 - [ ] ConfigurationDefinitionAst : StatementAst
 - [ ] DynamicKeywordStatementAst : StatementAst
-- [ ] TernaryExpressionAst : ExpressionAst
-- [ ] BinaryExpressionAst : ExpressionAst
+- [x] TernaryExpressionAst : ExpressionAst
+- [x] BinaryExpressionAst : ExpressionAst
 - [ ] UnaryExpressionAst : ExpressionAst
 - [ ] BlockStatementAst : StatementAst
 - [ ] AttributedExpressionAst : ExpressionAst, ISupportsAssignment, IAssignableValue
@@ -62,14 +62,14 @@
 - [ ] BaseCtorInvokeMemberExpressionAst : InvokeMemberExpressionAst
 - [ ] TypeExpressionAst : ExpressionAst
 - [x] VariableExpressionAst : ExpressionAst, ISupportsAssignment, IAssignableValue
-- [ ] ConstantExpressionAst : ExpressionAst
-- [ ] StringConstantExpressionAst : ConstantExpressionAst
-- [ ] ExpandableStringExpressionAst : ExpressionAst
-- [ ] ScriptBlockExpressionAst : ExpressionAst
-- [ ] ArrayLiteralAst : ExpressionAst, ISupportsAssignment
+- [x] ConstantExpressionAst : ExpressionAst
+- [x] StringConstantExpressionAst : ConstantExpressionAst
+- [x] ExpandableStringExpressionAst : ExpressionAst
+- [ ] [After SBAst] ScriptBlockExpressionAst : ExpressionAst
+- [x] ArrayLiteralAst : ExpressionAst, ISupportsAssignment
 - [ ] HashtableAst : ExpressionAst
-- [ ] ArrayExpressionAst : ExpressionAst
-- [ ] ParenExpressionAst : ExpressionAst, ISupportsAssignment
-- [ ] SubExpressionAst : ExpressionAst
+- [ ] [After StatementAst] ArrayExpressionAst : ExpressionAst
+- [ ] [After PipelineAst] ParenExpressionAst : ExpressionAst, ISupportsAssignment
+- [ ] [After SB] SubExpressionAst : ExpressionAst
 - [ ] UsingExpressionAst : ExpressionAst
 - [ ] IndexExpressionAst : ExpressionAst, ISupportsAssignment

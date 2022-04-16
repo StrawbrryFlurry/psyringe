@@ -1,7 +1,7 @@
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using FluentAssertions;
-using PSyringe.Language.AstExtensions;
+using PSyringe.Language.AstTransformation;
 using Xunit;
 using static PSyringe.Language.Test.AstTransformation.TransformationConstants;
 

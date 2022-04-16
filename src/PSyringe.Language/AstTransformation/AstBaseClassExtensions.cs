@@ -2,14 +2,15 @@ using System.Management.Automation.Language;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace PSyringe.Language.AstExtensions;
+namespace PSyringe.Language.AstTransformation;
 
 /// <summary>
-///   Extension method for base AST types. Uses reflection
+///   Extension methods for base AST types. Uses reflection
 ///   to get the extension method for the concrete implementation
 ///   of the runtime AST type.
 /// </summary>
 public static class AstBaseClassExtensions {
+  // Caching reflection info
   internal static readonly Type NamespaceType = typeof(AstBaseClassExtensions);
   internal static readonly Type ExtensionAttributeType = typeof(ExtensionAttribute);
 
@@ -43,7 +44,6 @@ public static class AstBaseClassExtensions {
 
     return extensionMethod;
   }
-
 
   private static bool DoesMethodTakeTypeAsFirstParameter(MethodInfo method, Type type) {
     var parameter = method.GetParameters().First();
