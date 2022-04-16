@@ -93,9 +93,73 @@ public static class ExpressionAstExtensions {
   }
 
   public static string GetAstAsString(this UsingExpressionAst ast) {
+    // TODO: ${ using:SomeVar } might brake this
     var variable = (VariableExpressionAst) ast.SubExpression;
     var variableName = variable.VariablePath.UserPath;
 
     return $"$using:{variableName}";
+  }
+
+  public static string GetAstAsString(this IndexExpressionAst ast) {
+    var nullConditional = ast.NullConditional ? "?" : "";
+    var target = ast.Target.GetAstAsString();
+    var index = ast.Index.GetAstAsString();
+
+    return $"{target}{nullConditional}[{index}]";
+  }
+
+  public static string GetAstAsString(this TypeExpressionAst ast) {
+    return ast.TypeName.InvokeExtensionMethodInAssemblyForConcreteType<string>(nameof(GetAstAsString));
+  }
+
+  public static string GetAstAsString(this ITypeName type) {
+    return type.InvokeExtensionMethodInAssemblyForConcreteType<string>(nameof(GetAstAsString));
+  }
+
+  public static string GetAstAsString(this TypeName type) {
+    return FullTypeNameAsString(type);
+  }
+
+  public static string GetAstAsString(this ReflectionTypeName type) {
+    return FullTypeNameAsString(type);
+  }
+
+  /// <summary>
+  ///   The FullName of the type already includes the generics
+  ///   e.g. System.Collections.Generic.List would be
+  ///   System.Collections.Generic.List[System.String]
+  /// </summary>
+  public static string GetAstAsString(this GenericTypeName type) {
+    return FullTypeNameAsString(type);
+  }
+
+  private static string FullTypeNameAsString(this ITypeName type) {
+    return $"[{type.FullName}]";
+  }
+
+  public static string GetAstAsString(this ArrayTypeName type) {
+    var brackets = string.Concat(Enumerable.Repeat("[]", type.Rank));
+    var typeName = type.ElementType.GetAstAsString();
+    // The GetString method will return the type name with the brackets
+    // which we need to remove to add the array brackets.
+    var typeNameWithoutEndBrackets = typeName.TrimEnd(']');
+
+    return $"{typeNameWithoutEndBrackets}{brackets}]";
+  }
+
+  public static string GetAstAsString(this UnaryExpressionAst ast) {
+    var token = ast.TokenKind;
+    var shouldBeAfterExpression = token.HasTrait(TokenFlags.PrefixOrPostfixOperator);
+    var childExpression = ast.Child.GetAstAsString();
+
+    if (shouldBeAfterExpression) {
+      return $"{childExpression}{token.Text()}";
+    }
+
+    return $"{token.Text()}{childExpression}";
+  }
+
+  public static string GetAstAsString(this ErrorExpressionAst ast) {
+    return string.Empty;
   }
 }

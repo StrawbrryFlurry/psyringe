@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Management.Automation.Language;
 using FluentAssertions;
 using PSyringe.Language.AstTransformation;
+using PSyringe.Language.Compiler;
+using PSyringe.Language.Test.Parsing.Utils;
 using Xunit;
 using static PSyringe.Language.Test.AstTransformation.TransformationConstants;
 
@@ -113,6 +116,136 @@ public class ExpressionAstExtensionsTest {
     actual.Should().Be(UsingExpression(VariableString));
   }
 
+  [Fact]
+  public void GetAstAsString_IndexExpressionAst() {
+    var sut = new IndexExpressionAst(EmptyExtent, VariableExpression(VariableName), NumberOneExpression);
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be(IndexExpression(VariableString, One));
+  }
+
+  [Fact]
+  public void GetAstAsString_NullConditional_IndexExpressionAst() {
+    var sut = new IndexExpressionAst(EmptyExtent, VariableExpression(VariableName), NumberOneExpression, true);
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be(IndexExpression(VariableString, One, true));
+  }
+
+  [Fact]
+  public void GetAstAsString_TypeName_TypeExpressionAst() {
+    var sut = new TypeExpressionAst(EmptyExtent, TypeNameExpression<string>());
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be("[System.String]");
+  }
+
+  [Fact]
+  public void GetAstAsString_ReflectionTypeName_TypeExpressionAst() {
+    var sut = new TypeExpressionAst(EmptyExtent, ReflectionTypeNameExpression<string>());
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be("[string]");
+  }
+
+  [Fact]
+  public void GetAstAsString_ArrayTypeName_TypeExpressionAst() {
+    var sut = new TypeExpressionAst(EmptyExtent, ArrayTypeNameExpression<string>());
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be("[System.String[]]");
+  }
+
+  [Fact]
+  public void GetAstAsString_ArrayTypeNameDepthTwo_TypeExpressionAst() {
+    var sut = new TypeExpressionAst(EmptyExtent, ArrayTypeNameExpression<string>(2));
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be("[System.String[][]]");
+  }
+
+  [Fact]
+  public void GetAstAsString_GenericTypeName_TypeExpressionAst() {
+    var sut = new TypeExpressionAst(EmptyExtent, GenericTypeNameExpression<List<string>>());
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be("[System.Collections.Generic.List[System.String]]");
+  }
+
+  [Fact]
+  public void GetAstAsString_GenericTypeNameTwoArguments_TypeExpressionAst() {
+    var sut = new TypeExpressionAst(EmptyExtent, GenericTypeNameExpression<Dictionary<string, string>>());
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be("[System.Collections.Generic.Dictionary[System.String,System.String]]");
+  }
+
+  [Fact]
+  public void GetAstAsString_UnaryIncrement_UnaryExpressionAst() {
+    var sut = new UnaryExpressionAst(EmptyExtent, TokenKind.PlusPlus, VariableExpression(VariableName));
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be($"{VariableString}++");
+  }
+
+  [Fact]
+  public void GetAstAsString_NotOperator_UnaryExpressionAst() {
+    var sut = new UnaryExpressionAst(EmptyExtent, TokenKind.Not, VariableExpression(VariableName));
+    var actual = sut.GetAstAsString();
+
+
+    actual.Should().Be($"-not{VariableString}");
+  }
+
+  [Fact]
+  public void GetAstAsString_NotExclamationMark_UnaryExpressionAst() {
+    var sut = new UnaryExpressionAst(EmptyExtent, TokenKind.Exclaim, VariableExpression(VariableName));
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be($"!{VariableString}");
+  }
+
+  [Fact]
+  public void GetAstAsString_ReturnsEmpty_ErrorExpressionAst() {
+    // The ErrorExpressionAst ctor is internal so we just
+    // make one using a nonsensical expression.
+    var sut = ParsingUtil.ParseScript("$false ? if() {} : else {}")!.FindOfType<ErrorExpressionAst>()!;
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be("");
+  }
+
+  /*
+   TODO: After CommandElementAst
+  [Fact]
+  public void GetAstAsString_InvokeMemberExpressionAst() {
+    var sut = new MemberExpressionAst(EmptyExtent, );
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be("[System.Collections.Generic.Dictionary[System.String,System.String]]");
+  }
+
+  
+  [Fact]
+  public void GetAstAsString_MemberExpressionAst() {
+    var sut = new MemberExpressionAst(EmptyExtent, );
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be("[System.Collections.Generic.Dictionary[System.String,System.String]]");
+  }
+  
+  */
+  /*
+   TODO: Confusion
+  [Fact]
+  public void GetAstAsString_BaseCtorInvokeMemberExpressionAst() {
+    var sut = new BaseCtorInvokeMemberExpressionAst(EmptyExtent, GenericTypeNameExpression<Dictionary<string, string>>());
+    var actual = sut.GetAstAsString();
+
+    actual.Should().Be("[System.Collections.Generic.Dictionary[System.String,System.String]]");
+  }
+
+  */
   /*
 TODO: After StatementAst
    [Fact]
@@ -131,7 +264,6 @@ TODO: After StatementAst
   }
   
   */
-
   /*
    TODO: After StatementAst
   [Fact]
@@ -150,7 +282,6 @@ TODO: After StatementAst
     actual.Should().Be(ArrayExpressionTwoElements);
   }
 */
-
   /*
    TODO: After ScriptBlockAst
   [Fact]

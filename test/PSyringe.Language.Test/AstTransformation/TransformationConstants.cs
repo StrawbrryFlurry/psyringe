@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Management.Automation.Language;
 
 namespace PSyringe.Language.Test.AstTransformation;
@@ -44,12 +46,40 @@ public static class TransformationConstants {
 
   public static IScriptExtent EmptyExtent => new ScriptExtent(null, null);
 
+  public static ITypeName GenericTypeNameExpression<T>() {
+    var genericArguments = typeof(T).GetGenericArguments();
+    var genericTypes = genericArguments.Select(TypeNameExpression);
+
+    return new GenericTypeName(EmptyExtent,
+      TypeNameExpression<T>(), genericTypes);
+  }
+
+  public static ITypeName ReflectionTypeNameExpression<T>() {
+    return new ReflectionTypeName(typeof(T));
+  }
+
+  public static ITypeName ArrayTypeNameExpression<T>(int depth = 1) {
+    return new ArrayTypeName(EmptyExtent, TypeNameExpression<T>(), depth);
+  }
+
+  public static ITypeName TypeNameExpression<T>() {
+    return new TypeName(EmptyExtent, GetNameSpace<T>());
+  }
+
+  public static ITypeName TypeNameExpression(Type type) {
+    return new TypeName(EmptyExtent, GetNameSpace(type));
+  }
+
   public static VariableExpressionAst VariableExpression(string variable) {
     return MakeVariable(variable);
   }
 
   public static string UsingExpression(string variable) {
     return $"$using:{variable}";
+  }
+
+  public static string IndexExpression(string variable, object index, bool nullConditional = false) {
+    return $"{variable}{(nullConditional ? "?" : "")}[{index}]";
   }
 
   public static VariableExpressionAst MakeVariable(string name, bool isSplatted = false) {
@@ -66,5 +96,23 @@ public static class TransformationConstants {
 
   public static string SingleQuote(object value) {
     return $"'{value}'";
+  }
+
+  private static string GetNameSpace<T>() {
+    var type = typeof(T);
+    return GetNameSpace(type);
+  }
+
+  private static string GetNameSpace(Type type) {
+    return $"{type.Namespace}.{GetTypeNameWithoutGenericInfo(type)}";
+  }
+
+  private static string GetTypeNameWithoutGenericInfo(Type type) {
+    var name = type.Name;
+    if (type.IsGenericType) {
+      return name.Substring(0, name.IndexOf('`'));
+    }
+
+    return name;
   }
 }

@@ -1,6 +1,6 @@
 - [ ] SequencePointAst : Ast
 - [ ] ErrorStatementAst : PipelineBaseAst
-- [ ] ErrorExpressionAst : ExpressionAst
+- [x] ErrorExpressionAst : ExpressionAst
 - [ ] ScriptBlockAst : Ast, IParameterMetadataProvider
 - [ ] ParamBlockAst : Ast
 - [ ] NamedBlockAst : Ast
@@ -44,7 +44,7 @@
 - [ ] CommandParameterAst : CommandElementAst
 - [ ] CommandBaseAst : StatementAst
 - [ ] CommandAst : CommandBaseAst
-- [ ] CommandExpressionAst : CommandBaseAst
+- [ ] [After CommandAst] CommandExpressionAst : CommandBaseAst
 - [ ] RedirectionAst : Ast
 - [ ] MergingRedirectionAst : RedirectionAst
 - [ ] FileRedirectionAst : RedirectionAst
@@ -53,14 +53,14 @@
 - [ ] DynamicKeywordStatementAst : StatementAst
 - [x] TernaryExpressionAst : ExpressionAst
 - [x] BinaryExpressionAst : ExpressionAst
-- [ ] UnaryExpressionAst : ExpressionAst
+- [x] UnaryExpressionAst : ExpressionAst
 - [ ] BlockStatementAst : StatementAst
-- [ ] AttributedExpressionAst : ExpressionAst, ISupportsAssignment, IAssignableValue
-- [ ] ConvertExpressionAst : AttributedExpressionAst, ISupportsAssignment
-- [ ] MemberExpressionAst : ExpressionAst, ISupportsAssignment
-- [ ] InvokeMemberExpressionAst : MemberExpressionAst, ISupportsAssignment
+- [ ] [After AttributeAst]AttributedExpressionAst : ExpressionAst, ISupportsAssignment, IAssignableValue
+- [ ] [After AttributeAst] ConvertExpressionAst : AttributedExpressionAst, ISupportsAssignment
+- [ ] [After CommandElementAst] MemberExpressionAst : ExpressionAst, ISupportsAssignment
+- [ ] [After CommandElementAst] InvokeMemberExpressionAst : MemberExpressionAst, ISupportsAssignment
 - [ ] BaseCtorInvokeMemberExpressionAst : InvokeMemberExpressionAst
-- [ ] TypeExpressionAst : ExpressionAst
+- [x] TypeExpressionAst : ExpressionAst
 - [x] VariableExpressionAst : ExpressionAst, ISupportsAssignment, IAssignableValue
 - [x] ConstantExpressionAst : ExpressionAst
 - [x] StringConstantExpressionAst : ConstantExpressionAst
@@ -71,5 +71,5 @@
 - [ ] [After StatementAst] ArrayExpressionAst : ExpressionAst
 - [ ] [After PipelineAst] ParenExpressionAst : ExpressionAst, ISupportsAssignment
 - [ ] [After SB] SubExpressionAst : ExpressionAst
-- [ ] UsingExpressionAst : ExpressionAst
-- [ ] IndexExpressionAst : ExpressionAst, ISupportsAssignment
+- [x] UsingExpressionAst : ExpressionAst
+- [x] IndexExpressionAst : ExpressionAst, ISupportsAssignment
