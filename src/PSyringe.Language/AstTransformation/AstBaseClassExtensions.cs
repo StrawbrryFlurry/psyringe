@@ -1,4 +1,5 @@
 using System.Management.Automation.Language;
+using PSyringe.Language.TypeLoader;
 
 namespace PSyringe.Language.AstTransformation;
 
@@ -8,11 +9,27 @@ namespace PSyringe.Language.AstTransformation;
 ///   of the runtime AST type.
 /// </summary>
 public static class AstBaseClassExtensions {
-  public static string GetAstAsString(this Ast ast) {
-    return ast.InvokeExtensionMethodInAssemblyForConcreteType<string>(nameof(GetAstAsString));
+  public static string ToStringFromAst(this Ast ast) {
+    return ast.InvokeExtensionMethodInAssemblyForConcreteType<string>(nameof(ToStringFromAst));
   }
 
-  public static string GetAstAsString(this ExpressionAst ast) {
-    return ast.InvokeExtensionMethodInAssemblyForConcreteType<string>(nameof(GetAstAsString));
+  public static IList<string> ToStringListFromAst(this IEnumerable<Ast> asts) {
+    var astStrings = asts.Select(a => a.ToStringFromAst()).ToList();
+    return astStrings;
+  }
+
+  /// <summary>
+  ///   Joins the AST's string representations with a given separator.
+  ///   Returns null if the the enumerable is empty.
+  /// </summary>
+  public static string? ToStringFromAstJoinBy(this IEnumerable<Ast> asts, string joinBy) {
+    var astStrings = asts.ToStringListFromAst();
+
+    if (!astStrings.Any()) {
+      return null;
+    }
+
+    var joinedString = string.Join(joinBy, astStrings);
+    return joinedString;
   }
 }

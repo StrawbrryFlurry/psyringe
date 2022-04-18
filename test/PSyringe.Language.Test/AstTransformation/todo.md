@@ -1,75 +1,93 @@
 - [ ] SequencePointAst : Ast
-- [ ] ErrorStatementAst : PipelineBaseAst
-- [x] ErrorExpressionAst : ExpressionAst
 - [ ] ScriptBlockAst : Ast, IParameterMetadataProvider
-- [ ] ParamBlockAst : Ast
-- [ ] NamedBlockAst : Ast
-- [ ] NamedAttributeArgumentAst : Ast
-- [ ] AttributeBaseAst : Ast
-- [ ] AttributeAst : AttributeBaseAst
-- [ ] TypeConstraintAst : AttributeBaseAst
-- [ ] ParameterAst : Ast
-- [ ] StatementBlockAst : Ast
-- [ ] StatementAst : Ast
-- [ ] TypeDefinitionAst : StatementAst
-- [ ] UsingStatementAst : StatementAst
-- [ ] MemberAst : Ast
+- [ ] [After Statement] NamedBlockAst : Ast
+- [ ] CatchClauseAst : Ast
+- [ ] [After SBAst] ScriptBlockExpressionAst : ExpressionAst
+- [ ] HashtableAst : ExpressionAst
+- [ ] [After StatementAst] ArrayExpressionAst : ExpressionAst
+- [ ] [After PipelineAst] ParenExpressionAst : ExpressionAst, ISupportsAssignment
+- [ ] [After SB] SubExpressionAst : ExpressionAst
+
+# Class
+
+- [ ] [After CommandElementAst] MemberExpressionAst : ExpressionAst, ISupportsAssignment
+- [ ] [After CommandElementAst] InvokeMemberExpressionAst : MemberExpressionAst, ISupportsAssignment
+- [ ] BaseCtorInvokeMemberExpressionAst : InvokeMemberExpressionAst
 - [ ] PropertyMemberAst : MemberAst
-- [ ] FunctionMemberAst : MemberAst, IParameterMetadataProvider
-- [ ] CompilerGeneratedMemberFunctionAst : MemberAst, IParameterMetadataProvider
-- [ ] FunctionDefinitionAst : StatementAst, IParameterMetadataProvider
-- [ ] IfStatementAst : StatementAst
-- [ ] DataStatementAst : StatementAst
-- [ ] LabeledStatementAst : StatementAst
-- [ ] LoopStatementAst : LabeledStatementAst
-- [ ] ForEachStatementAst : LoopStatementAst
+- [ ] FunctionMemberAst : MemberAst,
+- [ ] TypeDefinitionAst : StatementAst
+
+---
+
+# Pipeline
+
+- [x] PipelineAst : ChainableAst
+- [x] AssignmentStatementAst : PipelineBaseAst
+- [x] PipelineChainAst : ChainableAst
+- [x] ErrorStatementAst : PipelineBaseAst
+- [x] AssignmentStatementAst : PipelineBaseAst
+
+---
+
+# statements
+
+- [x] StatementBlockAst : Ast IParameterMetadataProvider
+- [x] IfStatementAst : StatementAst
+- [x] ForEachStatementAst : LoopStatementAst
 - [ ] ForStatementAst : LoopStatementAst
 - [ ] DoWhileStatementAst : LoopStatementAst
 - [ ] DoUntilStatementAst : LoopStatementAst
 - [ ] WhileStatementAst : LoopStatementAst
 - [ ] SwitchStatementAst : LabeledStatementAst
-- [ ] CatchClauseAst : Ast
+- [ ] UsingStatementAst : StatementAst
 - [ ] TryStatementAst : StatementAst
-- [ ] TrapStatementAst : StatementAst
-- [ ] BreakStatementAst : StatementAst
-- [ ] ContinueStatementAst : StatementAst
-- [ ] ReturnStatementAst : StatementAst
-- [ ] ExitStatementAst : StatementAst
-- [ ] ThrowStatementAst : StatementAst
-- [ ] ChainableAst : PipelineBaseAst
-- [ ] PipelineChainAst : ChainableAst
-- [ ] PipelineBaseAst : StatementAst
-- [ ] PipelineAst : ChainableAst
-- [ ] CommandElementAst : Ast
-- [ ] CommandParameterAst : CommandElementAst
-- [ ] CommandBaseAst : StatementAst
-- [ ] CommandAst : CommandBaseAst
-- [ ] [After CommandAst] CommandExpressionAst : CommandBaseAst
-- [ ] RedirectionAst : Ast
-- [ ] MergingRedirectionAst : RedirectionAst
-- [ ] FileRedirectionAst : RedirectionAst
-- [ ] AssignmentStatementAst : PipelineBaseAst
+- [x] TrapStatementAst : StatementAst
+- [x] BreakStatementAst : StatementAst
+- [x] ContinueStatementAst : StatementAst
+- [x] ReturnStatementAst : StatementAst
+- [x] ExitStatementAst : StatementAst
+- [x] ThrowStatementAst : StatementAst
+- [ ] DataStatementAst : StatementAst
+
 - [ ] ConfigurationDefinitionAst : StatementAst
 - [ ] DynamicKeywordStatementAst : StatementAst
-- [x] TernaryExpressionAst : ExpressionAst
-- [x] BinaryExpressionAst : ExpressionAst
-- [x] UnaryExpressionAst : ExpressionAst
 - [ ] BlockStatementAst : StatementAst
-- [ ] [After AttributeAst]AttributedExpressionAst : ExpressionAst, ISupportsAssignment, IAssignableValue
-- [ ] [After AttributeAst] ConvertExpressionAst : AttributedExpressionAst, ISupportsAssignment
-- [ ] [After CommandElementAst] MemberExpressionAst : ExpressionAst, ISupportsAssignment
-- [ ] [After CommandElementAst] InvokeMemberExpressionAst : MemberExpressionAst, ISupportsAssignment
-- [ ] BaseCtorInvokeMemberExpressionAst : InvokeMemberExpressionAst
+- [ ] FunctionDefinitionAst : StatementAst, IParameterMetadataProvider
+
+---
+
+# Done
+
+- [x] AttributedExpressionAst : ExpressionAst, ISupportsAssignment, IAssignableValue
+- [x] ConvertExpressionAst : AttributedExpressionAst, ISupportsAssignment
 - [x] TypeExpressionAst : ExpressionAst
 - [x] VariableExpressionAst : ExpressionAst, ISupportsAssignment, IAssignableValue
 - [x] ConstantExpressionAst : ExpressionAst
 - [x] StringConstantExpressionAst : ConstantExpressionAst
 - [x] ExpandableStringExpressionAst : ExpressionAst
-- [ ] [After SBAst] ScriptBlockExpressionAst : ExpressionAst
 - [x] ArrayLiteralAst : ExpressionAst, ISupportsAssignment
-- [ ] HashtableAst : ExpressionAst
-- [ ] [After StatementAst] ArrayExpressionAst : ExpressionAst
-- [ ] [After PipelineAst] ParenExpressionAst : ExpressionAst, ISupportsAssignment
-- [ ] [After SB] SubExpressionAst : ExpressionAst
 - [x] UsingExpressionAst : ExpressionAst
 - [x] IndexExpressionAst : ExpressionAst, ISupportsAssignment
+- [x] TernaryExpressionAst : ExpressionAst
+- [x] BinaryExpressionAst : ExpressionAst
+- [x] UnaryExpressionAst : ExpressionAst
+- [x] NamedAttributeArgumentAst : Ast
+- [x] AttributeAst : AttributeBaseAst
+- [x] TypeConstraintAst : AttributeBaseAst
+- [x] ParameterAst : Ast
+- [x] ErrorExpressionAst : ExpressionAst
+- [x] MergingRedirectionAst : RedirectionAst
+- [x] FileRedirectionAst : RedirectionAst
+- [x] ParamBlockAst : Ast
+
+## Commands
+
+- [x] [After CommandAst] CommandExpressionAst : CommandBaseAst
+- [x] CommandParameterAst : CommandElementAst
+- [x] CommandAst : CommandBaseAst
+
+---
+
+# Compiler
+
+- [ ] CompilerGeneratedAst

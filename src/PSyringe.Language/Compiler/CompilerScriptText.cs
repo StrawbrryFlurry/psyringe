@@ -1,7 +1,8 @@
 namespace PSyringe.Language.Compiler;
 
-public class CompilerScriptText {
+public static class CompilerScriptText {
   public const string TrueVariable = "$true";
+  public const string NewLine = "\r\n";
 
   /// <summary>
   ///   Comment inserted inline before a compiler generated variable declaration.

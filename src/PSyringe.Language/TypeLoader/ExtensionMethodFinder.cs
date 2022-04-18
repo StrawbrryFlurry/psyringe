@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace PSyringe.Language.AstTransformation;
+namespace PSyringe.Language.TypeLoader;
 
 /// <summary>
 ///   Utility extension method for `object`. Can be used to
@@ -51,10 +51,11 @@ public static class ExtensionMethodFinder {
   }
 
   private static IEnumerable<MethodInfo> GetAllExtensionMethodsInAssembly() {
-    return TypeInAssembly.Assembly.GetTypes()
-                         .Select(c => c.GetMethods(ExtensionMethodBindingFlags)
-                                       .Where(IsMethodExtensionMethod)
-                         ).SelectMany(m => m);
+    var m = TypeInAssembly.Assembly.GetTypes()
+                          .Select(c => c.GetMethods(ExtensionMethodBindingFlags)
+                                        .Where(IsMethodExtensionMethod)
+                          ).SelectMany(m => m);
+    return m;
   }
 
   private static bool IsMethodExtensionMethod(MethodInfo method) {
