@@ -14,8 +14,8 @@ public class ScriptCompiler : IScriptCompiler {
     var sb = definition.ScriptBlock;
 
     foreach (var element in definition.Elements) {
-      RemoveElementAttributeFromAst(ref sb, element);
-      TransformElementAst(ref sb, element);
+      // RemoveElementAttributeFromAst(ref sb, element);
+      // TransformElementAst(ref sb, element);
     }
 
     return script;

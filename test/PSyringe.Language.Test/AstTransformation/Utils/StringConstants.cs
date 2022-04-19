@@ -1,3 +1,5 @@
+using System.Management.Automation.Language;
+
 namespace PSyringe.Language.Test.AstTransformation.Utils;
 
 public static class StringConstants {
@@ -19,6 +21,7 @@ public static class StringConstants {
   public const int Nine = 9;
 
   public const string NewLine = "\r\n";
+  public const TokenKind PlusPlus = TokenKind.PlusPlus;
 
   public static string BinaryExpression(object left, string op, object right) {
     return $"{left} {op} {right}";

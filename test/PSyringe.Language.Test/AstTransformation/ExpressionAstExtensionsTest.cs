@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Management.Automation.Language;
 using System.Runtime.Serialization;
@@ -303,59 +302,38 @@ public class ExpressionAstExtensionsTest {
 
   [Fact]
   public void ToStringFromAst_HashtableAst() {
-    var sut = new HashtableAst(EmptyExtent, List<Tuple<ExpressionAst, StatementAst>>());
+    var sut = new HashtableAst(EmptyExtent, null);
     var actual = sut.ToStringFromAst();
 
-    actual.Should().Be("@{}");
+    actual.Should().Be($"@{{{NewLine}" +
+                       "}");
   }
 
-  /*
-   TODO: After CommandElementAst
   [Fact]
-  public void ToStringFromAst_InvokeMemberExpressionAst() {
-    var sut = new MemberExpressionAst(EmptyExtent, );
+  public void ToStringFromAst_Element_HashtableAst() {
+    var elements = List(
+      Tuple<ExpressionAst, StatementAst>(CmdStr("Prop"), Statement(Const("Value")))
+    );
+    var sut = new HashtableAst(EmptyExtent, elements);
     var actual = sut.ToStringFromAst();
 
-    actual.Should().Be("[System.Collections.Generic.Dictionary[System.String,System.String]]");
+    actual.Should().Be($"@{{{NewLine}" +
+                       $"Prop = {DoubleQuote("Value")};{NewLine}" +
+                       "}");
   }
 
-  
   [Fact]
-  public void ToStringFromAst_MemberExpressionAst() {
-    var sut = new MemberExpressionAst(EmptyExtent, );
+  public void ToStringFromAst_MultiElements_HashtableAst() {
+    var elements = List(
+      Tuple<ExpressionAst, StatementAst>(CmdStr("Prop1"), Statement(Const("Value"))),
+      Tuple<ExpressionAst, StatementAst>(CmdStr("Prop2"), Statement(Const("Value")))
+    );
+    var sut = new HashtableAst(EmptyExtent, elements);
     var actual = sut.ToStringFromAst();
 
-    actual.Should().Be("[System.Collections.Generic.Dictionary[System.String,System.String]]");
+    actual.Should().Be($"@{{{NewLine}" +
+                       $"Prop1 = {DoubleQuote("Value")};{NewLine}" +
+                       $"Prop2 = {DoubleQuote("Value")};{NewLine}" +
+                       "}");
   }
-  
-  */
-  /*
-   TODO: Confusion
-  [Fact]
-  public void ToStringFromAst_BaseCtorInvokeMemberExpressionAst() {
-    var sut = new BaseCtorInvokeMemberExpressionAst(EmptyExtent, GenericTypeNameExpression<Dictionary<string, string>>());
-    var actual = sut.ToStringFromAst();
-
-    actual.Should().Be("[System.Collections.Generic.Dictionary[System.String,System.String]]");
-  }
-
-  */
-  /*
-TODO: After StatementAst
-   [Fact]
-  public void ToStringFromAst_SubExpressionAst() {
-    var sut = new SubExpressionAst(EmptyExtent, ArrayOneElement);
-    var actual = sut.ToStringFromAst();
-
-    actual.Should().Be(ArrayExpressionOneElement);
-  }
-*/
-  /*
-  TODO: After PipelineAst
-  [Fact]
-  public void ToStringFromAst_ParenExpressionAst() {
-    var sut = new ParenExpressionAst();
-  }
-  
-  */
 }

@@ -4,6 +4,10 @@ namespace PSyringe.Language.AstTransformation;
 
 public static class WhileStatementAstExtensions {
   public static string ToStringFromAst(this WhileStatementAst ast) {
-    return default;
+    var condition = ast.Condition.ToStringFromAst();
+    var body = ast.Body.ToStringFromAst();
+    var label = ast.GetLabel();
+
+    return $"{label}while ({condition}) {body}";
   }
 }

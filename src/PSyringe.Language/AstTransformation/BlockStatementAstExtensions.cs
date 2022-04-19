@@ -4,6 +4,11 @@ namespace PSyringe.Language.AstTransformation;
 
 public static class BlockStatementAstExtensions {
   public static string ToStringFromAst(this BlockStatementAst ast) {
-    return default;
+    // We get the text of the token kind rather than the `Token`
+    // instance because the `Token` instance points to the script extent.
+    var keyword = ast.Kind.Kind.Text().ToLower();
+    var body = ast.Body.ToStringFromAst();
+
+    return $"{keyword} {body}";
   }
 }

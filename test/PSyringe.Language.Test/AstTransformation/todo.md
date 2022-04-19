@@ -1,17 +1,21 @@
 - [ ] SequencePointAst : Ast
 - [ ] ScriptBlockAst : Ast, IParameterMetadataProvider
-- [ ] [After Statement] NamedBlockAst : Ast
-- [ ] CatchClauseAst : Ast
-- [ ] [After SBAst] ScriptBlockExpressionAst : ExpressionAst
-- [ ] HashtableAst : ExpressionAst
-- [ ] [After StatementAst] ArrayExpressionAst : ExpressionAst
-- [ ] [After PipelineAst] ParenExpressionAst : ExpressionAst, ISupportsAssignment
-- [ ] [After SB] SubExpressionAst : ExpressionAst
+- [ ] NamedBlockAst : Ast
+- [ ] ScriptBlockExpressionAst : ExpressionAst
+- [ ] ArrayExpressionAst : ExpressionAst
+- [ ] ParenExpressionAst : ExpressionAst, ISupportsAssignment
+- [ ] SubExpressionAst : ExpressionAst
+
+# Weird
+
+- [ ] DataStatementAst : StatementAst
+- [ ] ConfigurationDefinitionAst : StatementAst
+- [ ] DynamicKeywordStatementAst : StatementAst
 
 # Class
 
-- [ ] [After CommandElementAst] MemberExpressionAst : ExpressionAst, ISupportsAssignment
-- [ ] [After CommandElementAst] InvokeMemberExpressionAst : MemberExpressionAst, ISupportsAssignment
+- [ ] MemberExpressionAst : ExpressionAst, ISupportsAssignment
+- [ ] InvokeMemberExpressionAst : MemberExpressionAst, ISupportsAssignment
 - [ ] BaseCtorInvokeMemberExpressionAst : InvokeMemberExpressionAst
 - [ ] PropertyMemberAst : MemberAst
 - [ ] FunctionMemberAst : MemberAst,
@@ -34,24 +38,21 @@
 - [x] StatementBlockAst : Ast IParameterMetadataProvider
 - [x] IfStatementAst : StatementAst
 - [x] ForEachStatementAst : LoopStatementAst
-- [ ] ForStatementAst : LoopStatementAst
-- [ ] DoWhileStatementAst : LoopStatementAst
-- [ ] DoUntilStatementAst : LoopStatementAst
-- [ ] WhileStatementAst : LoopStatementAst
-- [ ] SwitchStatementAst : LabeledStatementAst
-- [ ] UsingStatementAst : StatementAst
-- [ ] TryStatementAst : StatementAst
+- [x] ForStatementAst : LoopStatementAst
+- [x] DoWhileStatementAst : LoopStatementAst
+- [x] DoUntilStatementAst : LoopStatementAst
+- [x] WhileStatementAst : LoopStatementAst
+- [x] SwitchStatementAst : LabeledStatementAst
+- [x] UsingStatementAst : StatementAst
+- [x] TryStatementAst : StatementAst
+- [x] CatchClauseAst : Ast
 - [x] TrapStatementAst : StatementAst
 - [x] BreakStatementAst : StatementAst
 - [x] ContinueStatementAst : StatementAst
 - [x] ReturnStatementAst : StatementAst
 - [x] ExitStatementAst : StatementAst
 - [x] ThrowStatementAst : StatementAst
-- [ ] DataStatementAst : StatementAst
-
-- [ ] ConfigurationDefinitionAst : StatementAst
-- [ ] DynamicKeywordStatementAst : StatementAst
-- [ ] BlockStatementAst : StatementAst
+- [x] BlockStatementAst : StatementAst
 - [ ] FunctionDefinitionAst : StatementAst, IParameterMetadataProvider
 
 ---
@@ -79,6 +80,7 @@
 - [x] MergingRedirectionAst : RedirectionAst
 - [x] FileRedirectionAst : RedirectionAst
 - [x] ParamBlockAst : Ast
+- [x] HashtableAst : ExpressionAst
 
 ## Commands
 

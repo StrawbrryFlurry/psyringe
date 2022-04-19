@@ -4,6 +4,10 @@ namespace PSyringe.Language.AstTransformation;
 
 public static class DoUntilStatementAstExtensions {
   public static string ToStringFromAst(this DoUntilStatementAst ast) {
-    return default;
+    var condition = ast.Condition.ToStringFromAst();
+    var body = ast.Body.ToStringFromAst();
+    var label = ast.GetLabel();
+
+    return $"{label}do {body} until ({condition});";
   }
 }

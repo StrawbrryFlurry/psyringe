@@ -181,21 +181,88 @@ public class AstExtensionsTest {
                        ")");
   }
 
-  /*
-   TODO: After Statements
-  [Fact]
-  public void ToStringFromAst_StatementBlockAst() {
-    var sut = new StatementBlockAst(EmptyExtent, null, List(Param(Var(VariableName)), Param(Var(VariableName))));
-    
-  }
-  
+  #region ScriptBlock
+
   [Fact]
   public void ToStringFromAst_NamedBlockAst() {
-    var sut = new NamedBlockAst(EmptyExtent, null, List(Param(Var(VariableName)), Param(Var(VariableName))));
+    var sut = new NamedBlockAst(EmptyExtent, TokenKind.Begin, EmptyBlock(), false);
     var actual = sut.ToStringFromAst();
 
-    actual.Should().Be("");
+    actual.Should().Be($"begin {{{NewLine}" +
+                       "}");
   }
-  
-  */
+
+  [Fact]
+  public void ToStringFromAst_Unnamed_NamedBlockAst() {
+    var sut = new NamedBlockAst(EmptyExtent, TokenKind.Process, EmptyBlock(), true);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"{{{NewLine}" +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Statement_NamedBlockAst() {
+    var block = Block(
+      Const("Statement")
+    );
+    var sut = new NamedBlockAst(EmptyExtent, TokenKind.Begin, block, false);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"begin {{{NewLine}" +
+                       $"{DoubleQuote("Statement")};{NewLine}" +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_TrapStatement_NamedBlockAst() {
+    var block = Block(
+      List(Trap(Statement(Const("Error")))
+      ));
+    var sut = new NamedBlockAst(EmptyExtent, TokenKind.Begin, block, false);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"begin {{{NewLine}" +
+                       $"trap {{{NewLine}" +
+                       $"{DoubleQuote("Error")};{NewLine}" +
+                       $"}}{NewLine}" +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_TrapAndStatement_NamedBlockAst() {
+    var block = Block(
+      List(Trap(Statement(Const("Error")))),
+      Statement(Const("Statement"))
+    );
+
+    var sut = new NamedBlockAst(EmptyExtent, TokenKind.Begin, block, false);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"begin {{{NewLine}" +
+                       $"{DoubleQuote("Statement")};{NewLine}" +
+                       $"trap {{{NewLine}" +
+                       $"{DoubleQuote("Error")};{NewLine}" +
+                       $"}}{NewLine}" +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_ScriptBlockAst() {
+    var sut = new ScriptBlockAst(EmptyExtent, ParamBlock(), null, null, null, null);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"{{{NewLine}" +
+                       "}");
+  }
+
+  private ParamBlockAst ParamBlock(params ParameterAst[] parameters) {
+    return new ParamBlockAst(EmptyExtent, null, parameters);
+  }
+
+  private NamedBlockAst NamedBlock(TokenKind name, params StatementAst[] statements) {
+    return new NamedBlockAst(EmptyExtent, name, Block(statements), false);
+  }
+
+  #endregion
 }

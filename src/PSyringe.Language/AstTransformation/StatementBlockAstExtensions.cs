@@ -10,7 +10,11 @@ public static class StatementBlockAstExtensions {
     var traps = ast.Traps?.ToStringFromAstJoinBy($"{NewLine}{NewLine}");
     var block = new StringBuilder();
 
-    block.AppendLine("{");
+    var shouldAddBrackets = !ast.Parent.AreStatementBracketsIncluded();
+
+    if (shouldAddBrackets) {
+      block.AppendLine("{");
+    }
 
     if (statements is not null) {
       if (!statements.EndsWith(';')) {
@@ -24,7 +28,9 @@ public static class StatementBlockAstExtensions {
       block.AppendLine(traps);
     }
 
-    block.Append('}');
+    if (shouldAddBrackets) {
+      block.Append('}');
+    }
 
     return block.ToString();
   }

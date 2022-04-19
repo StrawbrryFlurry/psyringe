@@ -4,13 +4,11 @@ namespace PSyringe.Language.AstTransformation;
 
 public static class ForEachStatementAstExtensions {
   public static string ToStringFromAst(this ForEachStatementAst ast) {
+    var label = ast.GetLabel();
     var variable = ast.Variable.ToStringFromAst();
     var expression = ast.Condition.ToStringFromAst();
     var body = ast.Body.ToStringFromAst();
 
-    var label = ast.Label;
-    var labelString = label is not null ? $":{label} " : "";
-
-    return $"{labelString}foreach ({variable} in {expression}) {body}";
+    return $"{label}foreach ({variable} in {expression}) {body}";
   }
 }

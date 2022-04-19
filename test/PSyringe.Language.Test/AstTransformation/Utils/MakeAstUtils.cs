@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation.Language;
+using System.Reflection;
+using System.Runtime.Serialization;
 using static PSyringe.Language.Test.AstTransformation.Utils.AstConstants;
 
 namespace PSyringe.Language.Test.AstTransformation.Utils;
@@ -15,7 +17,7 @@ public static class MakeAstUtils {
     return new ConstantExpressionAst(EmptyExtent, value);
   }
 
-  public static ConstantExpressionAst Const(string value) {
+  public static StringConstantExpressionAst Const(string value) {
     return new StringConstantExpressionAst(EmptyExtent, value, StringConstantType.DoubleQuoted);
   }
 
@@ -25,6 +27,10 @@ public static class MakeAstUtils {
 
   public static ExpressionAst Condition(ExpressionAst left, TokenKind op, ExpressionAst right) {
     return new BinaryExpressionAst(EmptyExtent, left, op, right, EmptyExtent);
+  }
+
+  public static ExpressionAst Unary(ExpressionAst left, TokenKind op) {
+    return new UnaryExpressionAst(EmptyExtent, op, left);
   }
 
   public static AttributeAst Attr<T>(
@@ -62,7 +68,7 @@ public static class MakeAstUtils {
     return new StatementBlockAst(EmptyExtent, statements, null);
   }
 
-  public static StatementBlockAst Block(TrapStatementAst[] traps, params StatementAst[] statements) {
+  public static StatementBlockAst Block(IEnumerable<TrapStatementAst> traps, params StatementAst[] statements) {
     return new StatementBlockAst(EmptyExtent, statements, traps);
   }
 
@@ -79,8 +85,25 @@ public static class MakeAstUtils {
     return new PipelineAst(EmptyExtent, commands);
   }
 
+  public static PipelineBaseAst Assign(ExpressionAst left, ExpressionAst right) {
+    return new AssignmentStatementAst(EmptyExtent, left, TokenKind.Equals, Statement(right), EmptyExtent);
+  }
+
+
   public static TrapStatementAst Trap(params StatementAst[] elements) {
     return new TrapStatementAst(EmptyExtent, null, Block(elements));
+  }
+
+  public static Token Token(TokenKind kind) {
+    //   This is a little hacky but we don't have a good way to get a
+    //   token instance as both its constructor and InternalScriptExtent
+    //   are internal.
+    var tokenType = typeof(Token);
+    var internalScriptExtent =
+      tokenType.Assembly.GetType("System.Management.Automation.Language.InternalScriptExtent")!;
+    var extent = FormatterServices.GetUninitializedObject(internalScriptExtent);
+    var ctor = tokenType.GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic).First();
+    return (Token) ctor.Invoke(new[] {extent, kind, null});
   }
 
   public static TypeConstraintAst TypeAttr<T>() {
@@ -121,6 +144,10 @@ public static class MakeAstUtils {
 
   public static IList<T> List<T>(params T[] expressions) {
     return expressions.ToList();
+  }
+
+  public static Tuple<T1, T2> Tuple<T1, T2>(T1 t1, T2 t2) {
+    return new Tuple<T1, T2>(t1, t2);
   }
 
   private static string GetTypeFullName<T>() {
