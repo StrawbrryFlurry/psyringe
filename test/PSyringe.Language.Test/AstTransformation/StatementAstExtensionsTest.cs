@@ -40,6 +40,8 @@ public class StatementAstExtensionsTest {
   [Fact]
   public void ToStringFromAst_FunctionDefinitionAst() {
     // var sut = new FunctionDefinitionAst();
+    // {}.IsFilter => Filter Foo {  }
+    // {}.IsConfiguration => Configuration Foo {  }
   }
 
   # endregion

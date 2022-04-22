@@ -1,5 +1,4 @@
 - [ ] SequencePointAst : Ast
-- [ ] ScriptBlockAst : Ast, IParameterMetadataProvider
 - [ ] NamedBlockAst : Ast
 - [ ] ScriptBlockExpressionAst : ExpressionAst
 - [ ] ArrayExpressionAst : ExpressionAst
@@ -8,8 +7,8 @@
 
 # Weird
 
-- [ ] DataStatementAst : StatementAst
-- [ ] ConfigurationDefinitionAst : StatementAst
+- [ ] DataStatementAst : StatementAst `Data Foo { }`
+- [ ] ConfigurationDefinitionAst `Configuration Foo { }`
 - [ ] DynamicKeywordStatementAst : StatementAst
 
 # Class
@@ -80,6 +79,7 @@
 - [x] MergingRedirectionAst : RedirectionAst
 - [x] FileRedirectionAst : RedirectionAst
 - [x] ParamBlockAst : Ast
+- [x] ScriptBlockAst : Ast, IParameterMetadataProvider
 - [x] HashtableAst : ExpressionAst
 
 ## Commands

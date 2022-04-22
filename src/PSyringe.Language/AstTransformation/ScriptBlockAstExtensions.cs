@@ -15,24 +15,31 @@ public static class ScriptBlockAstExtensions {
 
     var scriptBlock = new StringBuilder();
 
-
     if (requirements is not null) {
       AppendScriptRequirements(scriptBlock, requirements);
     }
 
     if (!isRootScriptBlock) {
       scriptBlock.Append(attributes);
-      scriptBlock.Append('{');
+      scriptBlock.AppendLine("{");
     }
 
     AppendLineIfNotNull(scriptBlock, usingStatements);
     AppendLineIfNotNull(scriptBlock, paramBlock);
 
-    AppendBlock(scriptBlock, ast.DynamicParamBlock);
-    AppendBlock(scriptBlock, ast.BeginBlock);
-    AppendBlock(scriptBlock, ast.ProcessBlock);
-    AppendBlock(scriptBlock, ast.EndBlock);
-    AppendBlock(scriptBlock, ast.CleanBlock);
+    if (!HasNoNamedBlocks(ast)) {
+      AppendBlock(scriptBlock, ast.DynamicParamBlock);
+      AppendBlock(scriptBlock, ast.BeginBlock);
+      AppendBlock(scriptBlock, ast.ProcessBlock);
+      AppendBlock(scriptBlock, ast.EndBlock);
+      AppendBlock(scriptBlock, ast.CleanBlock);
+    }
+    else {
+      var statements = ast.EndBlock.Statements?.ToStringFromAstJoinBy(NewLine);
+      var traps = ast.EndBlock.Traps?.ToStringFromAstJoinBy(NewLine);
+      AppendLineIfNotNull(scriptBlock, statements);
+      AppendLineIfNotNull(scriptBlock, traps);
+    }
 
     if (!isRootScriptBlock) {
       scriptBlock.Append('}');
@@ -55,7 +62,7 @@ public static class ScriptBlockAstExtensions {
   private static void AppendScriptRequirements(StringBuilder sb, ScriptRequirements requirements) {
     var assemblies = requirements.RequiredAssemblies.Select(e => $"#requires -Assembly {e};").JoinBy(NewLine);
     var modules = requirements.RequiredModules.Select(e => $"#requires -Module {e};").JoinBy(NewLine);
-    var psEditions = requirements.RequiredPSEditions.Select(e => $"#requires -PSEdition {e}").JoinBy(NewLine);
+    var psEditions = requirements.RequiredPSEditions.Select(e => $"#requires -PSEdition {e};").JoinBy(NewLine);
     var psSnapins = requirements.RequiresPSSnapIns
                                 .Select(e => $"#requires -PSSnapin {e.Name} -Version {e.Version};")
                                 .JoinBy(NewLine);
@@ -72,5 +79,26 @@ public static class ScriptBlockAstExtensions {
     if (requirements.RequiredPSVersion is not null) {
       sb.AppendLine($"#requires -Version {requirements.RequiredPSVersion};");
     }
+  }
+
+  /// <summary>
+  ///   When a ScriptBlock has no defined blocks
+  ///   e.g. is defined like so:
+  ///   <code>
+  /// {
+  ///   "Do Something!"
+  /// }
+  /// </code>
+  ///   The parser puts the statements as a named block into
+  ///   the EndBlock of the AST.
+  /// </summary>
+  /// <param name="ast"></param>
+  /// <returns></returns>
+  private static bool HasNoNamedBlocks(ScriptBlockAst ast) {
+    return ast.BeginBlock is null &&
+           ast.ProcessBlock is null &&
+           ast.CleanBlock is null &&
+           ast.DynamicParamBlock is null &&
+           ast.EndBlock is not null;
   }
 }

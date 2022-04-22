@@ -1,7 +1,11 @@
+using System.Collections.Generic;
 using System.Management.Automation;
 using System.Management.Automation.Language;
+using System.Reflection;
+using System.Runtime.Serialization;
 using FluentAssertions;
 using PSyringe.Language.AstTransformation;
+using PSyringe.Language.Test.Parsing.Utils;
 using Xunit;
 using static PSyringe.Language.Test.AstTransformation.Utils.MakeAstUtils;
 using static PSyringe.Language.Test.AstTransformation.Utils.AstConstants;
@@ -14,6 +18,8 @@ namespace PSyringe.Language.Test.AstTransformation;
 ///   any specific category and derive directly from `Ast`.
 /// </summary>
 public class AstExtensionsTest {
+  # region AttributeAst
+
   [Fact]
   public void ToStringFromAst_NamedAttributeArgumentAst() {
     var sut = NamedArg("Name", Const(One));
@@ -87,6 +93,10 @@ public class AstExtensionsTest {
 
     actual.Should().Be($"[{nameof(ParameterAttribute)}({One}, Mandatory = {VarS(True)})]");
   }
+
+  #endregion
+
+  # region ParameterAst
 
   [Fact]
   public void ToStringFromAst_ParameterAst() {
@@ -181,7 +191,9 @@ public class AstExtensionsTest {
                        ")");
   }
 
-  #region ScriptBlock
+  #endregion
+
+  #region StatementBlockAst
 
   [Fact]
   public void ToStringFromAst_NamedBlockAst() {
@@ -247,21 +259,332 @@ public class AstExtensionsTest {
                        "}");
   }
 
+  #endregion
+
+  #region ScriptBlockAst
+
   [Fact]
-  public void ToStringFromAst_ScriptBlockAst() {
-    var sut = new ScriptBlockAst(EmptyExtent, ParamBlock(), null, null, null, null);
+  public void ToStringFromAst_EmptyRoot_ScriptBlockAst() {
+    var sut = ScriptBlock(true);
     var actual = sut.ToStringFromAst();
 
-    actual.Should().Be($"{{{NewLine}" +
+    actual.Should().Be("");
+  }
+
+  [Fact]
+  public void ToStringFromAst_SingleImplicitBlockRoot_ScriptBlockAst() {
+    var sut = ScriptBlock(null, Block(Pipeline(Const("Hi!"))), true);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be(DoubleQuote("Hi!") + NewLine);
+  }
+
+  [Fact]
+  public void ToStringFromAst_RootParam_ScriptBlockAst() {
+    var sut = ScriptBlock(true, null, ParamBlock());
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("param()" + NewLine);
+  }
+
+  [Fact]
+  public void ToStringFromAst_RootSingleBlock_ScriptBlockAst() {
+    var sut = ScriptBlock(true, null, null, NamedBlock(TokenKind.Begin));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("begin {" + NewLine +
+                       "}" + NewLine);
+  }
+
+  [Fact]
+  public void ToStringFromAst_RootAllBlocks_ScriptBlockAst() {
+    var sut = ScriptBlock(true, null, null,
+      NamedBlock(TokenKind.Begin),
+      NamedBlock(TokenKind.Process),
+      NamedBlock(TokenKind.End),
+      NamedBlock(TokenKind.Clean),
+      NamedBlock(TokenKind.Dynamicparam)
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("dynamicparam {" + NewLine +
+                       "}" + NewLine +
+                       "begin {" + NewLine +
+                       "}" + NewLine +
+                       "process {" + NewLine +
+                       "}" + NewLine +
+                       "end {" + NewLine +
+                       "}" + NewLine +
+                       "clean {" + NewLine +
+                       "}" + NewLine);
+  }
+
+  [Fact]
+  public void ToStringFromAst_RootBlockAndParam_ScriptBlockAst() {
+    var sut = ScriptBlock(true, null, ParamBlock(), NamedBlock(TokenKind.Begin));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("param()" + NewLine +
+                       "begin {" + NewLine +
+                       "}" + NewLine);
+  }
+
+  /// <summary>
+  ///   We only need to check using statements for "root" Script Blocks
+  ///   because they're not allowed in any other context.
+  /// </summary>
+  [Fact]
+  public void ToStringFromAst_RootUsingStatements_ScriptBlockAst() {
+    var usingStatements = List(
+      new UsingStatementAst(EmptyExtent, UsingStatementKind.Namespace, Const("System.Reflection"))
+    );
+    var sut = ScriptBlock(true, usingStatements);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"using namespace {DoubleQuote("System.Reflection")};"
+                       + NewLine);
+  }
+
+  [Fact]
+  public void ToStringFromAst_RootUsingStatementsParamBlock_ScriptBlockAst() {
+    var usingStatements = List(
+      new UsingStatementAst(EmptyExtent, UsingStatementKind.Namespace, Const("System.Reflection"))
+    );
+    var sut = ScriptBlock(true, usingStatements, ParamBlock());
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"using namespace {DoubleQuote("System.Reflection")};"
+                       + NewLine +
+                       "param()"
+                       + NewLine);
+  }
+
+  [Fact]
+  public void ToStringFromAst_RootScriptRequirements_ScriptBlockAst() {
+    // All setters are internal so this is
+    // the easiest way to get access to all of them.
+    var requirements = @"#requires -Assembly System.Reflection;
+#requires -Module @{ ModuleName = 'PSReadLine'; ModuleVersion = '0.12.0' };
+#requires -PSEdition Core;
+#requires -PSSnapin DiskSnapin -Version 1.2;
+#requires -RunAsAdministrator;
+#requires -Version 7.0;";
+    var requirementsAst = ParsingUtil.ParseScript(requirements).ScriptRequirements;
+    var usingStatements = List(
+      new UsingStatementAst(EmptyExtent, UsingStatementKind.Namespace, Const("System.Reflection"))
+    );
+    var sut = ScriptBlock(true, usingStatements);
+    SetScriptBlockRequirements(sut, requirementsAst);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be(requirements
+                       + NewLine +
+                       $"using namespace {DoubleQuote("System.Reflection")};"
+                       + NewLine);
+  }
+
+  [Fact]
+  public void ToStringFromAst_Empty_ScriptBlockAst() {
+    var sut = ScriptBlock(false);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("{"
+                       + NewLine +
                        "}");
   }
 
-  private ParamBlockAst ParamBlock(params ParameterAst[] parameters) {
+  [Fact]
+  public void ToStringFromAst_Block_ScriptBlockAst() {
+    var sut = ScriptBlock(null, null, NamedBlock(TokenKind.Begin));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("{" +
+                       NewLine + "begin {" +
+                       NewLine + "}" +
+                       NewLine +
+                       "}");
+  }
+
+
+  [Fact]
+  public void ToStringFromAst_Param_ScriptBlockAst() {
+    var sut = ScriptBlock(null, ParamBlock());
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("{" +
+                       NewLine + "param()" +
+                       NewLine +
+                       "}");
+  }
+
+
+  [Fact]
+  public void ToStringFromAst_BlockAndParam_ScriptBlockAst() {
+    var sut = ScriptBlock(null, ParamBlock(), NamedBlock(TokenKind.Begin));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("{" +
+                       NewLine + "param()" +
+                       NewLine + "begin {" +
+                       NewLine + "}" + NewLine +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_StatementsOnly_ScriptBlockAst() {
+    var sut = ScriptBlock(null, EmptyBlock());
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("{"
+                       + NewLine +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_ParamBlockStatementsOnly_ScriptBlockAst() {
+    var sut = ScriptBlock(ParamBlock(), EmptyBlock());
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("{"
+                       + NewLine +
+                       "param()"
+                       + NewLine +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Attribute_ScriptBlockAst() {
+    var sut = ScriptBlock(List(Attr<ParameterAttribute>()));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"{AttrS<ParameterAttribute>()}{{"
+                       + NewLine +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Attributes_ScriptBlockAst() {
+    var sut = ScriptBlock(
+      List(
+        Attr<ParameterAttribute>(),
+        Attr<CmdletAttribute>()
+      ));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"{AttrS<ParameterAttribute>()}{AttrS<CmdletAttribute>()}{{"
+                       + NewLine +
+                       "}");
+  }
+
+  #endregion
+
+  # region ScriptBlockAstUtils
+
+  private static ParamBlockAst ParamBlock(params ParameterAst[] parameters) {
     return new ParamBlockAst(EmptyExtent, null, parameters);
   }
 
-  private NamedBlockAst NamedBlock(TokenKind name, params StatementAst[] statements) {
+  private static NamedBlockAst NamedBlock(TokenKind name, params StatementAst[] statements) {
     return new NamedBlockAst(EmptyExtent, name, Block(statements), false);
+  }
+
+  private static void SetParent(Ast ast) {
+    var mockParent = FormatterServices.GetUninitializedObject(typeof(ScriptBlockAst));
+    var setParentBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty;
+    var astParentSetter = typeof(Ast).GetProperty("Parent", setParentBindingFlags)!;
+    astParentSetter.SetValue(ast, mockParent);
+  }
+
+  /// <summary>
+  ///   The ScriptBlockAst has a bunch of different overloads for the constructor
+  ///   that we don't really care about. The main ones are those that take
+  ///   a single list of statements and the ones that provide all sections
+  ///   of the script block.
+  ///   We can ignore `isFilter` and `isConfiguration` because they
+  ///   are taken care of by the FunctionDefinitionAst / ConfigurationStatementAst
+  ///   as which they are parsed.
+  /// </summary>
+  private static ScriptBlockAst ScriptBlock(
+    bool isRoot = false,
+    IEnumerable<UsingStatementAst>? usingStatements = null,
+    ParamBlockAst? paramBlock = null,
+    NamedBlockAst? beginBlock = null,
+    NamedBlockAst? processBlock = null,
+    NamedBlockAst? endBlock = null,
+    NamedBlockAst? cleanBlock = null,
+    NamedBlockAst? dynamicParamBlock = null
+  ) {
+    var sb = new ScriptBlockAst(
+      EmptyExtent,
+      usingStatements,
+      paramBlock,
+      beginBlock,
+      processBlock,
+      endBlock,
+      cleanBlock,
+      dynamicParamBlock
+    );
+
+    if (!isRoot) {
+      SetParent(sb);
+    }
+
+    return sb;
+  }
+
+  private static ScriptBlockAst ScriptBlock(
+    IEnumerable<AttributeAst>? attributes = null,
+    ParamBlockAst? paramBlock = null,
+    NamedBlockAst? beginBlock = null,
+    NamedBlockAst? processBlock = null,
+    NamedBlockAst? endBlock = null,
+    NamedBlockAst? cleanBlock = null,
+    NamedBlockAst? dynamicParamBlock = null
+  ) {
+    var sb = new ScriptBlockAst(
+      EmptyExtent,
+      null,
+      // Attributes make only sense in child script blocks
+      // as there is no way to declare them on a root ScriptBlock
+      attributes,
+      paramBlock,
+      beginBlock,
+      processBlock,
+      endBlock,
+      cleanBlock,
+      dynamicParamBlock
+    );
+
+    SetParent(sb);
+
+    return sb;
+  }
+
+  private static ScriptBlockAst ScriptBlock(
+    ParamBlockAst? paramBlock,
+    StatementBlockAst? statements,
+    bool isRoot = false
+  ) {
+    var sb = new ScriptBlockAst(
+      EmptyExtent,
+      paramBlock,
+      statements,
+      // IsFilter doesn't matter for these test cases
+      false
+    );
+
+    if (!isRoot) {
+      SetParent(sb);
+    }
+
+    return sb;
+  }
+
+  private static void SetScriptBlockRequirements(ScriptBlockAst sb, ScriptRequirements requirements) {
+    var setScriptBlockRequirementsBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty;
+    var scriptBlockRequirementsSetter =
+      typeof(ScriptBlockAst).GetProperty("ScriptRequirements", setScriptBlockRequirementsBindingFlags)!;
+    scriptBlockRequirementsSetter.SetValue(sb, requirements);
   }
 
   #endregion
