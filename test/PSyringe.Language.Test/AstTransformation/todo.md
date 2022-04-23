@@ -1,20 +1,5 @@
-- [ ] SequencePointAst : Ast
-- [ ] NamedBlockAst : Ast
-- [ ] ScriptBlockExpressionAst : ExpressionAst
-- [ ] ArrayExpressionAst : ExpressionAst
-- [ ] ParenExpressionAst : ExpressionAst, ISupportsAssignment
-- [ ] SubExpressionAst : ExpressionAst
-
-# Weird
-
-- [ ] DataStatementAst : StatementAst `Data Foo { }`
-- [ ] ConfigurationDefinitionAst `Configuration Foo { }`
-- [ ] DynamicKeywordStatementAst : StatementAst
-
 # Class
 
-- [ ] MemberExpressionAst : ExpressionAst, ISupportsAssignment
-- [ ] InvokeMemberExpressionAst : MemberExpressionAst, ISupportsAssignment
 - [ ] BaseCtorInvokeMemberExpressionAst : InvokeMemberExpressionAst
 - [ ] PropertyMemberAst : MemberAst
 - [ ] FunctionMemberAst : MemberAst,
@@ -52,12 +37,16 @@
 - [x] ExitStatementAst : StatementAst
 - [x] ThrowStatementAst : StatementAst
 - [x] BlockStatementAst : StatementAst
-- [ ] FunctionDefinitionAst : StatementAst, IParameterMetadataProvider
+- [x] FunctionDefinitionAst : StatementAst, IParameterMetadataProvider
+- [x] DataStatementAst : StatementAst `Data Foo { }`
+- [x] ConfigurationDefinitionAst `Configuration Foo { }`
+- [x] DynamicKeywordStatementAst : StatementAst
 
 ---
 
 # Done
 
+- [x] NamedBlockAst : Ast
 - [x] AttributedExpressionAst : ExpressionAst, ISupportsAssignment, IAssignableValue
 - [x] ConvertExpressionAst : AttributedExpressionAst, ISupportsAssignment
 - [x] TypeExpressionAst : ExpressionAst
@@ -81,6 +70,12 @@
 - [x] ParamBlockAst : Ast
 - [x] ScriptBlockAst : Ast, IParameterMetadataProvider
 - [x] HashtableAst : ExpressionAst
+- [x] ScriptBlockExpressionAst : ExpressionAst
+- [x] ArrayExpressionAst : ExpressionAst
+- [x] ParenExpressionAst : ExpressionAst, ISupportsAssignment
+- [x] SubExpressionAst : ExpressionAst
+- [x] MemberExpressionAst : ExpressionAst, ISupportsAssignment
+- [x] InvokeMemberExpressionAst : MemberExpressionAst, ISupportsAssignment
 
 ## Commands
 

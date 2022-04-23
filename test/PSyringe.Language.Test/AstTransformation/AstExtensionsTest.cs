@@ -14,10 +14,89 @@ using static PSyringe.Language.Test.AstTransformation.Utils.StringConstants;
 namespace PSyringe.Language.Test.AstTransformation;
 
 /// <summary>
-///   Generic AST elements that don't belong to
-///   any specific category and derive directly from `Ast`.
+///   Generic AST elements and ScriptBlocks
 /// </summary>
 public class AstExtensionsTest {
+  # region FunctionDefinitionAst
+
+  // {}.IsConfiguration => Configuration Foo {  }
+  [Fact]
+  public void ToStringFromAst_FunctionDefinitionAst() {
+    // We use the root overload for the ScriptBlock
+    // because the function needs to set itself as the parent
+    var sut = new FunctionDefinitionAst(EmptyExtent, false, false, "Foo", null, ScriptBlock(true));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("function Foo {"
+                       + NewLine +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Param_FunctionDefinitionAst() {
+    var paramList = List(
+      Param(Var("param1"))
+    );
+    var sut = new FunctionDefinitionAst(EmptyExtent, false, false, "Foo", paramList, ScriptBlock(true));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("function Foo ($param1) {"
+                       + NewLine +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Params_FunctionDefinitionAst() {
+    var paramList = List(
+      Param(Var("param1")),
+      Param(Var("param2"))
+    );
+    var sut = new FunctionDefinitionAst(EmptyExtent, false, false, "Foo", paramList, ScriptBlock(true));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("function Foo ($param1, $param2) {"
+                       + NewLine +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Workflow_FunctionDefinitionAst() {
+    var sut = new FunctionDefinitionAst(EmptyExtent, false, true, "Foo", null, ScriptBlock(true));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("workflow Foo {"
+                       + NewLine +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Filter_FunctionDefinitionAst() {
+    var sut = new FunctionDefinitionAst(EmptyExtent, true, false, "Foo", null, ScriptBlock(true));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("filter Foo {"
+                       + NewLine +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_ScriptBlockParams_FunctionDefinitionAst() {
+    var paramBlock = ParamBlock(
+      Param(Var("param"))
+    );
+    var sut = new FunctionDefinitionAst(EmptyExtent, false, false, "Foo", null, ScriptBlock(true, null, paramBlock));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("function Foo {"
+                       + NewLine + "param("
+                       + NewLine + "$param"
+                       + NewLine + ")"
+                       + NewLine +
+                       "}");
+  }
+
+  # endregion
+
   # region AttributeAst
 
   [Fact]

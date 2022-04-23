@@ -4,6 +4,7 @@ namespace PSyringe.Language.AstTransformation;
 
 public static class ScriptBlockExpressionAstExtensions {
   public static string ToStringFromAst(this ScriptBlockExpressionAst ast) {
-    return default;
+    var sb = ast.ScriptBlock.ToStringFromAst();
+    return sb;
   }
 }

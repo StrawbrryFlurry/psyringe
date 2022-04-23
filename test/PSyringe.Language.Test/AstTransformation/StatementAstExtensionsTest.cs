@@ -17,34 +17,12 @@ public class StatementAstExtensionsTest {
   public void ToStringFromAst_ErrorStatementAst() {
     // Internal constructor
     var sut = (ErrorStatementAst) FormatterServices.GetUninitializedObject(typeof(ErrorStatementAst));
-    var actual = sut.ToStringFromAst();
+    var action = () => sut.ToStringFromAst();
 
-    actual.Should().Be("");
+    action.Should().Throw<Exception>();
   }
 
   #endregion
-
-  [Fact]
-  public void ToStringFromAst_DataStatementAst() {
-    // var sut = new DataStatementAst();
-  }
-
-  [Fact]
-  public void ToStringFromAst_DynamicKeywordStatementAst() {
-    var sut = new DynamicKeywordStatementAst(EmptyExtent, List(Const("")));
-    // var sut = new DataStatementAst();
-  }
-
-  # region FunctionDefinitionAst
-
-  [Fact]
-  public void ToStringFromAst_FunctionDefinitionAst() {
-    // var sut = new FunctionDefinitionAst();
-    // {}.IsFilter => Filter Foo {  }
-    // {}.IsConfiguration => Configuration Foo {  }
-  }
-
-  # endregion
 
   #region UsingStatementAst
 
@@ -54,6 +32,52 @@ public class StatementAstExtensionsTest {
     var actual = sut.ToStringFromAst();
 
     actual.Should().Be($"using namespace {DoubleQuote("System.Reflection")};");
+  }
+
+  #endregion
+
+  # region DscAsts
+
+  [Fact(Skip = "Not sure if DSC should be supported")]
+  public void ToStringFromAst_ConfigurationDefinitionAst() {
+    var _ = new ConfigurationDefinitionAst(EmptyExtent, null, ConfigurationType.Meta, Const(""));
+    var __ = new DynamicKeywordStatementAst(EmptyExtent, List(Const("")));
+  }
+
+  #endregion
+
+  # region DataStatementAst
+
+  [Fact]
+  public void ToStringFromAst_DataStatementAst() {
+    var sut = new DataStatementAst(EmptyExtent, "Foo", null, EmptyBlock());
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("data Foo {"
+                       + NewLine +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_SupportedCommand_DataStatementAst() {
+    var supportedCommands = List(CmdStr("Get-Foo"));
+    var sut = new DataStatementAst(EmptyExtent, "Foo", supportedCommands, EmptyBlock());
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("data Foo -SupportedCommand Get-Foo {"
+                       + NewLine +
+                       "}");
+  }
+
+  [Fact]
+  public void ToStringFromAst_SupportedCommands_DataStatementAst() {
+    var supportedCommands = List(CmdStr("Get-Foo"), CmdStr("Set-Foo"));
+    var sut = new DataStatementAst(EmptyExtent, "Foo", supportedCommands, EmptyBlock());
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("data Foo -SupportedCommand Get-Foo, Set-Foo {"
+                       + NewLine +
+                       "}");
   }
 
   #endregion

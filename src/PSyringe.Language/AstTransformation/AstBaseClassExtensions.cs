@@ -13,23 +13,6 @@ public static class AstBaseClassExtensions {
     return ast.InvokeExtensionMethodInAssemblyForConcreteType<string>(nameof(ToStringFromAst));
   }
 
-  /// <summary>
-  ///   For certain AST types like <see cref="StatementBlockAst" />, the brackets
-  ///   may or may not be included as part of the parent. For example, the
-  ///   FunctionDefinitionAst has a StatementBlockAst as its body, but the brackets
-  ///   are added by the FunctionDefinitionAst itself.
-  /// </summary>
-  public static bool AreStatementBracketsIncluded(this Ast ast) {
-    try {
-      return ast.InvokeExtensionMethodInAssemblyForConcreteType<bool>(nameof(AreStatementBracketsIncluded));
-    }
-    // Could not find extension method for concrete type.
-    catch {
-      // By default the brackets are not included.
-      return false;
-    }
-  }
-
   public static IList<string> ToStringListFromAst(this IEnumerable<Ast> asts) {
     var astStrings = asts.Select(a => a.ToStringFromAst()).ToList();
     return astStrings;

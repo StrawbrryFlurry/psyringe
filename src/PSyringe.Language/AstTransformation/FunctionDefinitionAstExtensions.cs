@@ -4,10 +4,21 @@ namespace PSyringe.Language.AstTransformation;
 
 public static class FunctionDefinitionAstExtensions {
   public static string ToStringFromAst(this FunctionDefinitionAst ast) {
-    return default;
+    var keyword = GetFunctionKeywordUsed(ast);
+    var functionName = ast.Name;
+    var body = ast.Body.ToStringFromAst();
+    var parameters = ast.Parameters?.ToStringFromAstJoinBy(", ");
+
+    var parameterString = parameters is null ? "" : $" ({parameters})";
+
+    return $"{keyword} {functionName}{parameterString} {body}";
   }
 
-  public static bool AreStatementBracketsIncluded(this FunctionDefinitionAst ast) {
-    return true;
+  private static string GetFunctionKeywordUsed(FunctionDefinitionAst ast) {
+    return ast switch {
+      {IsFilter: true} => "filter",
+      {IsWorkflow: true} => "workflow",
+      _ => "function"
+    };
   }
 }

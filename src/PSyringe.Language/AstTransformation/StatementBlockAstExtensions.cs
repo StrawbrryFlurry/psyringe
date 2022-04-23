@@ -5,14 +5,13 @@ using static PSyringe.Language.Compiler.CompilerScriptText;
 namespace PSyringe.Language.AstTransformation;
 
 public static class StatementBlockAstExtensions {
-  public static string ToStringFromAst(this StatementBlockAst ast) {
+  public static string ToStringFromAst(this StatementBlockAst ast, bool includeBrackets = true) {
     var statements = ast.Statements?.ToStringFromAstJoinBy($";{NewLine}");
     var traps = ast.Traps?.ToStringFromAstJoinBy($"{NewLine}{NewLine}");
     var block = new StringBuilder();
 
-    var shouldAddBrackets = !ast.Parent.AreStatementBracketsIncluded();
 
-    if (shouldAddBrackets) {
+    if (includeBrackets) {
       block.AppendLine("{");
     }
 
@@ -28,7 +27,7 @@ public static class StatementBlockAstExtensions {
       block.AppendLine(traps);
     }
 
-    if (shouldAddBrackets) {
+    if (includeBrackets) {
       block.Append('}');
     }
 

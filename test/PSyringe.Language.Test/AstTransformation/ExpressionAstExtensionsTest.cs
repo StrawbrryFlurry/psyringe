@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Management.Automation.Language;
 using System.Runtime.Serialization;
@@ -254,9 +255,9 @@ public class ExpressionAstExtensionsTest {
   public void ToStringFromAst_ReturnsEmpty_ErrorExpressionAst() {
     // Internal constructor
     var sut = (ErrorExpressionAst) FormatterServices.GetUninitializedObject(typeof(ErrorExpressionAst));
-    var actual = sut.ToStringFromAst();
+    var action = () => sut.ToStringFromAst();
 
-    actual.Should().Be("");
+    action.Should().Throw<Exception>();
   }
 
   [Fact]
@@ -336,4 +337,251 @@ public class ExpressionAstExtensionsTest {
                        $"Prop2 = {DoubleQuote("Value")};{NewLine}" +
                        "}");
   }
+
+  #region ScriptBlockExpressionAst
+
+  [Fact]
+  public void ToStringFromAst_ScriptBlockExpressionAst() {
+    var sut = new ScriptBlockExpressionAst(EmptyExtent, new ScriptBlockAst(EmptyExtent, null, EmptyBlock(), false));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("{"
+                       + NewLine +
+                       "}");
+  }
+
+  #endregion
+
+  #region ArrayExpressionAst
+
+  [Fact]
+  public void ToStringFromAst_ArrayExpressionAst() {
+    var sut = new ArrayExpressionAst(EmptyExtent, EmptyBlock());
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("@()");
+  }
+
+  [Fact]
+  public void ToStringFromAst_OneElement_ArrayExpressionAst() {
+    var sut = new ArrayExpressionAst(EmptyExtent, Block(Const("Foo")));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"@({DoubleQuote("Foo")})");
+  }
+
+  [Fact]
+  public void ToStringFromAst_TwoElements_ArrayExpressionAst() {
+    var sut = new ArrayExpressionAst(EmptyExtent, Block(Const("Foo"), Const("Bar")));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"@({DoubleQuote("Foo")}, {DoubleQuote("Bar")})");
+  }
+
+  #endregion
+
+  #region SubExpressionAst
+
+  [Fact]
+  public void ToStringFromAst_SubExpressionAst() {
+    var sut = new SubExpressionAst(EmptyExtent, EmptyBlock());
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("$()");
+  }
+
+  [Fact]
+  public void ToStringFromAst_SubExpression_SubExpressionAst() {
+    var sut = new SubExpressionAst(EmptyExtent, Block(Const(1)));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("$(1;"
+                       + NewLine +
+                       ")");
+  }
+
+  #endregion
+
+  #region ParenExpressionAst
+
+  [Fact]
+  public void ToStringFromAst_ParenExpressionAst() {
+    var sut = new ParenExpressionAst(EmptyExtent, Pipeline(Const(1)));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("(1)");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Command_ParenExpressionAst() {
+    var sut = new ParenExpressionAst(EmptyExtent, Pipeline(CmdStr("Get-Foo")));
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("(Get-Foo)");
+  }
+
+  #endregion
+
+  #region MemberExpressionAst
+
+  [Fact]
+  public void ToStringFromAst_MemberExpressionAst() {
+    var sut = new MemberExpressionAst(
+      EmptyExtent,
+      Var("Foo"),
+      CmdStr("Invoke"),
+      false
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"{VarS("Foo")}.Invoke");
+  }
+
+  [Fact]
+  public void ToStringFromAst_NullConditional_MemberExpressionAst() {
+    var sut = new MemberExpressionAst(
+      EmptyExtent,
+      Var("Foo"),
+      CmdStr("Invoke"),
+      false,
+      true
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"{VarS("Foo")}?.Invoke");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Static_MemberExpressionAst() {
+    var sut = new MemberExpressionAst(
+      EmptyExtent,
+      TypeExpression<string>(),
+      CmdStr("NullOrEmpty"),
+      true
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("[System.String]::NullOrEmpty");
+  }
+
+  [Fact]
+  public void ToStringFromAst_StaticGeneric_MemberExpressionAst() {
+    var sut = new MemberExpressionAst(
+      EmptyExtent,
+      TypeExpression<Array>(),
+      CmdStr("Empty"),
+      true,
+      false,
+      List(MakeTypeName<string>())
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("[System.Array]::Empty[System.String]");
+  }
+
+  [Fact]
+  public void ToStringFromAst_StaticGenerics_MemberExpressionAst() {
+    var sut = new MemberExpressionAst(
+      EmptyExtent,
+      TypeExpression<Array>(),
+      CmdStr("Empty"),
+      true,
+      false,
+      List(MakeTypeName<string>(), MakeTypeName<int>())
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("[System.Array]::Empty[System.String, System.Int32]");
+  }
+
+  #endregion
+
+  #region InvokeMemberExpressionAst
+
+  // Some tests are already covered by MemberExpressionAst
+
+  [Fact]
+  public void ToStringFromAst_InvokeMemberExpressionAst() {
+    var sut = new InvokeMemberExpressionAst(
+      EmptyExtent,
+      Var("Foo"),
+      CmdStr("Invoke"),
+      List<ExpressionAst>(),
+      false
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"{VarS("Foo")}.Invoke()");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Argument_InvokeMemberExpressionAst() {
+    var sut = new InvokeMemberExpressionAst(
+      EmptyExtent,
+      Var("Foo"),
+      CmdStr("Invoke"),
+      List(Const(1)),
+      false
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"{VarS("Foo")}.Invoke(1)");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Arguments_InvokeMemberExpressionAst() {
+    var sut = new InvokeMemberExpressionAst(
+      EmptyExtent,
+      Var("Foo"),
+      CmdStr("Invoke"),
+      List(Const(1), Const(2)),
+      false
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"{VarS("Foo")}.Invoke(1, 2)");
+  }
+
+  [Fact]
+  public void ToStringFromAst_Static_InvokeMemberExpressionAst() {
+    var sut = new InvokeMemberExpressionAst(
+      EmptyExtent,
+      TypeExpression<string>(),
+      CmdStr("NullOrEmpty"),
+      List<ExpressionAst>(),
+      true
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("[System.String]::NullOrEmpty()");
+  }
+
+  [Fact]
+  public void ToStringFromAst_StaticArgument_InvokeMemberExpressionAst() {
+    var sut = new InvokeMemberExpressionAst(
+      EmptyExtent,
+      TypeExpression<string>(),
+      CmdStr("NullOrEmpty"),
+      List(Var("Str")),
+      true
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"[System.String]::NullOrEmpty({VarS("Str")})");
+  }
+
+  [Fact]
+  public void ToStringFromAst_StaticArguments_InvokeMemberExpressionAst() {
+    var sut = new InvokeMemberExpressionAst(EmptyExtent,
+      TypeExpression<string>(),
+      CmdStr("NullOrEmpty"),
+      List(Var("Str"), Var("false")),
+      true
+    );
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be($"[System.String]::NullOrEmpty({VarS("Str")}, {VarS("false")})");
+  }
+
+  #endregion
 }

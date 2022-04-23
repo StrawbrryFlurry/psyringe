@@ -134,6 +134,10 @@ public static class MakeAstUtils {
       MakeTypeName<T>(), genericTypes);
   }
 
+  public static TypeExpressionAst TypeExpression<T>() {
+    return new TypeExpressionAst(EmptyExtent, MakeTypeName<T>());
+  }
+
   public static IList<ExpressionAst> ExprList(params ExpressionAst[] expressions) {
     return expressions.ToList();
   }

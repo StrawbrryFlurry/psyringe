@@ -4,6 +4,12 @@ namespace PSyringe.Language.AstTransformation;
 
 public static class DataStatementAstExtensions {
   public static string ToStringFromAst(this DataStatementAst ast) {
-    return default;
+    var allowedCommands = ast.CommandsAllowed?.ToStringFromAstJoinBy(", ");
+    var variable = ast.Variable;
+    var body = ast.Body.ToStringFromAst();
+
+    var commandString = allowedCommands is null ? "" : $" -SupportedCommand {allowedCommands}";
+
+    return $"data {variable}{commandString} {body}";
   }
 }

@@ -4,6 +4,8 @@ namespace PSyringe.Language.AstTransformation;
 
 public static class ParenExpressionAstExtensions {
   public static string ToStringFromAst(this ParenExpressionAst ast) {
-    return default;
+    var expression = ast.Pipeline.ToStringFromAst();
+
+    return $"({expression})";
   }
 }
