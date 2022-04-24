@@ -10,7 +10,7 @@ public static class CompilerScriptText {
   ///  $SomeVariable = <![CDATA[ <# COMPILER GENERATED VARIABLE #> ]]> $ɵɵvar;
   /// </code>
   /// </summary>
-  public const string GeneratedVariableInline = "<# COMPILER GENERATED VARIABLE #>";
+  public const string InlineExpression = "<# COMPILER GENERATED VARIABLE #>";
 
   /// <summary>
   ///   Comment inserted above a compiler generated script block or code section.
@@ -22,7 +22,7 @@ public static class CompilerScriptText {
   ///   # }
   ///   </code>
   /// </summary>
-  public const string GeneratedScriptBlockOpen = "# COMPILER GENERATED CODE {";
+  public const string BlockOpen = "# COMPILER GENERATED CODE {";
 
   /// <summary>
   ///   Comment inserted below a compiler generated script block or code section.
@@ -34,5 +34,5 @@ public static class CompilerScriptText {
   ///   # }
   ///   </code>
   /// </summary>
-  public const string GeneratedScriptBlockClose = "# }";
+  public const string BlockClose = "# }";
 }

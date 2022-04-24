@@ -14,17 +14,8 @@ namespace PSyringe.Language.Test.AstTransformation;
 ///   Generic AST elements and ScriptBlocks
 /// </summary>
 public class AstExtensionsTest {
-  # region CompilerGeneratedAst
-
-  [Fact]
-  public void ToStringFromAst_CompilerGeneratedAst() {
-  }
-
-  # endregion
-
   # region FunctionDefinitionAst
 
-  // {}.IsConfiguration => Configuration Foo {  }
   [Fact]
   public void ToStringFromAst_FunctionDefinitionAst() {
     // We use the root overload for the ScriptBlock
