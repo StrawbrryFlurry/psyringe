@@ -6,8 +6,9 @@ namespace PSyringe.Language.AstTransformation;
 public static class AttributeAstExtensions {
   public static string ToStringFromAst(this AttributeAst ast) {
     // We use the reflection type rather than the full name to
-    // make the resulting more readable.
-    var name = ast.TypeName.GetReflectionType().Name;
+    // make the resulting name more readable. We fall back to
+    // the name in case the type is not found.
+    var name = ast.TypeName.GetReflectionType()?.Name ?? ast.TypeName.FullName;
     var namedArguments = ast.NamedArguments.Select(a => a.ToStringFromAst()).ToList();
     var positionalArguments = ast.PositionalArguments.Select(a => a.ToStringFromAst()).ToList();
 

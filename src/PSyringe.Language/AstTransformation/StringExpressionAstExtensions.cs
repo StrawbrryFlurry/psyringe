@@ -1,4 +1,6 @@
 using System.Management.Automation.Language;
+using static System.Management.Automation.Language.StringConstantType;
+using static PSyringe.Language.Compiler.CompilerScriptText;
 
 namespace PSyringe.Language.AstTransformation;
 
@@ -16,14 +18,32 @@ public static class StringConstantExpressionAstExtensions {
   }
 
   private static string QuoteStringExpression(string value, StringConstantType type) {
+    FixStringEscapes(ref value, type);
+
     return type switch {
-      StringConstantType.BareWord => value,
-      StringConstantType.DoubleQuoted => DoubleQuote(value),
-      StringConstantType.DoubleQuotedHereString => $"@{DoubleQuote(value)}@",
-      StringConstantType.SingleQuoted => SingleQuote(value),
-      StringConstantType.SingleQuotedHereString => $"@{SingleQuote(value)}@",
+      BareWord => value,
+      DoubleQuoted => DoubleQuote(value),
+      DoubleQuotedHereString => $"@\"{NewLine}{value}{NewLine}\"@",
+      SingleQuoted => SingleQuote(value),
+      SingleQuotedHereString => $"@'{NewLine}{value}{NewLine}'@",
       _ => ""
     };
+  }
+
+  /// <summary>
+  ///   The parser will remove string escapes such as
+  ///   <code>
+  ///  'It''s me!'
+  ///  </code>
+  ///   So we need to add them back.
+  /// </summary>
+  private static void FixStringEscapes(ref string str, StringConstantType type) {
+    if (type is DoubleQuoted or DoubleQuotedHereString) {
+      str = str.Replace("\"", "\"\"");
+    }
+    else if (type is SingleQuoted or SingleQuotedHereString) {
+      str = str.Replace("'", "''");
+    }
   }
 
   private static string SingleQuote(object value) {

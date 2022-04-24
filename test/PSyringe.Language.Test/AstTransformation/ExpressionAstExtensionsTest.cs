@@ -82,7 +82,7 @@ public class ExpressionAstExtensionsTest {
     var sut = new StringConstantExpressionAst(EmptyExtent, ConstantString, StringConstantType.DoubleQuotedHereString);
     var actual = sut.ToStringFromAst();
 
-    actual.Should().Be($"@{DoubleQuote(ConstantString)}@");
+    actual.Should().Be($"@\"{NewLine}{ConstantString}{NewLine}\"@");
   }
 
   [Fact]
@@ -90,7 +90,24 @@ public class ExpressionAstExtensionsTest {
     var sut = new StringConstantExpressionAst(EmptyExtent, ConstantString, StringConstantType.SingleQuotedHereString);
     var actual = sut.ToStringFromAst();
 
-    actual.Should().Be($"@{SingleQuote(ConstantString)}@");
+    actual.Should().Be($"@'{NewLine}{ConstantString}{NewLine}'@");
+  }
+
+
+  [Fact]
+  public void ToStringFromAst_EscapedStringSingle_StringConstantExpressionAst() {
+    var sut = new StringConstantExpressionAst(EmptyExtent, "It's me!", StringConstantType.SingleQuoted);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("'It''s me!'");
+  }
+
+  [Fact]
+  public void ToStringFromAst_EscapedStringDouble_StringConstantExpressionAst() {
+    var sut = new StringConstantExpressionAst(EmptyExtent, "It\"s me!", StringConstantType.DoubleQuoted);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be("\"It\"\"s me!\"");
   }
 
   [Fact]
@@ -123,7 +140,6 @@ public class ExpressionAstExtensionsTest {
   [Fact]
   public void ToStringFromAst_SplattedVariableExpression() {
     var variableExpression = new VariableExpressionAst(EmptyExtent, $"{VariableName}", true);
-
     var actual = variableExpression.ToStringFromAst();
 
     actual.Should().Be(VarS(VariableName, true));
@@ -143,7 +159,7 @@ public class ExpressionAstExtensionsTest {
     var sut = new ArrayLiteralAst(EmptyExtent, ExprList(Const(One)));
     var actual = sut.ToStringFromAst();
 
-    actual.Should().Be($"@({One})");
+    actual.Should().Be($"{One}");
   }
 
   [Fact]
@@ -151,7 +167,7 @@ public class ExpressionAstExtensionsTest {
     var sut = new ArrayLiteralAst(EmptyExtent, ExprList(Const(One), Const(Two)));
     var actual = sut.ToStringFromAst();
 
-    actual.Should().Be($"@({One}, {Two})");
+    actual.Should().Be($"{One}, {Two}");
   }
 
   [Fact]
