@@ -6,7 +6,8 @@ namespace PSyringe.Language.AstTransformation;
 
 public static class StringConstantExpressionAstExtensions {
   public static string ToStringFromAst(this StringConstantExpressionAst ast) {
-    return QuoteStringExpression(ast.Value, ast.StringConstantType);
+    var escapedString = FixStringEscapes(ast.Value, ast.StringConstantType);
+    return QuoteStringExpression(escapedString, ast.StringConstantType);
   }
 
   /// <summary>
@@ -18,8 +19,6 @@ public static class StringConstantExpressionAstExtensions {
   }
 
   private static string QuoteStringExpression(string value, StringConstantType type) {
-    FixStringEscapes(ref value, type);
-
     return type switch {
       BareWord => value,
       DoubleQuoted => DoubleQuote(value),
@@ -37,13 +36,15 @@ public static class StringConstantExpressionAstExtensions {
   ///  </code>
   ///   So we need to add them back.
   /// </summary>
-  private static void FixStringEscapes(ref string str, StringConstantType type) {
+  private static string FixStringEscapes(string str, StringConstantType type) {
     if (type is DoubleQuoted or DoubleQuotedHereString) {
       str = str.Replace("\"", "\"\"");
     }
     else if (type is SingleQuoted or SingleQuotedHereString) {
       str = str.Replace("'", "''");
     }
+
+    return str;
   }
 
   private static string SingleQuote(object value) {

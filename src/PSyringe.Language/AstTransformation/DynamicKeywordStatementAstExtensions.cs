@@ -4,6 +4,6 @@ namespace PSyringe.Language.AstTransformation;
 
 public static class DynamicKeywordStatementAstExtensions {
   public static string ToStringFromAst(this DynamicKeywordStatementAst ast) {
-    return default;
+    throw new NotImplementedException("DSC ASTs are not yet supported");
   }
 }

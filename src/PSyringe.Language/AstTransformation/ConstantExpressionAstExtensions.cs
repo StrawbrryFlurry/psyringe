@@ -11,7 +11,7 @@ public static class ConstantExpressionAstExtensions {
     // has an implicit parameter e.g. [Parameter(ValueFromPipeline)]
     // in which case the value is true.
     if (ast.StaticType == typeof(bool)) {
-      return TrueVariable;
+      return True;
     }
 
     return value.ToString()!;
