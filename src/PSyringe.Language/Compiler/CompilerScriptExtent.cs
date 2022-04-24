@@ -15,7 +15,7 @@ public class CompilerScriptExtent : IScriptExtent {
     Text = text;
   }
 
-  public string File => null!;
+  public string? File => null;
 
   /// <summary>
   ///   Compiled script text that is going to be executed
