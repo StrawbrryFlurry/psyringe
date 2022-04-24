@@ -18,7 +18,7 @@ public static class AstExtensionUtils {
     var values = Enum.GetValues<T>();
 
     foreach (var value in values) {
-      if (value.Equals(excludeFlags)) {
+      if (excludeFlags.HasFlag(value)) {
         continue;
       }
 

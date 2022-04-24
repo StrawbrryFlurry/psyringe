@@ -1,9 +1,9 @@
 # Class
 
-- [ ] BaseCtorInvokeMemberExpressionAst : InvokeMemberExpressionAst
-- [ ] PropertyMemberAst : MemberAst
-- [ ] FunctionMemberAst : MemberAst,
-- [ ] TypeDefinitionAst : StatementAst
+- [x] BaseCtorInvokeMemberExpressionAst : InvokeMemberExpressionAst
+- [x] PropertyMemberAst : MemberAst
+- [x] FunctionMemberAst : MemberAst,
+- [x] TypeDefinitionAst : StatementAst
 
 ---
 

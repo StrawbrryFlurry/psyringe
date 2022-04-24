@@ -4,6 +4,8 @@ namespace PSyringe.Language.AstTransformation;
 
 public static class BaseCtorInvokeMemberExpressionAstExtensions {
   public static string ToStringFromAst(this BaseCtorInvokeMemberExpressionAst ast) {
-    return default;
+    var args = ast.Arguments?.ToStringFromAstJoinBy(", ") ?? "";
+
+    return $"base({args})";
   }
 }

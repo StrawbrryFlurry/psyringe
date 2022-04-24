@@ -506,7 +506,7 @@ public class ExpressionAstExtensionsTest {
       EmptyExtent,
       Var("Foo"),
       CmdStr("Invoke"),
-      List<ExpressionAst>(),
+      ExprList(),
       false
     );
     var actual = sut.ToStringFromAst();
@@ -548,7 +548,7 @@ public class ExpressionAstExtensionsTest {
       EmptyExtent,
       TypeExpression<string>(),
       CmdStr("NullOrEmpty"),
-      List<ExpressionAst>(),
+      ExprList(),
       true
     );
     var actual = sut.ToStringFromAst();

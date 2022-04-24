@@ -51,11 +51,10 @@ public static class ExtensionMethodFinder {
   }
 
   private static IEnumerable<MethodInfo> GetAllExtensionMethodsInAssembly() {
-    var m = TypeInAssembly.Assembly.GetTypes()
-                          .Select(c => c.GetMethods(ExtensionMethodBindingFlags)
-                                        .Where(IsMethodExtensionMethod)
-                          ).SelectMany(m => m);
-    return m;
+    return TypeInAssembly.Assembly.GetTypes()
+                         .Select(c => c.GetMethods(ExtensionMethodBindingFlags)
+                                       .Where(IsMethodExtensionMethod)
+                         ).SelectMany(m => m);
   }
 
   private static bool IsMethodExtensionMethod(MethodInfo method) {

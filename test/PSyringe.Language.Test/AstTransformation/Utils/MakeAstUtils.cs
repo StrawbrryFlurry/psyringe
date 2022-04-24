@@ -89,9 +89,16 @@ public static class MakeAstUtils {
     return new AssignmentStatementAst(EmptyExtent, left, TokenKind.Equals, Statement(right), EmptyExtent);
   }
 
-
   public static TrapStatementAst Trap(params StatementAst[] elements) {
     return new TrapStatementAst(EmptyExtent, null, Block(elements));
+  }
+
+  public static FunctionDefinitionAst Function(
+    string name,
+    IEnumerable<ParameterAst>? parameters,
+    ScriptBlockAst body
+  ) {
+    return new FunctionDefinitionAst(EmptyExtent, false, false, name, parameters, body);
   }
 
   public static Token Token(TokenKind kind) {
@@ -161,6 +168,123 @@ public static class MakeAstUtils {
   private static string GetTypeFullName(Type type) {
     return type.FullName();
   }
+
+  # region ScriptBlockAstUtils
+
+  public static ParamBlockAst ParamBlock(params ParameterAst[] parameters) {
+    return new ParamBlockAst(EmptyExtent, null, parameters);
+  }
+
+  public static NamedBlockAst NamedBlock(TokenKind name, params StatementAst[] statements) {
+    return new NamedBlockAst(EmptyExtent, name, Block(statements), false);
+  }
+
+  public static void SetParent(Ast ast) {
+    var mockParent = FormatterServices.GetUninitializedObject(typeof(ScriptBlockAst));
+    var setParentBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty;
+    var astParentSetter = typeof(Ast).GetProperty("Parent", setParentBindingFlags)!;
+    astParentSetter.SetValue(ast, mockParent);
+  }
+
+  public static void ClearParent(Ast ast) {
+    var setParentBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty;
+    var astParentSetter = typeof(Ast).GetProperty("Parent", setParentBindingFlags)!;
+    astParentSetter.SetValue(ast, null);
+  }
+
+  /// <summary>
+  ///   The ScriptBlockAst has a bunch of different overloads for the constructor
+  ///   that we don't really care about. The main ones are those that take
+  ///   a single list of statements and the ones that provide all sections
+  ///   of the script block.
+  ///   We can ignore `isFilter` and `isConfiguration` because they
+  ///   are taken care of by the FunctionDefinitionAst / ConfigurationStatementAst
+  ///   as which they are parsed.
+  /// </summary>
+  public static ScriptBlockAst ScriptBlock(
+    bool isRoot = false,
+    IEnumerable<UsingStatementAst>? usingStatements = null,
+    ParamBlockAst? paramBlock = null,
+    NamedBlockAst? beginBlock = null,
+    NamedBlockAst? processBlock = null,
+    NamedBlockAst? endBlock = null,
+    NamedBlockAst? cleanBlock = null,
+    NamedBlockAst? dynamicParamBlock = null
+  ) {
+    var sb = new ScriptBlockAst(
+      EmptyExtent,
+      usingStatements,
+      paramBlock,
+      beginBlock,
+      processBlock,
+      endBlock,
+      cleanBlock,
+      dynamicParamBlock
+    );
+
+    if (!isRoot) {
+      SetParent(sb);
+    }
+
+    return sb;
+  }
+
+  public static ScriptBlockAst ScriptBlock(
+    IEnumerable<AttributeAst>? attributes = null,
+    ParamBlockAst? paramBlock = null,
+    NamedBlockAst? beginBlock = null,
+    NamedBlockAst? processBlock = null,
+    NamedBlockAst? endBlock = null,
+    NamedBlockAst? cleanBlock = null,
+    NamedBlockAst? dynamicParamBlock = null
+  ) {
+    var sb = new ScriptBlockAst(
+      EmptyExtent,
+      null,
+      // Attributes make only sense in child script blocks
+      // as there is no way to declare them on a root ScriptBlock
+      attributes,
+      paramBlock,
+      beginBlock,
+      processBlock,
+      endBlock,
+      cleanBlock,
+      dynamicParamBlock
+    );
+
+    SetParent(sb);
+
+    return sb;
+  }
+
+  public static ScriptBlockAst ScriptBlock(
+    ParamBlockAst? paramBlock,
+    StatementBlockAst? statements,
+    bool isRoot = false
+  ) {
+    var sb = new ScriptBlockAst(
+      EmptyExtent,
+      paramBlock,
+      statements,
+      // IsFilter doesn't matter for these test cases
+      false
+    );
+
+    if (!isRoot) {
+      SetParent(sb);
+    }
+
+    return sb;
+  }
+
+  public static void SetScriptBlockRequirements(ScriptBlockAst sb, ScriptRequirements requirements) {
+    var setScriptBlockRequirementsBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty;
+    var scriptBlockRequirementsSetter =
+      typeof(ScriptBlockAst).GetProperty("ScriptRequirements", setScriptBlockRequirementsBindingFlags)!;
+    scriptBlockRequirementsSetter.SetValue(sb, requirements);
+  }
+
+  #endregion
 }
 
 internal static class InternalTypeExtensions {
