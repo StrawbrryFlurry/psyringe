@@ -8,56 +8,51 @@ namespace PSyringe.Language.TypeLoader;
 ///   invoke extension methods on a concrete implementation of
 ///   type of the object provided in this namespace.
 /// </summary>
-public static class ExtensionMethodFinder {
+public class ExtensionMethodFinder {
   // Caching reflection info
-  internal static readonly Type TypeInAssembly = typeof(ExtensionMethodFinder);
   internal static readonly Type ExtensionAttributeType = typeof(ExtensionAttribute);
-
-  internal static readonly IEnumerable<MethodInfo> ExtensionMethods =
-    GetAllExtensionMethodsInAssembly();
 
   internal static readonly BindingFlags ExtensionMethodBindingFlags =
     BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
-  internal static T InvokeExtensionMethodInAssemblyForConcreteType<T>(this object type, string name,
-    params object[] args) {
-    var concreteExtensionMethod = GetExtensionMethodOverloadForConcreteType(type, name);
+  internal IDictionary<Type, MethodInfo> ExtensionMethods = null!;
+
+  public ExtensionMethodFinder(string methodName, Assembly? assembly = null) {
+    assembly ??= GetType().Assembly;
+    ExtensionMethods = GetExtensionMethods(methodName, assembly);
+  }
+
+  internal T InvokeExtensionMethodInAssemblyForConcreteType<T>(object instance, params object[] args) {
+    var concreteExtensionMethod = GetExtensionMethodOverloadForConcreteType(instance);
     var parameterSet = args.ToList();
     // The first parameter of an extension method is always the instance type
-    parameterSet.Insert(0, type);
+    parameterSet.Insert(0, instance);
     return (T) concreteExtensionMethod.Invoke(null, parameterSet.ToArray())!;
   }
 
-  internal static MethodInfo GetExtensionMethodOverloadForConcreteType(object obj, string name) {
+  internal MethodInfo GetExtensionMethodOverloadForConcreteType(object obj) {
     var objectType = obj.GetType();
-    var extensionMethod = ExtensionMethods
-                          .Where(m => m.Name == name)
-                          .SingleOrDefault(
-                            m => DoesMethodTakeTypeAsFirstParameter(m, objectType)
-                          );
 
-    if (extensionMethod is null) {
+    if (!ExtensionMethods.TryGetValue(objectType, out var extensionMethod)) {
       throw new Exception($"Could not find extension method for type {objectType.Name}");
     }
 
     return extensionMethod;
   }
 
-  private static bool DoesMethodTakeTypeAsFirstParameter(MethodInfo method, Type type) {
-    var parameter = method.GetParameters().First();
-    var doesParameterMatch = parameter.ParameterType == type;
+  private static IDictionary<Type, MethodInfo> GetExtensionMethods(string methodName, Assembly assembly) {
+    var methods = assembly.GetTypes()
+                          .Select(t => GetExtensionMethodsOfType(t)
+                            .Where(m => m.Name == methodName)
+                          )
+                          .SelectMany(m => m)
+                          .Select(method => (method.GetParameters().First().ParameterType, method));
 
-    return doesParameterMatch;
+    return methods.ToDictionary(e => e.ParameterType, e => e.method);
   }
 
-  private static IEnumerable<MethodInfo> GetAllExtensionMethodsInAssembly() {
-    return TypeInAssembly.Assembly.GetTypes()
-                         .Select(c => c.GetMethods(ExtensionMethodBindingFlags)
-                                       .Where(IsMethodExtensionMethod)
-                         ).SelectMany(m => m);
-  }
-
-  private static bool IsMethodExtensionMethod(MethodInfo method) {
-    return method.IsDefined(ExtensionAttributeType);
+  private static IEnumerable<MethodInfo> GetExtensionMethodsOfType(Type type) {
+    return type.GetMethods(ExtensionMethodBindingFlags)
+               .Where(m => m.IsDefined(ExtensionAttributeType));
   }
 }

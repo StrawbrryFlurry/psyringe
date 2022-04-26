@@ -9,8 +9,10 @@ namespace PSyringe.Language.AstTransformation;
 ///   of the runtime AST type.
 /// </summary>
 public static class AstBaseClassExtensions {
+  private static readonly ExtensionMethodFinder _extensionMethodFinder = new(nameof(ToStringFromAst));
+
   public static string ToStringFromAst(this Ast ast) {
-    return ast.InvokeExtensionMethodInAssemblyForConcreteType<string>(nameof(ToStringFromAst));
+    return _extensionMethodFinder.InvokeExtensionMethodInAssemblyForConcreteType<string>(ast);
   }
 
   public static IList<string> ToStringListFromAst(this IEnumerable<Ast> asts) {

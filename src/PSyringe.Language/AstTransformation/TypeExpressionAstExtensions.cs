@@ -4,12 +4,14 @@ using PSyringe.Language.TypeLoader;
 namespace PSyringe.Language.AstTransformation;
 
 public static class TypeExpressionAstExtensions {
+  private static readonly ExtensionMethodFinder _extensionMethodFinder = new(nameof(ToStringFromAst));
+
   public static string ToStringFromAst(this TypeExpressionAst ast) {
-    return ast.TypeName.InvokeExtensionMethodInAssemblyForConcreteType<string>(nameof(ToStringFromAst));
+    return _extensionMethodFinder.InvokeExtensionMethodInAssemblyForConcreteType<string>(ast.TypeName);
   }
 
   public static string ToStringFromAst(this ITypeName type) {
-    return type.InvokeExtensionMethodInAssemblyForConcreteType<string>(nameof(ToStringFromAst));
+    return _extensionMethodFinder.InvokeExtensionMethodInAssemblyForConcreteType<string>(type);
   }
 
   public static string ToStringFromAst(this TypeName type) {
