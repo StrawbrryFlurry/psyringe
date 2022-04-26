@@ -1,13 +1,17 @@
 using System.Management.Automation.Language;
+using System.Text.RegularExpressions;
 using static System.Management.Automation.Language.StringConstantType;
 using static PSyringe.Language.Compiler.CompilerScriptText;
 
 namespace PSyringe.Language.AstTransformation;
 
 public static class StringConstantExpressionAstExtensions {
+  // (?<!\$\([^)]*)\"(?![^(]*\)) 
+  // Matches all quotes that are not surrounded by a $() sub expression
+  private static readonly Regex DoubleQuoteNotInSubExpressionPattern = new(@"(?<!\$\([^)]*)""(?![^(]*\))");
+
   public static string ToStringFromAst(this StringConstantExpressionAst ast) {
-    var escapedString = FixStringEscapes(ast.Value, ast.StringConstantType);
-    return QuoteStringExpression(escapedString, ast.StringConstantType);
+    return QuoteStringExpression(ast.Value, ast.StringConstantType);
   }
 
   /// <summary>
@@ -19,11 +23,15 @@ public static class StringConstantExpressionAstExtensions {
   }
 
   private static string QuoteStringExpression(string value, StringConstantType type) {
+    // We don't want to change the quotes in a sub
+    // expression because they don't need to escaped.
+    value = FixStringEscapes(value, type);
+
     return type switch {
       BareWord => value,
-      DoubleQuoted => DoubleQuote(value),
+      DoubleQuoted => $"\"{value}\"",
       DoubleQuotedHereString => $"@\"{NewLine}{value}{NewLine}\"@",
-      SingleQuoted => SingleQuote(value),
+      SingleQuoted => $"'{value}'",
       SingleQuotedHereString => $"@'{NewLine}{value}{NewLine}'@",
       _ => ""
     };
@@ -38,20 +46,17 @@ public static class StringConstantExpressionAstExtensions {
   /// </summary>
   private static string FixStringEscapes(string str, StringConstantType type) {
     if (type is DoubleQuoted or DoubleQuotedHereString) {
-      str = str.Replace("\"", "\"\"");
+      // Because expandable strings can have sub expressions
+      // we need to make sure that we don't duplicate quotes
+      // in those sub expressions. The expressions themselves
+      // are evaluated at runtime so all we get from the ast
+      // is the raw string value e.g. "Something$(Foo)Else" 
+      str = DoubleQuoteNotInSubExpressionPattern.Replace(str, "\"\"");
     }
     else if (type is SingleQuoted or SingleQuotedHereString) {
       str = str.Replace("'", "''");
     }
 
     return str;
-  }
-
-  private static string SingleQuote(object value) {
-    return $"'{value}'";
-  }
-
-  private static string DoubleQuote(object value) {
-    return $"\"{value}\"";
   }
 }

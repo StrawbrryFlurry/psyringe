@@ -107,7 +107,25 @@ public class ExpressionAstExtensionsTest {
     var sut = new StringConstantExpressionAst(EmptyExtent, "It\"s me!", StringConstantType.DoubleQuoted);
     var actual = sut.ToStringFromAst();
 
-    actual.Should().Be("\"It\"\"s me!\"");
+    actual.Should().Be(DoubleQuote("It\"\"s me!"));
+  }
+
+  [Fact]
+  public void ToStringFromAst_NotEscapeInSubExpression_ExpandableStringExpressionAst() {
+    var sut = new StringConstantExpressionAst(EmptyExtent, "Foo$(\"Some-Command\")Bar",
+      StringConstantType.DoubleQuoted);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be(DoubleQuote("Foo$(\"Some-Command\")Bar"));
+  }
+
+  [Fact]
+  public void ToStringFromAst_NotEscapeInMultiSubExpression_ExpandableStringExpressionAst() {
+    var sut = new StringConstantExpressionAst(EmptyExtent, "Foo$(\"Some-Command\")\"$(\"Some-Other\")Bar",
+      StringConstantType.DoubleQuoted);
+    var actual = sut.ToStringFromAst();
+
+    actual.Should().Be(DoubleQuote("Foo$(\"Some-Command\")\"\"$(\"Some-Other\")Bar"));
   }
 
   [Fact]
