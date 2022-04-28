@@ -10,9 +10,6 @@ namespace PSyringe.Language.Elements;
 /// </summary>
 /// <param name="ast"></param>
 public class InjectElement : ScriptElement {
-  public InjectElement(Ast ast) : base(ast) {
-  }
-
   public InjectElement(Ast ast, AttributeAst attribute) : base(ast, attribute) {
   }
 
