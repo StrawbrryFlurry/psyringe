@@ -1,6 +1,6 @@
 using System.Management.Automation.Language;
 
-namespace PSyringe.Language.CodeGen.SourceCodeGenerators;
+namespace PSyringe.Language.AstTransformation.SourceCodeGenerators;
 
 public static class NamedAttributeArgumentAstExtensions {
   public static string ToStringFromAst(this NamedAttributeArgumentAst ast) {

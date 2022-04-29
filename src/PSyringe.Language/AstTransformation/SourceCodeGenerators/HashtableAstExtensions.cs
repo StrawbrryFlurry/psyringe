@@ -1,7 +1,7 @@
 using System.Management.Automation.Language;
 using System.Text;
 
-namespace PSyringe.Language.CodeGen.SourceCodeGenerators;
+namespace PSyringe.Language.AstTransformation.SourceCodeGenerators;
 
 public static class HashtableAstExtensions {
   public static string ToStringFromAst(this HashtableAst ast) {

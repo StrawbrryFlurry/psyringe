@@ -2,7 +2,7 @@ using System.Management.Automation.Language;
 using System.Text;
 using static System.Management.Automation.Language.PropertyAttributes;
 
-namespace PSyringe.Language.CodeGen.SourceCodeGenerators;
+namespace PSyringe.Language.AstTransformation.SourceCodeGenerators;
 
 public static class PropertyMemberAstExtensions {
   public static string ToStringFromAst(this PropertyMemberAst ast) {

@@ -1,6 +1,6 @@
 using System.Management.Automation.Language;
 
-namespace PSyringe.Language.CodeGen.SourceCodeGenerators;
+namespace PSyringe.Language.AstTransformation.SourceCodeGenerators;
 
 public static class UsingStatementAstExtensions {
   public static string ToStringFromAst(this UsingStatementAst ast) {

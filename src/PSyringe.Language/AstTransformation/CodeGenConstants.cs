@@ -37,4 +37,9 @@ public static class CodeGenConstants {
   ///   </code>
   /// </summary>
   public const string BlockClose = "# }";
+
+  /// <summary>
+  ///   The prefix before a compiler generated variable name.
+  /// </summary>
+  public const string VariablePrefix = "ɵɵ";
 }

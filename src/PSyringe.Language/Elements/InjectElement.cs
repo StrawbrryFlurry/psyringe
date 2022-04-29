@@ -1,24 +1,33 @@
 using System.Management.Automation.Language;
-using PSyringe.Common.Language.Compiler;
 using PSyringe.Common.Language.Elements;
+using PSyringe.Language.AstTransformation;
 
 namespace PSyringe.Language.Elements;
 
-/// <summary>
-///   AttributedExpressionChild is either a VariableExpressionAst
-///   or a VariableAssignmentExpression
-/// </summary>
-/// <param name="ast"></param>
-public class InjectElement : ScriptElement {
+public sealed class InjectElement : ScriptElement {
   public InjectElement(Ast ast, AttributeAst attribute) : base(ast, attribute) {
   }
-
 
   public bool HasDefaultValue() {
     return false;
   }
 
-  public override void TransformAst(IAstTransformer transformer) {
-    throw new NotImplementedException();
+  public override Ast? TransformAst<T>(T source) {
+    ScriptTransformer x;
+    // x.AddDependency(this.Dependency);
+    if (IsAst<AttributedExpressionAst>(out var attributedExpressionAst)) {
+      var ast = (AttributedExpressionAst) Ast;
+    }
+
+    return default;
+  }
+
+  private Ast? TransformVariableAssignment(AssignmentStatementAst ast) {
+    var expression = ast.Left;
+    return expression;
+  }
+
+  private Ast? TransformAttributedExpression(AttributedExpressionAst ast) {
+    return ast.Child;
   }
 }

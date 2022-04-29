@@ -1,7 +1,7 @@
 using System.Management.Automation.Language;
 using PSyringe.Language.TypeLoader;
 
-namespace PSyringe.Language.CodeGen.SourceCodeGenerators;
+namespace PSyringe.Language.AstTransformation.SourceCodeGenerators;
 
 public static class TypeExpressionAstExtensions {
   private static readonly ExtensionMethodFinder _extensionMethodFinder = new(nameof(ToStringFromAst));

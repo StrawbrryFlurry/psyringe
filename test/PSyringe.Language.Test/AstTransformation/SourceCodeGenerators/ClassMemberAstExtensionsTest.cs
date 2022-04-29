@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using FluentAssertions;
-using PSyringe.Language.CodeGen.SourceCodeGenerators;
+using PSyringe.Language.AstTransformation.SourceCodeGenerators;
 using Xunit;
 using static System.Management.Automation.Language.MethodAttributes;
 using static PSyringe.Language.Test.AstTransformation.SourceCodeGenerators.Utils.MakeAstUtils;

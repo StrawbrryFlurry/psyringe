@@ -2,7 +2,7 @@ using System.Management.Automation.Language;
 using System.Text;
 using static PSyringe.Language.AstTransformation.CodeGenConstants;
 
-namespace PSyringe.Language.CodeGen.SourceCodeGenerators;
+namespace PSyringe.Language.AstTransformation.SourceCodeGenerators;
 
 public static class StatementBlockAstExtensions {
   public static string ToStringFromAst(this StatementBlockAst ast, bool includeBrackets = true) {

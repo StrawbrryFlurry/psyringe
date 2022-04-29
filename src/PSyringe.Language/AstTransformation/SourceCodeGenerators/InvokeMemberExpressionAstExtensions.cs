@@ -1,7 +1,7 @@
 using System.Management.Automation.Language;
-using PSyringe.Language.Compiler;
+using PSyringe.Language.Extensions;
 
-namespace PSyringe.Language.CodeGen.SourceCodeGenerators;
+namespace PSyringe.Language.AstTransformation.SourceCodeGenerators;
 
 public static class InvokeMemberExpressionAstExtensions {
   public static string ToStringFromAst(this InvokeMemberExpressionAst ast) {

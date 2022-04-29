@@ -1,5 +1,4 @@
 using System.Management.Automation.Language;
-using PSyringe.Common.Language.Compiler;
 
 namespace PSyringe.Common.Language.Elements;
 
@@ -45,9 +44,34 @@ public abstract class ScriptElement {
   public AttributeAst? Attribute { get; }
 
   /// <summary>
-  ///   Method used by the compiler to update the ScriptBlockAst of the
-  ///   input script for this element. The AttributeAst of this element in the
-  ///   ScriptBlock will already be removed by the compiler.
+  ///   Utility method to check whether the AST
+  ///   of this element is of a certain type.
   /// </summary>
-  public abstract void TransformAst(IAstTransformer transformer);
+  /// <param name="ast"></param>
+  /// <typeparam name="T"></typeparam>
+  /// <returns></returns>
+  protected bool IsAst<T>(out T? ast) where T : Ast {
+    if (Ast is T) {
+      ast = (T) Ast;
+      return true;
+    }
+
+    ast = default;
+    return false;
+  }
+
+  /// <summary>
+  ///   Method that can be used to transform an AST that this element represents
+  ///   to it's intended form.
+  ///   <code>
+  /// // An element representing this:
+  /// [Inject([ILogger])]$Logger;
+  /// // would be transformed to this:
+  /// $Logger = $script:ɵɵprov_GLOBAL_Logger_inj_ILogger;
+  /// </code>
+  /// </summary>
+  /// <param name="source">The source AST element that this element represents</param>
+  /// <typeparam name="T"></typeparam>
+  /// <returns>A replacement for the element or `null` if it should not be replaced</returns>
+  public abstract Ast? TransformAst<T>(T source) where T : Ast;
 }

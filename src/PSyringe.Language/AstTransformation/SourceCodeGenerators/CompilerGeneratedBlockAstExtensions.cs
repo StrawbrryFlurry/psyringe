@@ -2,7 +2,7 @@ using System.Text;
 using PSyringe.Language.AstTransformation.SyntheticAsts;
 using static PSyringe.Language.AstTransformation.CodeGenConstants;
 
-namespace PSyringe.Language.CodeGen.SourceCodeGenerators;
+namespace PSyringe.Language.AstTransformation.SourceCodeGenerators;
 
 public static class CompilerGeneratedBlockAstExtensions {
   public static string ToStringFromAst(this SyntheticBlockAst ast) {

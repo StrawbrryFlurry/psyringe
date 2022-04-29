@@ -1,7 +1,7 @@
 using System.Management.Automation.Language;
 using static PSyringe.Language.AstTransformation.CodeGenConstants;
 
-namespace PSyringe.Language.CodeGen.SourceCodeGenerators;
+namespace PSyringe.Language.AstTransformation.SourceCodeGenerators;
 
 public static class ConstantExpressionAstExtensions {
   public static string ToStringFromAst(this ConstantExpressionAst ast) {

@@ -1,7 +1,7 @@
 using FluentAssertions;
 using PSyringe.Language.AstTransformation;
+using PSyringe.Language.AstTransformation.SourceCodeGenerators;
 using PSyringe.Language.AstTransformation.SyntheticAsts;
-using PSyringe.Language.CodeGen.SourceCodeGenerators;
 using Xunit;
 using static PSyringe.Language.Test.AstTransformation.SourceCodeGenerators.Utils.MakeAstUtils;
 using static PSyringe.Language.Test.AstTransformation.SourceCodeGenerators.Utils.AstConstants;

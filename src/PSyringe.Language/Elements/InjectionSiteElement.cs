@@ -1,5 +1,4 @@
 using System.Management.Automation.Language;
-using PSyringe.Common.Language.Compiler;
 using PSyringe.Common.Language.Elements;
 using PSyringe.Language.Attributes;
 
@@ -27,7 +26,8 @@ public class InjectionSiteElement : ScriptElement {
     _parameters.Add(parameterElement);
   }
 
-  public override void TransformAst(IAstTransformer transformer) {
+
+  public override Ast? TransformAst<T>(T source) {
     throw new NotImplementedException();
   }
 }

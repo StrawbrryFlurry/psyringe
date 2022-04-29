@@ -1,5 +1,6 @@
 using System.Management.Automation.Language;
-using PSyringe.Language.Compiler;
+using PSyringe.Language.AstTransformation;
+using PSyringe.Language.Extensions;
 using Xunit;
 
 namespace PSyringe.Language.Test.AstTransformation;

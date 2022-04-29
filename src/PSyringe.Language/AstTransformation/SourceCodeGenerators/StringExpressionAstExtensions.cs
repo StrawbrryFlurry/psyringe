@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using static System.Management.Automation.Language.StringConstantType;
 using static PSyringe.Language.AstTransformation.CodeGenConstants;
 
-namespace PSyringe.Language.CodeGen.SourceCodeGenerators;
+namespace PSyringe.Language.AstTransformation.SourceCodeGenerators;
 
 public static class StringConstantExpressionAstExtensions {
   // (?<!\$\([^)]*)\"(?![^(]*\)) 

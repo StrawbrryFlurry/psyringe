@@ -1,5 +1,5 @@
 using FluentAssertions;
-using PSyringe.Language.CodeGen.SourceCodeGenerators;
+using PSyringe.Language.AstTransformation.SourceCodeGenerators;
 using PSyringe.Language.TypeLoader;
 using Xunit;
 using static PSyringe.Language.Test.AstTransformation.SourceCodeGenerators.Utils.MakeAstUtils;

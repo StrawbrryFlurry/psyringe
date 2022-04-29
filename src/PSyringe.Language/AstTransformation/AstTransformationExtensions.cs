@@ -20,17 +20,6 @@ public static class CompilerAstExtensions {
     return (TR) ast.Visit(visitor);
   }
 
-  public static T? FindOfType<T>(this Ast ast) where T : Ast {
-    return ast.Find(a => a is T, true) as T;
-  }
-
-  public static T CopyAs<T>(this Ast ast) where T : Ast {
-    return (T) ast.Copy();
-  }
-
-  public static IEnumerable<T> FindAllOfType<T>(this Ast ast) where T : Ast {
-    return (IEnumerable<T>) ast.FindAll(a => a is T, true);
-  }
 
   internal class ReplaceAstVisitor : ICustomAstVisitor2 {
     private readonly Func<object?, bool> _predicate;
