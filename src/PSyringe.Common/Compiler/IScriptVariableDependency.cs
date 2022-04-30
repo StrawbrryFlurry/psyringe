@@ -1,7 +1,7 @@
 using System.Management.Automation;
 using PSyringe.Common.DI;
 
-namespace PSyringe.Common.Language.Compiler;
+namespace PSyringe.Common.Compiler;
 
 /// <summary>
 ///   Contains information on a provider

@@ -9,9 +9,9 @@ namespace PSyringe.Language.Attributes;
 /// </summary>
 [PSAttributeUsage(Variable | Parameter)]
 public class InjectDatabaseAttribute : Attribute, IPSyringeAttribute<InjectDatabaseElement> {
+  public bool IsProviderConnectionString { get; }
+
   public InjectDatabaseAttribute(string ConnectionStrting, bool IsConnectionString = false) {
     IsProviderConnectionString = IsConnectionString;
   }
-
-  public bool IsProviderConnectionString { get; }
 }

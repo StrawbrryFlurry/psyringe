@@ -6,6 +6,8 @@ public static class CodeGenConstants {
   public const string Null = "$null";
   public const string NewLine = "\r\n";
 
+  public const string GlobalScope = "global";
+
   /// <summary>
   ///   Comment inserted inline before a compiler generated expression.
   ///   <code>

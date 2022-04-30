@@ -1,4 +1,5 @@
 using System.Management.Automation.Language;
+using PSyringe.Common.Compiler;
 
 namespace PSyringe.Common.Language.Elements;
 
@@ -15,15 +16,6 @@ namespace PSyringe.Common.Language.Elements;
 ///   AttributedExpressionAst of the `Inject` Attribute.
 /// </summary>
 public abstract class ScriptElement {
-  protected ScriptElement(Ast ast) {
-    Ast = ast;
-  }
-
-  protected ScriptElement(Ast ast, AttributeAst attribute) {
-    Ast = ast;
-    Attribute = attribute;
-  }
-
   /// <summary>
   ///   The Ast in the script that this element represents.
   /// </summary>
@@ -42,6 +34,15 @@ public abstract class ScriptElement {
   ///   Use <see cref="Ast" /> to get access to the AttributedExpressionAst.
   /// </summary>
   public AttributeAst? Attribute { get; }
+
+  protected ScriptElement(Ast ast) {
+    Ast = ast;
+  }
+
+  protected ScriptElement(Ast ast, AttributeAst attribute) {
+    Ast = ast;
+    Attribute = attribute;
+  }
 
   /// <summary>
   ///   Utility method to check whether the AST
@@ -70,8 +71,7 @@ public abstract class ScriptElement {
   /// $Logger = $script:ɵɵprov_GLOBAL_Logger_inj_ILogger;
   /// </code>
   /// </summary>
-  /// <param name="source">The source AST element that this element represents</param>
-  /// <typeparam name="T"></typeparam>
+  /// <param name="transformer">The transformer that was used to transform this element.</param>
   /// <returns>A replacement for the element or `null` if it should not be replaced</returns>
-  public abstract Ast? TransformAst<T>(T source) where T : Ast;
+  public abstract Ast? TransformAst(IScriptTransformer transformer);
 }

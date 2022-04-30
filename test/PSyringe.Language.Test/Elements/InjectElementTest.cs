@@ -1,5 +1,8 @@
 using FluentAssertions;
+using PSyringe.Common.Providers;
+using PSyringe.Language.AstTransformation;
 using PSyringe.Language.AstTransformation.SourceCodeGenerators;
+using PSyringe.Language.Elements;
 using Xunit;
 using static PSyringe.Language.Test.Elements.MockElementFactory<PSyringe.Language.Elements.InjectElement>;
 
@@ -18,13 +21,38 @@ public class InjectElementTest {
   private const string InjectVariableAssignment_Provider_Optional =
     $"{InjectVariableExpression_Provider_Optional} = $null";
 
-  [Fact]
-  public void TransformAst_ReplacesInjectAttribute_WhenExpressionHasExplicitTarget() {
-    var injectElement = CreateElement("[Inject([ILogger])]$Logger;");
-    var ast = injectElement.TransformAst(injectElement.Ast)!;
+  private readonly ScriptTransformer _scriptTransformer = new ElementScriptTransformer();
 
+  [Fact]
+  public void TransformAst_ReplacesInjectAttribute_VariableExpressionWithSingleInjectAttribute() {
+    var sut = CreateElement("[Inject([ILogger])]$Logger;");
+
+    var ast = sut.TransformAst(_scriptTransformer)!;
     var actual = ast.ToStringFromAst();
 
-    actual.Should().Be("$Logger = $null;");
+    actual.Should().StartWith("$Logger");
+  }
+
+  [Fact]
+  public void TransformAst_ReplacesOnlyInjectAttribute_VariableExpressionWithMultipleAttributes() {
+    var sut = CreateElement("[Inject([ILogger])][LogExpression()]$Logger;");
+
+    var ast = sut.TransformAst(_scriptTransformer)!;
+    var actual = ast.ToStringFromAst();
+
+    actual.Should().StartWith("[LogExpression()]$Logger");
+  }
+
+  [Fact]
+  public void TransformAst_ConvertsToAssignmentWithProviderVariable_VariableExpressionWithSingleInjectAttribute() {
+    var sut = CreateElement("[Inject([ILogger])]$Logger;");
+
+    var ast = sut.TransformAst(_scriptTransformer)!;
+    var actual = ast.ToStringFromAst();
+
+    var providerVariable =
+      _scriptTransformer.GetProviderVariableName("Logger", new ProviderResolvable(typeof(ILogger)));
+
+    actual.Should().Be($"$Logger = $script:{providerVariable};");
   }
 }

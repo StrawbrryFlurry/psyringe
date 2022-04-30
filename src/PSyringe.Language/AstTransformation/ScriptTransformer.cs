@@ -1,5 +1,6 @@
 using System.Management.Automation.Language;
-using PSyringe.Common.Language.Compiler;
+using PSyringe.Common.Compiler;
+using PSyringe.Common.Language;
 using PSyringe.Common.Language.Elements;
 using PSyringe.Language.AstTransformation.SyntheticAsts;
 using static PSyringe.Language.AstTransformation.CodeGenConstants;
@@ -7,16 +8,55 @@ using static PSyringe.Language.AstTransformation.CodeGenConstants;
 namespace PSyringe.Language.AstTransformation;
 
 public abstract class ScriptTransformer : IScriptTransformer {
+  internal readonly Dictionary<VariableExpressionAst, IProviderResolvable> Providers = new();
+
   public abstract void Transform(ref IScriptDefinition script);
 
-  protected VariableExpressionAst MakeProvideVariable(string target, string provider, string scope = "GLOBAL") {
-    var variableName = $"$script:{VariablePrefix}prov_{target}_inj_{provider}_{scope}";
+  public VariableExpressionAst MakeVariable(string name, string? scope = null, bool splatted = false) {
+    var variableScope = string.IsNullOrWhiteSpace(scope) ? "script" : scope;
+    var variablePath = $"{variableScope}:{name}";
 
-    return new SyntheticVariableExpression(ScriptExtent(), variableName);
+    return SyntheticVariableExpression.Create(variablePath, splatted);
   }
 
-  protected ScriptExtent ScriptExtent() {
-    // TODO: Replace with SyntheticScriptExtent once issue is fixed.
-    return new ScriptExtent(null, null);
+  public VariableExpressionAst AddProvider(string target, IProviderResolvable provider) {
+    var variableName = GetProviderVariableName(target, provider);
+    var variable = MakeVariable(variableName);
+    Providers.Add(variable, provider);
+
+    return variable;
+  }
+
+  public IEnumerable<IScriptVariableDependency> GetVariableDependencies() {
+    // return Providers.Select((variable, provider) => new(variable, provider));
+    throw new NotImplementedException();
+  }
+
+  /// <summary>
+  ///   Removes an attribute of type <see cref="attributeType" /> from the AttributedExpressionTree.
+  ///   [Foo()][Bar()]]Baz()]$Foo;
+  /// </summary>
+  /// <param name="ast"></param>
+  /// <param name="attributeType"></param>
+  /// <returns></returns>
+  public ExpressionAst SpliceAttributeFromAttributedExpression(AttributedExpressionAst ast, Type attributeType) {
+    if (ast.Parent is not AttributedExpressionAst parent) {
+      // If the parent is not an attributed expression we can just
+      // return the expression.
+      if (ast.Attribute.TypeName.GetReflectionType() == attributeType) {
+        return ast.Child;
+      }
+    }
+
+    if (ast.Child is not AttributedExpressionAst child) {
+      return default;
+    }
+
+    return default;
+  }
+
+  internal string GetProviderVariableName(string target, IProviderResolvable provider) {
+    var variableName = $"{VariablePrefix}prov_{provider.GetScope()}_{target}_inj_{provider}";
+    return variableName;
   }
 }
