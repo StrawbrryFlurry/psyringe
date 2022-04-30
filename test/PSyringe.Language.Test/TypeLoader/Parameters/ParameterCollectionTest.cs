@@ -5,35 +5,34 @@ using FluentAssertions;
 using PSyringe.Language.TypeLoader.Parameters;
 using Xunit;
 
-namespace PSyringe.Language.Test.TypeLoader.Parameters; 
+namespace PSyringe.Language.Test.TypeLoader.Parameters;
 
 public class ParameterCollectionTest {
-
   [Fact]
   public void TryGetMethodOverloadArguments_ReturnsTrue_WhenOverloadsMatch() {
     var parameters = GetParameterListStringFoo();
-    var parameterArguments = new List<PositionalParameter>() {
-      new () {
+    var parameterArguments = new List<PositionalParameter> {
+      new() {
         Position = 0,
         Value = "",
         Type = typeof(string)
       }
     };
 
-  var valid = ParameterCollection.TryValidateParameterOverload(
-    parameters,
+    var valid = ParameterCollection.TryValidateParameterOverload(
+      parameters,
       parameterArguments,
       out _
-      );
+    );
 
-  valid.Should().BeTrue();
+    valid.Should().BeTrue();
   }
 
   [Fact]
   public void TryGetMethodOverloadArguments_ReturnsFalse_WhenOverloadDoesNotMatch() {
     var parameters = GetParameterListStringFoo();
-    var parameterArguments = new List<PositionalParameter>() {
-      new () {
+    var parameterArguments = new List<PositionalParameter> {
+      new() {
         Position = 0,
         Value = 1,
         Type = typeof(int)
@@ -48,12 +47,12 @@ public class ParameterCollectionTest {
 
     valid.Should().BeFalse();
   }
-  
+
   [Fact]
   public void TryGetMethodOverloadArguments_ReturnsTrue_WhenOptionalParameterIsMissing() {
     var parameters = GetParameterListStringFooOptionalDecimalFrank();
-    var parameterArguments = new List<PositionalParameter>() {
-      new () {
+    var parameterArguments = new List<PositionalParameter> {
+      new() {
         Position = 0,
         Value = "Foo",
         Type = typeof(string)
@@ -66,13 +65,15 @@ public class ParameterCollectionTest {
       out _
     );
 
-    valid.Should().BeTrue();  }
-  
+    valid.Should().BeTrue();
+  }
+
   [Fact]
-  public void TryGetMethodOverloadArguments_FillsRemainingOptionalArgumentsWithZeros_WhenOptionalArgumentsHaveNoValue() {
+  public void
+    TryGetMethodOverloadArguments_FillsRemainingOptionalArgumentsWithZeros_WhenOptionalArgumentsHaveNoValue() {
     var parameters = GetParameterListStringFooOptionalDecimalFrank();
-    var parameterArguments = new List<PositionalParameter>() {
-      new () {
+    var parameterArguments = new List<PositionalParameter> {
+      new() {
         Position = 0,
         Value = "Foo",
         Type = typeof(string)
@@ -87,11 +88,10 @@ public class ParameterCollectionTest {
 
     arguments.Last().Should().BeNull();
   }
-  
+
   [Fact]
   public void TryGetMethodOverloadArguments_ReturnsTrue_WhenParameterCollectionCanBeAsAnOverloadForMethod() {
     var parameters = GetParameterListStringFooIntBar();
-
   }
 
   private IEnumerable<ConstructorInfo> GetTestConstructors() {
@@ -101,7 +101,7 @@ public class ParameterCollectionTest {
   private ParameterInfo[] GetParameterListStringFoo() {
     return GetTestConstructors().First().GetParameters();
   }
-  
+
   private ParameterInfo[] GetParameterListStringFooIntBar() {
     return GetTestConstructors().Skip(1).First().GetParameters();
   }
@@ -109,7 +109,7 @@ public class ParameterCollectionTest {
   private ParameterInfo[] GetParameterListStringFooOptionalDecimalFrank() {
     return GetTestConstructors().Skip(2).First().GetParameters();
   }
-  
+
   private ParameterInfo[] GetParameterListDecimalBaz() {
     return GetTestConstructors().Last().GetParameters();
   }

@@ -34,23 +34,23 @@ function {StartupFunctionName} {{
 
   public const string WithInjectVariableExpression_ExplicitTarget_Named_Provider = @$"
 [Inject(Target = 'LoggerProvider')]${InjectVariableName} = 'value'";
-  
+
   public const string WithInjectVariableExpression_ExplicitTarget_Named_Provider_Type = @$"
 [Inject(Target = [ILogger])]${InjectVariableName} = 'value'";
-  
+
   public const string WithInjectVariableExpression_ExplicitTarget_Named_Provider_Optional = @$"
 [Inject(Target = 'LoggerProvider', Optional = $true)]${InjectVariableName} = 'value'";
 
-  
+
   public const string WithInjectVariableExpression_ExplicitTarget_Positional_Provider = @$"
 [Inject('LoggerProvider')]${InjectVariableName} = 'value'";
-  
+
   public const string WithInjectVariableExpression_ExplicitTarget_Positional_Provider_Optional = @$"
 [Inject('LoggerProvider', $true)]${InjectVariableName} = 'value'";
-  
+
   public const string WithInjectVariableExpression_ExplicitTarget_Mixed_Provider_Optional = @$"
 [Inject(Target = 'LoggerProvider', $true)]${InjectVariableName} = 'value'";
-  
+
   public const string WithInjectVariableAssigment_ExplicitTarget_Type = @$"
 [Inject(Target = [ILogger])]${InjectVariableName} = 'value'";
 
@@ -80,7 +80,7 @@ function {StartupFunctionName} {{
 
   public const string WithInjectConstantVariable_NoTarget = @$"
 [InjectConstant()]${InjectVariableName};";
-  
+
   public const string WithInjectParameterFunction_NamedParameter = @$"
 function {InjectionSiteFunctionName} {{
   [InjectionSite()]

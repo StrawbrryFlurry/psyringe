@@ -20,7 +20,6 @@ public static class CompilerAstExtensions {
     return (TR) ast.Visit(visitor);
   }
 
-
   internal class ReplaceAstVisitor : ICustomAstVisitor2 {
     private readonly Func<object?, bool> _predicate;
     private readonly Func<object, object?> _replacementFunc;

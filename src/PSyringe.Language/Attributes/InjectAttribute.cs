@@ -7,6 +7,8 @@ namespace PSyringe.Language.Attributes;
 // ReSharper disable all InconsistentNaming
 [PSAttributeUsage(Variable | Parameter)]
 public class InjectAttribute : Attribute, IPSyringeAttribute<InjectElement> {
+  public Prov Provider { get; set; }
+
   public InjectAttribute(string? Target = null, bool Optional = false) {
     Provider = new Prov {
       Name = Target,
@@ -20,8 +22,6 @@ public class InjectAttribute : Attribute, IPSyringeAttribute<InjectElement> {
       Optional = Optional
     };
   }
-
-  public Prov Provider { get; set; }
 
   public class Prov {
     public string Name { get; init; }

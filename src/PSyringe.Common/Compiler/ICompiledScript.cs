@@ -1,7 +1,7 @@
 using System.Management.Automation.Language;
 using PSyringe.Common.Language.Elements;
 
-namespace PSyringe.Common.Language.Compiler;
+namespace PSyringe.Common.Compiler;
 
 public interface ICompiledScript {
   /// <summary>

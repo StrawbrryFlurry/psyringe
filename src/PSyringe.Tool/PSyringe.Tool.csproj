@@ -8,13 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\PSyringe.Common\PSyringe.Common.csproj" />
-      <ProjectReference Include="..\PSyringe.Core\PSyringe.Core.csproj" />
-      <ProjectReference Include="..\PSyringe.Language\PSyringe.Language.csproj" />
+        <ProjectReference Include="..\PSyringe.Common\PSyringe.Common.csproj"/>
+        <ProjectReference Include="..\PSyringe.Core\PSyringe.Core.csproj"/>
+        <ProjectReference Include="..\PSyringe.Language\PSyringe.Language.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.1"/>
     </ItemGroup>
 
 </Project>

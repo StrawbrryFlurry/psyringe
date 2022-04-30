@@ -4,6 +4,9 @@ using PSyringe.Language.TypeLoader.Extensions;
 namespace PSyringe.Language.TypeLoader.Parameters;
 
 public class ParameterCollection {
+  private IList<NamedParameter> NamedParameters { get; }
+  private IList<PositionalParameter> PositionalParameters { get; }
+
   public ParameterCollection(
     IList<NamedParameter> namedParameters,
     IList<PositionalParameter> positionalParameters
@@ -11,9 +14,6 @@ public class ParameterCollection {
     NamedParameters = namedParameters;
     PositionalParameters = positionalParameters;
   }
-
-  private IList<NamedParameter> NamedParameters { get; }
-  private IList<PositionalParameter> PositionalParameters { get; }
 
   public int GetParameterCount() {
     return NamedParameters.Count + PositionalParameters.Count;

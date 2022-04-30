@@ -3,11 +3,11 @@ namespace PSyringe.Common.Language.Attributes;
 // ReSharper disable once InconsistentNaming
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class PSAttributeUsageAttribute : Attribute {
+  public PSAttributeTargets Target { get; }
+
   public PSAttributeUsageAttribute(PSAttributeTargets target) {
     Target = target;
   }
-
-  public PSAttributeTargets Target { get; }
 }
 
 [Flags]

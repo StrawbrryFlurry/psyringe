@@ -1,5 +1,4 @@
-namespace PSyringe.Common.Providers; 
+namespace PSyringe.Common.Providers;
 
 public interface ILogger {
-  
 }

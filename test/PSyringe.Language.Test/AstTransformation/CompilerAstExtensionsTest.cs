@@ -1,5 +1,4 @@
 using System.Management.Automation.Language;
-using PSyringe.Language.AstTransformation;
 using PSyringe.Language.Extensions;
 using Xunit;
 

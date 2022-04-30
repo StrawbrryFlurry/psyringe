@@ -6,10 +6,10 @@ namespace PSyringe.Language.Elements.Properties;
 public class ParameterInjectionTarget {
   public AttributedExpressionAst ast;
 
+  public string Target { get; }
+
   public ParameterInjectionTarget(AttributedExpressionAst ast) {
   }
-
-  public string Target { get; }
 
   public bool HasDefaultValue() {
     throw new NotImplementedException();

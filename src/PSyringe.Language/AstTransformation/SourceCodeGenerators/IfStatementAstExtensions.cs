@@ -12,14 +12,14 @@ public static class IfStatementAstExtensions {
   // Utility class to represent an if statement
   // Mostly keep track of the keyword
   internal class IfStatement {
+    public IList<Tuple<PipelineBaseAst, StatementBlockAst>> Clauses { get; }
+    public StatementBlockAst? ElseClause { get; }
+    private bool _isFirstIf { get; set; } = true;
+
     public IfStatement(IList<Tuple<PipelineBaseAst, StatementBlockAst>> clauses, StatementBlockAst? elseClause) {
       Clauses = clauses;
       ElseClause = elseClause;
     }
-
-    public IList<Tuple<PipelineBaseAst, StatementBlockAst>> Clauses { get; }
-    public StatementBlockAst? ElseClause { get; }
-    private bool _isFirstIf { get; set; } = true;
 
     public override string ToString() {
       var statement = new StringBuilder();

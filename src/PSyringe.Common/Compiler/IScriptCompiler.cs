@@ -1,3 +1,4 @@
+using PSyringe.Common.Compiler;
 using PSyringe.Common.Language.Elements;
 
 namespace PSyringe.Common.Language.Compiler;
