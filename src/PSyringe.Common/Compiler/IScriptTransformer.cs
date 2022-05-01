@@ -28,5 +28,5 @@ public interface IScriptTransformer {
 
   public IEnumerable<IScriptVariableDependency> GetVariableDependencies();
 
-  public ExpressionAst SpliceAttributeFromAttributedExpression(AttributedExpressionAst ast, Type attributeType);
+  public void ReplaceAttributeInNestedExpression(AttributedExpressionAst ast, Type attributeType);
 }

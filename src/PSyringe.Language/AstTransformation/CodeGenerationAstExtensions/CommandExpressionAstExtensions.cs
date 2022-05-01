@@ -13,4 +13,14 @@ public static class CommandExpressionAstExtensions {
 
     return $"{command} {redirections}";
   }
+
+  public static bool ReplaceChildCore(this CommandExpressionAst ast, Ast child, Ast replacement) {
+    if (ast.Expression.Is(child)) {
+      replacement.SetParent(ast);
+      ast.SetPrivateProperty(nameof(ast.Expression), replacement);
+      return true;
+    }
+
+    return ast.Expression.ReplaceChild(child, replacement);
+  }
 }

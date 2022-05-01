@@ -33,7 +33,13 @@ public static class AstBaseClassExtensions {
       return true;
     }
 
-    return _replaceChildMethodFinder.InvokeExtensionMethodInAssemblyForConcreteType<bool>(ast, child, replacement);
+    try {
+      return _replaceChildMethodFinder.InvokeExtensionMethodInAssemblyForConcreteType<bool>(ast, child, replacement);
+    }
+    catch {
+      throw new Exception($@"Cannot invoke `ReplaceChild` on an edge AST node ""{ast.GetType().Name}"". " +
+                          "Instead, invoke the method on it's parent node to replace the AST entirely.");
+    }
   }
 
   public static IList<string> ToStringListFromAst(this IEnumerable<Ast> asts) {

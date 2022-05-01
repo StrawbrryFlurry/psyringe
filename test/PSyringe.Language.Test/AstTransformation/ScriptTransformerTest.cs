@@ -84,56 +84,54 @@ public class ScriptTransformerTest {
     child.Parent.Should().Be(replacementParent);
   }
 
-  [Fact(Skip = "s")]
-  public void SpliceAttributeFromAttributeTree_ReturnsSameAst_WhenAttributeTreeDoesNotContainAttribute() {
+  [Fact]
+  public void ReplaceAttributeInNestedExpression_DoesNothing_WhenAttributeTreeDoesNotContainAttribute() {
     var attributedExpression = Parse<AttributedExpressionAst>("[LogExpression()]$var");
 
-    var withoutAttribute =
-      sut.SpliceAttributeFromAttributedExpression(attributedExpression, typeof(InjectAttribute));
+    sut.ReplaceAttributeInNestedExpression(attributedExpression, typeof(InjectAttribute));
 
-    withoutAttribute.Should().Be(attributedExpression);
+    attributedExpression.Should().Be(attributedExpression);
   }
 
   [Fact]
-  public void SpliceAttributeFromAttributeTree_ReturnsSameAst_WhenTypeIsTheAst() {
+  public void ReplaceAttributeInNestedExpression_ReplacesItself_WhenTypeIsTheAst() {
     var attributedExpression = Parse<AttributedExpressionAst>("[Inject()]$var");
 
-    var withoutAttribute =
-      sut.SpliceAttributeFromAttributedExpression(attributedExpression, typeof(InjectAttribute));
-    var actual = withoutAttribute.ToStringFromAst();
+    sut.ReplaceAttributeInNestedExpression(attributedExpression, typeof(InjectAttribute));
+    // we need to call ToStringFromAst from the parent
+    // because the expression itself was not changed
+    var actual = attributedExpression.Parent.ToStringFromAst();
 
     actual.Should().Be("$var");
   }
 
-  [Fact(Skip = "s")]
-  public void SpliceAttributeFromAttributeTree_Returns_WhenTypeIsAParentOfTheAst() {
+  [Fact]
+  public void ReplaceAttributeInNestedExpression_Returns_WhenTypeIsAParentOfTheAst() {
     var parentExpression = Parse<AttributedExpressionAst>("[Inject()][LogExpression()]$var");
     var attributedExpression = (AttributedExpressionAst) parentExpression.Child;
-    var variable = attributedExpression.GetNestedChildAssignableToType<VariableExpressionAst>()!;
 
-    var actual = (AttributedExpressionAst) sut
-      .SpliceAttributeFromAttributedExpression(attributedExpression, typeof(InjectAttribute));
+    sut.ReplaceAttributeInNestedExpression(attributedExpression, typeof(InjectAttribute));
 
-    actual.Should().Be("[LogExpression()]$var");
+    var actual = parentExpression.Parent.ToStringFromAst();
+    actual.Should().Be("[LogExpressionAttribute()]$var");
   }
 
-  [Fact(Skip = "s")]
-  public void SpliceAttributeFromAttributeTree_ReplacesChildInParent_WhenTypeIsAChildOfTheAst() {
+  [Fact]
+  public void ReplaceAttributeInNestedExpression_ReplacesChildInParent_WhenTypeIsAChildOfTheAst() {
     var attributedExpression = Parse<AttributedExpressionAst>("[LogExpression()][Inject()]$var");
     var variable = attributedExpression.GetNestedChildAssignableToType<VariableExpressionAst>()!;
 
-    var actual = (AttributedExpressionAst) sut
-      .SpliceAttributeFromAttributedExpression(attributedExpression, typeof(InjectAttribute));
+    sut.ReplaceAttributeInNestedExpression(attributedExpression, typeof(InjectAttribute));
 
-    actual.Child.Should().BeSameAs(variable);
+    sut.Should().BeSameAs(variable);
   }
 
-  [Fact(Skip = "s")]
-  public void SpliceAttributeFromAttributeTree_ReplacesTheParentOfTheChild_WhenTypeIsAChildOfTheAst() {
+  [Fact]
+  public void ReplaceAttributeInNestedExpression_ReplacesTheParentOfTheChild_WhenTypeIsAChildOfTheAst() {
     var attributedExpression = Parse<AttributedExpressionAst>("[LogExpression()][Inject()]$var");
     var variable = attributedExpression.GetNestedChildAssignableToType<VariableExpressionAst>()!;
 
-    sut.SpliceAttributeFromAttributedExpression(attributedExpression, typeof(InjectAttribute));
+    sut.ReplaceAttributeInNestedExpression(attributedExpression, typeof(InjectAttribute));
 
     variable.Parent.Should().BeSameAs(attributedExpression);
   }

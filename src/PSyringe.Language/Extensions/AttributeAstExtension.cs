@@ -14,8 +14,11 @@ public static class AttributeAstExtension {
 
   public static bool IsOfExactType<T>(this AttributeBaseAst ast) {
     var type = typeof(T);
-    var attributeType = ast.GetAttributeType();
+    return IsOfExactType(ast, type);
+  }
 
+  public static bool IsOfExactType(this AttributeBaseAst ast, Type type) {
+    var attributeType = ast.GetAttributeType();
     return attributeType == type;
   }
 
@@ -28,6 +31,10 @@ public static class AttributeAstExtension {
     var psAttributeUsage = attributeType?.GetCustomAttribute<PSAttributeUsageAttribute>();
 
     return psAttributeUsage is not null && psAttributeUsage.Target.HasFlag(target);
+  }
+
+  public static bool IsAttributeOfExactType(this AttributedExpressionAst ast, Type type) {
+    return IsOfExactType(ast.Attribute, type);
   }
 
   /// <summary>

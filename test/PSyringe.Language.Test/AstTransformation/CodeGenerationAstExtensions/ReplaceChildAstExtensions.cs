@@ -9,18 +9,18 @@ using static PSyringe.Language.Test.AstTransformation.CodeGenerationAstExtension
 namespace PSyringe.Language.Test.AstTransformation.CodeGenerationAstExtensions;
 
 public class ReplaceChildAstExtensions {
-  #region AttributeAst
+  # region CommandExpressionAst
 
   [Fact]
-  public void AttributeAst_ReplacesSelfInParent_WhenChildIsSelf() {
-    var sut = Attr<string>();
-    var parent = StubAttrExpr(sut);
-    var replacement = Attr<string>();
+  public void CommandExpressionAst_ReplacesChildExpression_WhenChildIsExpression() {
+    var expression = StubConst();
+    var replacement = StubConst();
+    var sut = StubCommandExpr(expression);
 
-    sut.ReplaceChild(sut, replacement);
+    sut.ReplaceChild(expression, replacement);
 
-    parent.Attribute.Should().BeSameAs(replacement);
-    replacement.Parent.Should().BeSameAs(parent);
+    sut.Expression.Should().BeSameAs(replacement);
+    replacement.Parent.Should().BeSameAs(sut);
   }
 
   #endregion
@@ -29,11 +29,11 @@ public class ReplaceChildAstExtensions {
 
   [Fact]
   public void AttributedExpressionAst_ReplacesSelfInParent_WhenChildIsSelf() {
-    var child = StubAttrExpr();
+    var sut = StubAttrExpr();
     var replacement = StubAttrExpr();
-    var parent = StubAttrExpr(null, child);
+    var parent = StubAttrExpr(null, sut);
 
-    child.ReplaceChild(child, replacement);
+    sut.ReplaceChild(sut, replacement);
 
     parent.Child.Should().BeSameAs(replacement);
     replacement.Parent.Should().BeSameAs(parent);
@@ -43,25 +43,25 @@ public class ReplaceChildAstExtensions {
   public void AttributedExpressionAst_ReplacesAttribute_WhenChildIsAttribute() {
     var attribute = Attr<string>();
     var replacement = Attr<string>();
-    var sut = StubAttrExpr();
+
+    var sut = StubAttrExpr(attribute);
 
     sut.ReplaceChild(attribute, replacement);
 
     sut.Attribute.Should().BeSameAs(replacement);
     replacement.Parent.Should().BeSameAs(sut);
-
-    attribute.Should().BeSameAs(replacement);
   }
 
   [Fact]
   public void AttributedExpressionAst_ReplacesExpression_WhenChildIsExpression() {
     var expression = StubConst();
     var replacement = StubConst();
-    var sut = StubAttrExpr();
+
+    var sut = StubAttrExpr(null, expression);
 
     sut.ReplaceChild(expression, replacement);
 
-    sut.Attribute.Should().BeSameAs(replacement);
+    sut.Child.Should().BeSameAs(replacement);
     replacement.Parent.Should().BeSameAs(sut);
   }
 
@@ -103,6 +103,10 @@ public class ReplaceChildAstExtensions {
   # endregion
 
   # region Stubs
+
+  private CommandExpressionAst StubCommandExpr(ExpressionAst expression) {
+    return new CommandExpressionAst(EmptyExtent, expression, null);
+  }
 
   private AttributeAst StubAttr() {
     return default;

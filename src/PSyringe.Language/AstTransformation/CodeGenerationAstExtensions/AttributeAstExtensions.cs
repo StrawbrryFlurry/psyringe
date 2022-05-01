@@ -23,8 +23,4 @@ public static class AttributeAstExtensions {
     sb.Append(")]");
     return sb.ToString();
   }
-
-  public static bool ReplaceChildCore(this AttributeAst ast, Ast child, Ast replacement) {
-    return false;
-  }
 }

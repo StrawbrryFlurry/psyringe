@@ -2,7 +2,9 @@ using System.Management.Automation.Language;
 using PSyringe.Common.Compiler;
 using PSyringe.Common.Language;
 using PSyringe.Common.Language.Elements;
+using PSyringe.Language.AstTransformation.CodeGenerationAstExtensions;
 using PSyringe.Language.AstTransformation.SyntheticAsts;
+using PSyringe.Language.Extensions;
 using static PSyringe.Language.AstTransformation.CodeGenConstants;
 
 namespace PSyringe.Language.AstTransformation;
@@ -38,21 +40,23 @@ public abstract class ScriptTransformer : IScriptTransformer {
   /// </summary>
   /// <param name="ast"></param>
   /// <param name="attributeType"></param>
-  /// <returns></returns>
-  public ExpressionAst SpliceAttributeFromAttributedExpression(AttributedExpressionAst ast, Type attributeType) {
-    if (ast.Parent is not AttributedExpressionAst parent) {
-      // If the parent is not an attributed expression we can just
-      // return the expression.
-      if (ast.Attribute.TypeName.GetReflectionType() == attributeType) {
-        return ast.Child;
-      }
+  public void ReplaceAttributeInNestedExpression(AttributedExpressionAst ast, Type attributeType) {
+    if (ast is not AttributedExpressionAst) {
+      return;
     }
 
-    if (ast.Child is not AttributedExpressionAst child) {
-      return default;
+    if (ast.IsAttributeOfExactType(attributeType)) {
+      ast.ReplaceChild(ast, ast.Child);
+      return;
     }
 
-    return default;
+    if (ast.Child is AttributedExpressionAst child) {
+      ReplaceAttributeInNestedExpression(child, attributeType);
+    }
+
+    if (ast.Parent is AttributedExpressionAst parent) {
+      ReplaceAttributeInNestedExpression(parent, attributeType);
+    }
   }
 
   internal string GetProviderVariableName(string target, IProviderResolvable provider) {
