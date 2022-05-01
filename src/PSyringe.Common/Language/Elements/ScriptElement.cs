@@ -62,16 +62,22 @@ public abstract class ScriptElement {
   }
 
   /// <summary>
-  ///   Method that can be used to transform an AST that this element represents
-  ///   to it's intended form.
+  ///   Method that can be used to transform an AST that this element represents.
   ///   <code>
   /// // An element representing this:
   /// [Inject([ILogger])]$Logger;
   /// // would be transformed to this:
   /// $Logger = $script:ɵɵprov_GLOBAL_Logger_inj_ILogger;
   /// </code>
+  ///   In order to apply updates to the script AST, use the properties on the element's
+  ///   see <see cref="Ast" />. property. This should always point to a valid node within
+  ///   the ScriptBlock. While we don't have the ability to verify this, transforming an AST
+  ///   node should never break out a child or parent node from the Tree.
+  ///   <b>
+  ///     If the transform
+  ///     step updates any node in the AST, it's relatives need to be updated as well.
+  ///   </b>
   /// </summary>
   /// <param name="transformer">The transformer that was used to transform this element.</param>
-  /// <returns>A replacement for the element or `null` if it should not be replaced</returns>
-  public abstract Ast? TransformAst(IScriptTransformer transformer);
+  public abstract void TransformAst(IScriptTransformer transformer);
 }

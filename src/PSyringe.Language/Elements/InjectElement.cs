@@ -21,11 +21,8 @@ public sealed class InjectElement : ScriptElement {
     return ast.Child;
   }
 
-  public override Ast? TransformAst(IScriptTransformer transformer) {
+  public override void TransformAst(IScriptTransformer transformer) {
     if (IsAst<AttributedExpressionAst>(out var attributedExpressionAst)) {
-      return attributedExpressionAst.Child;
     }
-
-    return default;
   }
 }

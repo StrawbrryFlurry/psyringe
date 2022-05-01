@@ -12,7 +12,7 @@ public class InjectSecretElement : ScriptElement {
   }
 
 
-  public override Ast? TransformAst(IScriptTransformer transformer) {
+  public override void TransformAst(IScriptTransformer transformer) {
     throw new NotImplementedException();
   }
 }

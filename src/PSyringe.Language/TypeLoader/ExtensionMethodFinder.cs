@@ -16,25 +16,35 @@ public class ExtensionMethodFinder {
     BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
   internal IDictionary<Type, MethodInfo> ExtensionMethods = null!;
+  internal string MethodName;
 
   public ExtensionMethodFinder(string methodName, Assembly? assembly = null) {
     assembly ??= GetType().Assembly;
+    MethodName = methodName;
     ExtensionMethods = GetExtensionMethods(methodName, assembly);
   }
 
+  internal void InvokeExtensionMethodInAssemblyForConcreteType(object instance, params object[] args) {
+    InvokeExtensionMethodCore(instance, args);
+  }
+
   internal T InvokeExtensionMethodInAssemblyForConcreteType<T>(object instance, params object[] args) {
+    return (T) InvokeExtensionMethodCore(instance, args)!;
+  }
+
+  private object? InvokeExtensionMethodCore(object instance, IEnumerable<object> args) {
     var concreteExtensionMethod = GetExtensionMethodOverloadForConcreteType(instance);
     var parameterSet = args.ToList();
     // The first parameter of an extension method is always the instance type
     parameterSet.Insert(0, instance);
-    return (T) concreteExtensionMethod.Invoke(null, parameterSet.ToArray())!;
+    return concreteExtensionMethod.Invoke(null, parameterSet.ToArray())!;
   }
 
   internal MethodInfo GetExtensionMethodOverloadForConcreteType(object obj) {
     var objectType = obj.GetType();
 
     if (!ExtensionMethods.TryGetValue(objectType, out var extensionMethod)) {
-      throw new Exception($"Could not find extension method for type {objectType.Name}");
+      throw new Exception($@"Could not find extension method ""{MethodName}"" for type ""{objectType.Name}""");
     }
 
     return extensionMethod;

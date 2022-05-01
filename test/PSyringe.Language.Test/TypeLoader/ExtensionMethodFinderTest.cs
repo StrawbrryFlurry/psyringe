@@ -1,8 +1,8 @@
 using FluentAssertions;
-using PSyringe.Language.AstTransformation.SourceCodeGenerators;
+using PSyringe.Language.AstTransformation.CodeGenerationAstExtensions;
 using PSyringe.Language.TypeLoader;
 using Xunit;
-using static PSyringe.Language.Test.AstTransformation.SourceCodeGenerators.Utils.MakeAstUtils;
+using static PSyringe.Language.Test.AstTransformation.CodeGenerationAstExtensions.Utils.MakeAstUtils;
 
 namespace PSyringe.Language.Test.TypeLoader;
 

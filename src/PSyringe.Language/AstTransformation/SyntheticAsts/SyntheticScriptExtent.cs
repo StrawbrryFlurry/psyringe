@@ -1,5 +1,6 @@
 using System.Management.Automation.Language;
 using System.Reflection;
+using static PSyringe.Language.AstTransformation.CodeGenerationUtil;
 
 namespace PSyringe.Language.AstTransformation.SyntheticAsts;
 
@@ -16,7 +17,11 @@ namespace PSyringe.Language.AstTransformation.SyntheticAsts;
 public class SyntheticScriptExtent {
   public static readonly IScriptExtent EmptyScriptExtent = new ScriptExtent(null, null);
   internal static readonly IScriptPosition EmptyScriptPosition = new ScriptPosition(null, 0, 0, "0");
-  internal static readonly FieldInfo AstExtentBackingField = GetExtentBackingField();
+
+  // `Ast.Extent` does not have a setter so in order to replace
+  // it's value we need to get the backing field of the property
+  // and set that.
+  internal static readonly FieldInfo AstExtentBackingField = GetPropertyBackingField(typeof(Ast), nameof(Ast.Extent));
 
   public string? File => null;
 
@@ -61,18 +66,5 @@ public class SyntheticScriptExtent {
     var replacementExtent = new ScriptExtent(null, null);
     AstExtentBackingField.SetValue(ast, replacementExtent);
     return ast;
-  }
-
-  /// <summary>
-  ///   `Ast.Extent` does not have a setter so in order to replace
-  ///   it's value we need to get the backing field of the property
-  ///   and set that.
-  /// </summary>
-  private static FieldInfo GetExtentBackingField() {
-    var bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
-    var propertyName = nameof(Ast.Extent);
-    var backingFieldName = $"<{propertyName}>k__BackingField";
-
-    return typeof(Ast).GetField(backingFieldName, bindingFlags)!;
   }
 }

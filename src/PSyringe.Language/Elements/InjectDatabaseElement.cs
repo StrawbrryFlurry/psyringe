@@ -8,7 +8,7 @@ public class InjectDatabaseElement : ScriptElement {
   public InjectDatabaseElement(Ast ast, AttributeAst attribute) : base(ast, attribute) {
   }
 
-  public override Ast? TransformAst(IScriptTransformer transformer) {
+  public override void TransformAst(IScriptTransformer transformer) {
     throw new NotImplementedException();
   }
 }
