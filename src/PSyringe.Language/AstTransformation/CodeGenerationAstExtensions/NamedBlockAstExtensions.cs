@@ -35,4 +35,18 @@ public static class NamedBlockAstExtensions {
 
     return namedBlock.ToString();
   }
+
+  private static bool ReplaceChildCore(this NamedBlockAst ast, StatementAst child, Ast replacement) {
+    var idx = ast.Statements.IndexOf(child);
+
+    if (idx == -1) {
+      return false;
+    }
+
+    var newStatements = ast.Statements.ToList();
+    newStatements[idx] = (StatementAst) replacement;
+
+    ast.SetPrivateProperty(nameof(ast.Statements), newStatements.AsReadOnly());
+    return true;
+  }
 }

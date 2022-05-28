@@ -5,6 +5,6 @@ namespace PSyringe.Language.Test.Elements;
 
 public static class TestElementExtensions {
   public static string ToStringFromAst(this ScriptElement element) {
-    return element.Ast.ToStringFromAst();
+    return element.Ast.Parent.ToStringFromAst();
   }
 }

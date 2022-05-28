@@ -122,8 +122,9 @@ public class ScriptTransformerTest {
     var variable = attributedExpression.GetNestedChildAssignableToType<VariableExpressionAst>()!;
 
     sut.ReplaceAttributeInNestedExpression(attributedExpression, typeof(InjectAttribute));
+    var actual = variable.Parent.ToStringFromAst();
 
-    sut.Should().BeSameAs(variable);
+    actual.Should().Be("[LogExpressionAttribute()]$var");
   }
 
   [Fact]

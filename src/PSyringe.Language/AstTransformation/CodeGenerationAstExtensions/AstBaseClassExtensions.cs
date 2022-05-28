@@ -36,9 +36,10 @@ public static class AstBaseClassExtensions {
     try {
       return _replaceChildMethodFinder.InvokeExtensionMethodInAssemblyForConcreteType<bool>(ast, child, replacement);
     }
-    catch {
+    catch (Exception e) {
       throw new Exception($@"Cannot invoke `ReplaceChild` on an edge AST node ""{ast.GetType().Name}"". " +
-                          "Instead, invoke the method on it's parent node to replace the AST entirely.");
+                          "Instead, invoke the method on it's parent node to replace the AST entirely.\n" +
+                          e);
     }
   }
 

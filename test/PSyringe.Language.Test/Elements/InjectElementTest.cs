@@ -1,6 +1,7 @@
 using FluentAssertions;
 using PSyringe.Common.Providers;
 using PSyringe.Language.AstTransformation;
+using PSyringe.Language.AstTransformation.CodeGenerationAstExtensions;
 using PSyringe.Language.Elements;
 using Xunit;
 using static PSyringe.Language.Test.Elements.MockElementFactory<PSyringe.Language.Elements.InjectElement>;
@@ -22,32 +23,32 @@ public class InjectElementTest {
 
   private readonly ScriptTransformer _scriptTransformer = new ElementScriptTransformer();
 
-  [Fact(Skip = "s")]
+  [Fact]
   public void TransformAst_ReplacesInjectAttribute_VariableExpressionWithSingleInjectAttribute() {
-    var sut = CreateElement("[Inject([ILogger])]$Logger;");
+    var sut = CreateElement("[Inject([ILogger])]$Logger;", out var sb);
 
     sut.TransformAst(_scriptTransformer);
-    var actual = sut.ToStringFromAst();
+    var actual = sb.ToStringFromAst();
 
     actual.Should().StartWith("$Logger");
   }
 
-  [Fact(Skip = "s")]
+  [Fact]
   public void TransformAst_ReplacesOnlyInjectAttribute_VariableExpressionWithMultipleAttributes() {
-    var sut = CreateElement("[Inject([ILogger])][LogExpression()]$Logger;");
+    var sut = CreateElement("[Inject([ILogger])][LogExpression()]$Logger;", out var sb);
 
     sut.TransformAst(_scriptTransformer);
-    var actual = sut.ToStringFromAst();
+    var actual = sb.ToStringFromAst();
 
-    actual.Should().StartWith("[LogExpression()]$Logger");
+    actual.Should().StartWith("[LogExpressionAttribute()]$Logger");
   }
 
-  [Fact(Skip = "s")]
+  [Fact]
   public void TransformAst_ConvertsToAssignmentWithProviderVariable_VariableExpressionWithSingleInjectAttribute() {
-    var sut = CreateElement("[Inject([ILogger])]$Logger;");
+    var sut = CreateElement("[Inject([ILogger])]$Logger;", out var sb);
 
     sut.TransformAst(_scriptTransformer);
-    var actual = sut.ToStringFromAst();
+    var actual = sb.ToStringFromAst();
 
     var providerVariable =
       _scriptTransformer.GetProviderVariableName("Logger", new ProviderResolvable(typeof(ILogger)));

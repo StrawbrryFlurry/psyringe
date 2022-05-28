@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Management.Automation.Language;
 using PSyringe.Common.Language.Elements;
 using PSyringe.Language.Parsing;
 
@@ -9,8 +10,9 @@ public static class MockElementFactory<T> where T : ScriptElement {
   private static readonly ElementFactory _elementFactory = new();
   private static readonly ScriptParser _parser = new(_elementFactory);
 
-  public static T CreateElement(string elementSource) {
+  public static T CreateElement(string elementSource, out ScriptBlockAst scriptBlockAst) {
     var scriptDef = _parser.Parse(elementSource);
+    scriptBlockAst = scriptDef.ScriptBlock;
     T element;
 
     try {

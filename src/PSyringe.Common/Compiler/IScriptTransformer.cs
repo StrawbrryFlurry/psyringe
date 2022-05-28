@@ -27,6 +27,4 @@ public interface IScriptTransformer {
   );
 
   public IEnumerable<IScriptVariableDependency> GetVariableDependencies();
-
-  public void ReplaceAttributeInNestedExpression(AttributedExpressionAst ast, Type attributeType);
 }

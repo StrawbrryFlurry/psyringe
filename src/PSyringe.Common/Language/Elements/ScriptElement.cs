@@ -51,13 +51,13 @@ public abstract class ScriptElement {
   /// <param name="ast"></param>
   /// <typeparam name="T"></typeparam>
   /// <returns></returns>
-  protected bool IsAst<T>(out T? ast) where T : Ast {
+  protected bool IsAst<T>(out T ast) where T : Ast {
     if (Ast is T) {
       ast = (T) Ast;
       return true;
     }
 
-    ast = default;
+    ast = default!;
     return false;
   }
 
